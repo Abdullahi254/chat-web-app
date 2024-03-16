@@ -1,11 +1,16 @@
 const mongoose = require("mongoose");
 
 const uri = "mongodb+srv://admin:xTErsJzESty9jud5@chatappcluster.bble1lm.mongodb.net/?retryWrites=true&w=majority&appName=chatAppCluster";
+const mongoose = require("mongoose");
+
+const uri = "mongodb+srv://admin:xTErsJzESty9jud5@chatappcluster.bble1lm.mongodb.net/?retryWrites=true&w=majority&appName=chatAppCluster";
 
 global.mongoose = {
   conn: null,
   promise: null,
 };
+
+async function dbConnect() {
 
 async function dbConnect() {
   try {
@@ -33,6 +38,7 @@ async function dbConnect() {
   }
 }
 
+const disconnect = () => {
 const disconnect = () => {
   if (!global.mongoose.conn) {
     return;
