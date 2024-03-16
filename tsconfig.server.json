@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2020",
+        "esModuleInterop": true,
+  },
+    "include": ["src/server/**/*.ts"],
+    "exclude": ["node_modules"]
+}
