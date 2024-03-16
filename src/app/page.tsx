@@ -1,6 +1,5 @@
 import ChatScreen from "@/components/ChatScreen";
 import SideChat from "@/components/SideChat";
-import Image from "next/image";
 
 export default function Home() {
   return (
