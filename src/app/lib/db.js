@@ -1,10 +1,13 @@
-import mongoose, { Mongoose } from "mongoose";
+const mongoose = require("mongoose");
+
+const uri = "mongodb+srv://admin:xTErsJzESty9jud5@chatappcluster.bble1lm.mongodb.net/?retryWrites=true&w=majority&appName=chatAppCluster";
 
 global.mongoose = {
   conn: null,
   promise: null,
 };
-export async function dbConnect() {
+
+async function dbConnect() {
   try {
     if (global.mongoose && global.mongoose.conn) {
       console.log("Connected from previous");
@@ -30,10 +33,12 @@ export async function dbConnect() {
   }
 }
 
-export const disconnect = () => {
+const disconnect = () => {
   if (!global.mongoose.conn) {
     return;
   }
   global.mongoose.conn = null;
   mongoose.disconnect();
 };
+
+module.exports = { dbConnect,  disconnect};
