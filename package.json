@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "server": "ts-node-dev --project tsconfig.server.json src/server/sockets/socket.ts",
+    "server": "ts-node-dev --project tsconfig.server.json src/server/index.ts",
     "run_app": "next dev & npm run server",
     "lint": "next lint",
     "xp": "nodemon src/server/index.js"
