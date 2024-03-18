@@ -1,8 +1,8 @@
-const userModel = require("../../models/user");
-
+// user controllers
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
+const dbClient = require('../utils/db');
 
 const createToken = (_id) => {
     const jwtkey = process.env.JWT_SECRET_KEY || "my-secret-key-2024";
@@ -11,27 +11,27 @@ const createToken = (_id) => {
 
 const registerUser = async (req, res) => {
     try {
-        const {name, email, password} = req.body;
+        const {username, email, password} = req.body;
     
-        if(!name || !email || !password) return res.status(400).json("All fields are required!");
+        if(!username || !email || !password) return res.status(400).json("All fields are required!");
     
         if(!validator.isEmail(email)) return res.status(400).json("Email must be valid email!");
     
         if(!validator.isStrongPassword(password)) return res.status(400).json("The password must be strong password");
        
-        let user = await userModel.findOne({email});   
+        const users = await dbClient.getCollection("chatDB", "users");
+        let user = await users.findOne({email}); 
        
         if (user) return res.status(400).json("User already exists!");
 
-        user = new userModel({name, email, password});
-
         const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(user.password, salt);
-        await user.save();
-    
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        user = users.insertOne({username, email, password: hashedPassword});
+        
         const token = createToken(user._id);
     
-        res.status(200).json({_id: user._id, name, email, token});
+        res.status(200).json({_id: user._id, username, email, token});
     
     } catch(error) {
         console.log(error);
@@ -43,7 +43,8 @@ const loginUser = async (req, res) => {
     try {
         const {email, password} = req.body;
 
-        let user = await userModel.findOne({email});
+        const users = await dbClient.getCollection("chatDB", "users");
+        let user = await users.findOne({email}); 
 
         if(!user) return res.status(400).json("Invalid email or password");
 
@@ -53,7 +54,7 @@ const loginUser = async (req, res) => {
 
         const token = createToken(user._id);
     
-        res.status(200).json({_id: user._id, name: user.name, email, token});
+        res.status(200).json({_id: user._id, username: user.username, email, token});
     } catch(error) {
         console.log(error);
         res.status(500).json(error); 
