@@ -8,7 +8,8 @@
     "start": "next start",
     "server": "ts-node-dev --project tsconfig.server.json src/server/sockets/socket.ts",
     "run_app": "next dev & npm run server",
-    "lint": "next lint"
+    "lint": "next lint",
+    "xp": "nodemon src/server/index.js"
   },
   "dependencies": {
     "mongodb": "^6.5.0",
