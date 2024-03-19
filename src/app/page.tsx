@@ -1,9 +1,12 @@
+import ChatScreen from "@/components/ChatScreen";
+import SideChat from "@/components/SideChat";
 import Image from "next/image";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="text-xl font-semibold">CHAT APP</div>
+    <main className="grid grid-cols-3 h-screen py-10 px-6 max-w-7xl mx-auto">
+      <SideChat/>
+      <ChatScreen/>
     </main>
   );
 }
