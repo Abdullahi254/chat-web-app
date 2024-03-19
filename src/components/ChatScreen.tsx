@@ -1,24 +1,31 @@
 "use client"
 
-import React from 'react'
+import React, { useState } from 'react'
 import { IoMdSend } from "react-icons/io";
 import MessageBubble from './MessageBubble';
 type Props = {}
 
 const ChatScreen = (props: Props) => {
 
-    const handleMessageSent = (formData: FormData)=>{
-        // handle message sent 
-        const message = formData.get("chat")
-        console.log(message)
-    }
+    const [message, setMessage] = useState<string>()
 
+    const handleMessageSent = (formData: FormData) => {
+        // handle message sent
+        
+        const message = formData.get("chat")
+        if (typeof (message) === 'string') {
+            setMessage(message)
+        }
+
+
+    }
+    
     return (
         <div className='col-span-2 border-l-gray-950 border-l-2 px-6 relative flex flex-col space-y-3'>
             {/* list of messages being received */}
             {[1, 2, 3].map(val => <MessageBubble
                 message='Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mattis pellentesque id nibh tortor id aliquet lectus. Elementum nibh tellus molestie nunc non blandit massa enim.'
-                status = {true}
+                status={true}
                 timeStamp='19/03/2024 15:05'
                 key={val}
                 userName='John Doe'
