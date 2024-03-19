@@ -1,15 +1,16 @@
 // entry point to the db
 const { MongoClient } = require('mongodb');
 
-const uri = "mongodb+srv://admin:xTErsJzESty9jud5@chatappcluster.bble1lm.mongodb.net/?retryWrites=true&w=majority&appName=chatAppCluster";
+
+// const uri = "mongodb+srv://admin:xTErsJzESty9jud5@chatappcluster.bble1lm.mongodb.net/?retryWrites=true&w=majority&appName=chatAppCluster";
 
 class DBClient {
     constructor() {
-        const connectionString = process.env.MONGO_URL || uri;
+        const connectionString = process.env.MONGO_URL;
         if (!connectionString) {
             throw new Error('DB_URI environment variable is not defined.');
         }
-        this.client = new MongoClient(connectionString, { useUnifiedTopology: true });
+        this.client = new MongoClient(connectionString);
     }
     async getCollection(databaseName, collectionName) {
         try {
