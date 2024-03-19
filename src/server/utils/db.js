@@ -5,7 +5,7 @@ class DBClient {
     constructor() {
         const connectionString = process.env.REACT_APP_MONGO_URL;
         if (!connectionString) {
-            throw new Error('DB_URI environment variable is not defined.');
+            throw new Error('MONGO_URL environment variable is not defined.');
         }
         this.client = new MongoClient(connectionString);
     }

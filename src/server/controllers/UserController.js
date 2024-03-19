@@ -1,5 +1,5 @@
 // user controllers
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
 const dbClient = require('../utils/db');
@@ -12,14 +12,14 @@ const createToken = (_id) => {
 
 const registerUser = async (req, res) => {
     try {
-        const {username, email, password} = req.body;
-    
-        if(!username || !email || !password) return res.status(400).json("All fields are required!");
-    
+        const { email, password } = req.body;
+
+        if(!email || !password) return res.status(400).json("All fields are required!");
+
         if(!validator.isEmail(email)) return res.status(400).json("Email must be valid email!");
-    
+
         if(!validator.isStrongPassword(password)) return res.status(400).json("The password must be strong password");
-       
+
         const users = await dbClient.getCollection("chatDB", "users");
         const existingUser = await users.findOne({email}); 
        
