@@ -32,7 +32,6 @@ const page = (props: Props) => {
             if (results.status !== 201) {
                 console.log(row)
             }
-            console.log('====>', row)
 
             if (results.status !== 201) {
                 console.log(row)
