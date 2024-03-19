@@ -10,15 +10,16 @@ const ChatScreen = (props: Props) => {
     const chat_socket = io('http://localhost:4000')
 
     const [message, setMessage] = useState<string>()
+    const [messages, setMessages] = useState([])
     //NOTE: Might change this to target the other user instead
     const [onlineStatus, setOnlineStatus] = useState(chat_socket.connected)
 
     const handleMessageSent = (formData: FormData) => {
         // handle message sent
 
-        const message = formData.get("chat")
-        if (typeof (message) === 'string') {
-            setMessage(message)
+        const content = formData.get("chat")
+        if (typeof (content) === 'string') {
+            setMessage(content)
         }
 
 
@@ -31,16 +32,24 @@ const ChatScreen = (props: Props) => {
         chat_socket.on('disconnect', () => {
             setOnlineStatus(false)
         })
-        if (message.length !== 0) {
+        if (message !== null) {
             //NOTE: Possibly attach the user id from database
-            chat_socket.emit('user', { msg: message })
+            chat_socket.emit('message:send', { msg: message })
         }
-    })
+        //NOTE: UI is not updating as message come in.
+        chat_socket.on('message:sent', (msg) => {
+            let msgArray = []
+            console.log(msg.msg)
+            msgArray.push(msg.msg)
+            setMessages(msgArray);
+        })
+    }, [])
 
 
     return (
         <div className='col-span-2 border-l-gray-950 border-l-2 px-6 relative flex flex-col space-y-3'>
             {/* list of messages being received */}
+            {/*
             {[1, 2, 3].map(val => <MessageBubble
                 message='Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mattis pellentesque id nibh tortor id aliquet lectus. Elementum nibh tellus molestie nunc non blandit massa enim.'
                 status={true}
@@ -48,7 +57,17 @@ const ChatScreen = (props: Props) => {
                 key={val}
                 userName='John Doe'
             />)}
+            */}
 
+            {messages === null ? <div>No messages</div> : messages.map((v, k) =>
+                <MessageBubble
+                    message={v.msgContent}
+                    status={true}
+                    timeStamp='19/03/2024 15:05'
+                    key={k}
+                    userName={v.from}
+                />
+            )}
             <form className='absolute bottom-1 w-full lg:px-2' action={handleMessageSent}>
                 <label htmlFor="chat" className="sr-only">Your message</label>
                 <div className="flex items-center px-3 py-2 rounded-lg bg-gray-50">
