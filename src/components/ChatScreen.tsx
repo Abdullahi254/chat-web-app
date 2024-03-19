@@ -10,16 +10,25 @@ const ChatScreen = (props: Props) => {
     const chat_socket = io('http://localhost:4000')
 
     const [message, setMessage] = useState<string>()
+<<<<<<< HEAD
     const [messages, setMessages] = useState([])
+=======
+>>>>>>> 14a4004 (feat: send messages via sockets.)
     //NOTE: Might change this to target the other user instead
     const [onlineStatus, setOnlineStatus] = useState(chat_socket.connected)
 
     const handleMessageSent = (formData: FormData) => {
         // handle message sent
 
+<<<<<<< HEAD
         const content = formData.get("chat")
         if (typeof (content) === 'string') {
             setMessage(content)
+=======
+        const message = formData.get("chat")
+        if (typeof (message) === 'string') {
+            setMessage(message)
+>>>>>>> 14a4004 (feat: send messages via sockets.)
         }
 
 
@@ -32,6 +41,7 @@ const ChatScreen = (props: Props) => {
         chat_socket.on('disconnect', () => {
             setOnlineStatus(false)
         })
+<<<<<<< HEAD
         if (message !== null) {
             //NOTE: Possibly attach the user id from database
             chat_socket.emit('message:send', { msg: message })
@@ -44,6 +54,13 @@ const ChatScreen = (props: Props) => {
             setMessages(msgArray);
         })
     }, [])
+=======
+        if (message.length !== 0) {
+            //NOTE: Possibly attach the user id from database
+            chat_socket.emit('user', { msg: message })
+        }
+    })
+>>>>>>> 14a4004 (feat: send messages via sockets.)
 
 
     return (
