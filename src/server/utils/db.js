@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-// entry point to the db
-=======
 // entry point to the db
 const { MongoClient } = require('mongodb');
 
@@ -30,4 +27,3 @@ class DBClient {
 const dbClient = new DBClient();
 
 module.exports = dbClient;
->>>>>>> c8ff33b (updated authentication)
