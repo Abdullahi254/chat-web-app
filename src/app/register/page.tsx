@@ -13,39 +13,23 @@ const page = (props: Props) => {
             confirmPassword: formData.get('password2'),
         }
         if (userData.password !== userData.confirmPassword) {
-
             console.log("passwords do not match")
             return 
         }        
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> dc843e1 (Add login handler)
         try {
-<<<<<<< HEAD
             console.log(userData)
-=======
->>>>>>> f67e17f (Add base url for api fetching)
             const results = await fetch(process.env.BASE_URL + "/register", {
                 method: 'POST',
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(userData)
             })
             const row = await results.json()
-<<<<<<< HEAD
 
             if (results.status !== 201) {
                 console.log(row)
             }
-
-=======
->>>>>>> dc843e1 (Add login handler)
-            if (results.status !== 201) {
-                console.log(row)
-            }
-        }  catch(error) {
+           }  catch(error) {
             console.log(error)
         }
     }
