@@ -18,8 +18,12 @@ const page = (props: Props) => {
             const results = await fetch(process.env.BASE_URL + '/login', {
 =======
             console.log(userData)
+<<<<<<< HEAD
             const results = await fetch("http://localhost:8000/login", {
 >>>>>>> dc843e1 (Add login handler)
+=======
+            const results = await fetch(process.env.BASE_URL + '/login', {
+>>>>>>> c296a2f (Add login handler)
                 method: 'POST',
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(userData)
