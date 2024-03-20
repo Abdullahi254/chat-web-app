@@ -12,6 +12,7 @@ const getTokenKey = () => {
 }
 
 const createToken = (_id) => {
+    const jwtkey = getTokenKey();
     return jwt.sign({id: _id}, jwtkey, {expiresIn: "3d"});
 }
 
