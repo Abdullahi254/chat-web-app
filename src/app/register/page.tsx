@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 <<<<<<< HEAD
 =======
 
+<<<<<<< HEAD
 >>>>>>> 6e18758 (Add register handler to register page)
 
 type Props = {}
@@ -13,6 +14,13 @@ const page = (props: Props) => {
 =======
     // const [error, setrror] = useState([])
 >>>>>>> 6e18758 (Add register handler to register page)
+=======
+type Props = {}
+
+const page = (props: Props) => {
+    // const [error, setrror] = useState('')
+
+>>>>>>> dc843e1 (Add login handler)
     async function handleRegistration(formData: FormData) {
         'use server'
         const userData = {
@@ -22,18 +30,25 @@ const page = (props: Props) => {
         }
         if (userData.password !== userData.confirmPassword) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 6e18758 (Add register handler to register page)
+=======
+
+>>>>>>> dc843e1 (Add login handler)
             console.log("passwords do not match")
             return 
         }        
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         try {
             const results = await fetch(process.env.BASE_URL + "/register", {
 =======
         console.log(userData)
+=======
+>>>>>>> dc843e1 (Add login handler)
         try {
             console.log(userData)
             const results = await fetch("http://localhost:8000/register", {
@@ -44,12 +59,18 @@ const page = (props: Props) => {
             })
             const row = await results.json()
 <<<<<<< HEAD
+<<<<<<< HEAD
             if (results.status !== 201) {
                 console.log(row)
             }
 =======
             console.log('====>', row)
 >>>>>>> 6e18758 (Add register handler to register page)
+=======
+            if (results.status !== 201) {
+                console.log(row)
+            }
+>>>>>>> dc843e1 (Add login handler)
         }  catch(error) {
             console.log(error)
         }
