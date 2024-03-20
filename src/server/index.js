@@ -22,10 +22,6 @@ const io = new Server(httpServer, { cors: {
   methods: ['GET', 'POST'],
 },})
 
-app.get((req, res) => {
-  console.log(res)
-  console.log(req)
-});
 
 const PORT = process.env.PORT || 4000;
 // /** Send message to user

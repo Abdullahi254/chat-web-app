@@ -46,7 +46,7 @@ const registerUser = async (req, res) => {
 }
 
 const loginUser = async (req, res) => {
-
+        const userId = req.userId
     try {
         const {email, password} = req.body;
         if(!email || !password) return res.status(400).json("All fields are required!");
@@ -84,15 +84,16 @@ const verifyToken = async (req, res, next) => {
 
         return jwt.verify(token, "my-secret-key-2024", (err, decoded) => {
             if (err) {
-                return res.status(403).send('Token is invalid');
+                return res.status(401).send('Token is invalid');
             }
-            req.userId = decoded.id;
-            next()
+
+            return res.status(200).json({ verified: true });
         });
     } catch (error) {
-        return res.status(403).send('Invalid token');
+        return res.status(401).send('Invalid token');
     }
 }
+
 
 async function getUserfromToken(token) {
     try {
