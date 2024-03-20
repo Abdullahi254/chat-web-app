@@ -50,9 +50,13 @@ const page = (props: Props) => {
 =======
 >>>>>>> dc843e1 (Add login handler)
         try {
+<<<<<<< HEAD
             console.log(userData)
             const results = await fetch("http://localhost:8000/register", {
 >>>>>>> 6e18758 (Add register handler to register page)
+=======
+            const results = await fetch(process.env.BASE_URL + "/register", {
+>>>>>>> f67e17f (Add base url for api fetching)
                 method: 'POST',
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(userData)
