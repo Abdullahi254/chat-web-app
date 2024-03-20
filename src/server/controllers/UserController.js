@@ -46,7 +46,6 @@ const registerUser = async (req, res) => {
 }
 
 const loginUser = async (req, res) => {
-    console.log('----lll--->', req.body)
 
     try {
         const {email, password} = req.body;
@@ -60,10 +59,8 @@ const loginUser = async (req, res) => {
         if(!user){
             return res.status(401).json("user not found")
         };
-        console.log('----lll--->', password, user.password)
 
         const isValidPassword = await bcrypt.compare(password, user.password);
-        console.log(isValidPassword)
 
         if(!isValidPassword) return res.status(400).json("Invalid email or password");
 
