@@ -28,11 +28,9 @@ const registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const newUser = await users.insertOne({username, email, password: hashedPassword});
- 
-        const token = createToken(newUser.insertedId);
-    
-        res.status(200).json({_id: newUser.insertedId, username, email, token});
+        await users.insertOne({username, email, password: hashedPassword});
+     
+        res.status(201).json({ username, email});
     
     } catch(error) {
         console.log(error);
@@ -55,7 +53,7 @@ const loginUser = async (req, res) => {
 
         const token = createToken(user._id);
     
-        res.status(200).json({_id: user._id, username: user.username, email, token});
+        res.status(200).json({username: user.username, email, token});
     } catch(error) {
         console.log(error);
         res.status(500).json(error); 

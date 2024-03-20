@@ -1,10 +1,10 @@
 import React, {useState} from 'react'
 
-
 type Props = {}
 
 const page = (props: Props) => {
-    // const [error, setrror] = useState([])
+    // const [error, setrror] = useState('')
+
     async function handleRegistration(formData: FormData) {
         'use server'
         const userData = {
@@ -13,11 +13,11 @@ const page = (props: Props) => {
             confirmPassword: formData.get('password2'),
         }
         if (userData.password !== userData.confirmPassword) {
+
             console.log("passwords do not match")
             return 
         }        
 
-        console.log(userData)
         try {
             console.log(userData)
             const results = await fetch("http://localhost:8000/register", {
@@ -26,7 +26,9 @@ const page = (props: Props) => {
                 body: JSON.stringify(userData)
             })
             const row = await results.json()
-            console.log('====>', row)
+            if (results.status !== 201) {
+                console.log(row)
+            }
         }  catch(error) {
             console.log(error)
         }
@@ -52,6 +54,7 @@ const page = (props: Props) => {
                 </div>
                 <button type="submit" className="w-full text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Register</button>
             </form>
+            
         </main>
     )
 }
