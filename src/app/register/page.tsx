@@ -1,6 +1,5 @@
 import React, {useState} from 'react'
 
-
 type Props = {}
 
 const page = (props: Props) => {
@@ -14,12 +13,16 @@ const page = (props: Props) => {
             confirmPassword: formData.get('password2'),
         }
         if (userData.password !== userData.confirmPassword) {
+
             console.log("passwords do not match")
             return 
         }        
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> dc843e1 (Add login handler)
         try {
             console.log(userData)
             const results = await fetch(process.env.BASE_URL + "/register", {
@@ -28,11 +31,14 @@ const page = (props: Props) => {
                 body: JSON.stringify(userData)
             })
             const row = await results.json()
+<<<<<<< HEAD
 
             if (results.status !== 201) {
                 console.log(row)
             }
 
+=======
+>>>>>>> dc843e1 (Add login handler)
             if (results.status !== 201) {
                 console.log(row)
             }
