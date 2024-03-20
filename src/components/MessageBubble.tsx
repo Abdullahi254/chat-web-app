@@ -5,7 +5,7 @@ import Image from 'next/image'
 import dp from "../../public/dp.jpg"
 import { BsThreeDotsVertical } from "react-icons/bs";
 
-type Props = {
+export type Props = {
   userName: string
   message: string
   status: boolean
@@ -37,7 +37,7 @@ const MessageBubble = ({
     };
   }, [ref, triggerMenu])
   return (
-    <div className="flex items-start gap-2.5">
+    <div className="flex items-start gap-2.5 relative">
       <Image width={40} className="h-[32px] w-[32px] rounded-full" src={dp} alt="Dp" />
       <div className="flex flex-col w-full leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl">
         <div className="flex items-center space-x-2 rtl:space-x-reverse">

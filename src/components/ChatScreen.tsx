@@ -1,37 +1,75 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { IoMdSend } from "react-icons/io";
 import MessageBubble from './MessageBubble';
+import { Props as MessageInfo } from "./MessageBubble"
 type Props = {}
+
 
 const ChatScreen = (props: Props) => {
 
-    const [message, setMessage] = useState<string>()
+    const [messageList, setMessageList] = useState<MessageInfo[]>()
 
     const handleMessageSent = (formData: FormData) => {
         // handle message sent
-        
         const message = formData.get("chat")
         if (typeof (message) === 'string') {
-            setMessage(message)
+            const sentMessage: MessageInfo = {
+                message,
+                status: true,
+                timeStamp: "19/03/2024 15:05",
+                userName: "Sender One"
+            }
+            setMessageList(prevList => [...prevList as MessageInfo[], sentMessage])
         }
-
-
     }
-    
-    return (
-        <div className='col-span-2 border-l-gray-950 border-l-2 px-6 relative flex flex-col space-y-3'>
-            {/* list of messages being received */}
-            {[1, 2, 3].map(val => <MessageBubble
-                message='Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mattis pellentesque id nibh tortor id aliquet lectus. Elementum nibh tellus molestie nunc non blandit massa enim.'
-                status={true}
-                timeStamp='19/03/2024 15:05'
-                key={val}
-                userName='John Doe'
-            />)}
 
-            <form className='absolute bottom-1 w-full lg:px-2' action={handleMessageSent}>
+    useEffect(() => {
+        // getting a list of messages from the db
+        const listOfMessages = [
+            {
+                message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mattis pellentesque id nibh tortor id aliquet lectus",
+                status: true,
+                timeStamp: '19/03/2024 15:05',
+                userName: 'John Doe'
+            },
+            {
+                message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mattis pellentesque id nibh tortor id aliquet lectus",
+                status: true,
+                timeStamp: '19/03/2024 15:05',
+                userName: 'John Doe'
+            },
+            {
+                message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mattis pellentesque id nibh tortor id aliquet lectus",
+                status: true,
+                timeStamp: '19/03/2024 15:05',
+                userName: 'John Doe'
+            },
+            {
+                message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mattis pellentesque id nibh tortor id aliquet lectus",
+                status: true,
+                timeStamp: '19/03/2024 15:05',
+                userName: 'John Doe'
+            },
+        ]
+        setMessageList(prevList => [...listOfMessages])
+    }, [])
+
+    return (
+        <div className='col-span-2 border-l-gray-950 border-l-2 px-6 relative flex flex-col h-full'>
+            {/* list of messages being received */}
+            <div className=' overflow-y-scroll sm:max-h-[700px] md:max-h-[900px] lg:max-h-[1100px] space-y-3'>
+                {messageList?.map((message, index) => <MessageBubble
+                    message={message.message}
+                    status={message.status}
+                    timeStamp={message.timeStamp}
+                    key={index}
+                    userName={message.userName}
+                />)}
+            </div>
+
+            <form className='absolute bottom-1 w-full lg:px-2' onSubmit={()=>console.log("ppapap")} action={handleMessageSent}>
                 <label htmlFor="chat" className="sr-only">Your message</label>
                 <div className="flex items-center px-3 py-2 rounded-lg bg-gray-50">
                     <textarea id="chat" name='chat' rows={2} className="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-gray-500 focus:border-gray-500" placeholder="Your message..."></textarea>
