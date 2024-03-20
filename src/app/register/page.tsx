@@ -29,7 +29,7 @@ const page = (props: Props) => {
             if (results.status !== 201) {
                 console.log(row)
             }
-           }  catch(error) {
+        }  catch(error) {
             console.log(error)
         }
     }
