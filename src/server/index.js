@@ -1,14 +1,17 @@
 const express = require("express");
-const app = express();
-const http = require("http").createServer(app);
 const socketIO = require("socket.io");
 const { Socket } = require("socket.io");
-const socket = new socketIO.Server({
+
+const app = express();
+const http = require("http").createServer(app);
+
+const server = http.createServer(app)
+
+const socket = new socketIO.Server(server, {
   cors: {
     origin: "http://localhost:3000",
   },
 });
-const PORT = 4000;
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
@@ -41,5 +44,6 @@ socket.on("connection", async (soc) => {
   soc.on("message:send", (msg) => sendMessage(soc.id, msg.msg, soc));
 });
 
+const PORT = process.env.PORT || 4000;
 socket.listen(PORT);
 
