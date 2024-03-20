@@ -1,10 +1,12 @@
 import React from 'react'
-import { useRouter } from 'next/router';
 
 
-type Props = {}
+type Props = {
 
-const page = (props: Props) => {
+}
+
+
+const Page = (props: Props) => {
 
     async function handleLogin(formData: FormData) {
         'use server'
@@ -20,15 +22,13 @@ const page = (props: Props) => {
                 body: JSON.stringify(userData)
             })
             const row = await results.json()
-            console.log(row)
             if (results.status !== 200) {
                 console.log(row)
             } else {
                 if (row.token) {
-                    if (typeof localStorage !== 'undefined') {
-                        localStorage.setItem('x-token', row.token)
-                        console.log('successfully logged in')  
-                    }
+                    console.log(row)
+                    // localStorage.setItem('x-token', row.token)
+                    console.log('successfully logged in')  
                 }
             }
         }  catch(error) {
@@ -55,4 +55,4 @@ const page = (props: Props) => {
     )
 }
 
-export default page
+export default Page
