@@ -1,0 +1,6 @@
+<!-- all envs should be listed here -->
+
+<!-- server -->
+REACT_APP_MONGO_URL=
+
+<!-- client -->

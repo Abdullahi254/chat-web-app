@@ -34,10 +34,10 @@ const registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const username = email.spit('@')[0];
+        const username = email.split('@')[0];
         await users.insertOne({username, email, password: hashedPassword});
      
-        res.status(201).json({ username, email});
+        res.status(201).json({ username, email });
     
     } catch(error) {
         console.log(error);

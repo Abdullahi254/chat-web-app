@@ -1,29 +1,30 @@
+'use client'
 import React, {useState} from 'react'
 
 type Props = {}
 
-const page = (props: Props) => {
-    // const [error, setrror] = useState('')
+const Page = (props: Props) => {
+    const [error, setrror] = useState('')
 
     async function handleRegistration(formData: FormData) {
-        'use server'
         const userData = {
             email: formData.get('email'),
             password: formData.get('password'),
             confirmPassword: formData.get('password2'),
         }
         if (userData.password !== userData.confirmPassword) {
-            console.log("passwords do not match")
+            setrror("passwords do not match")
             return 
         }        
-
+        console.log(userData)
         try {
-            const results = await fetch(process.env.BASE_URL + "/register", {
+            const results = await fetch("http://localhost:8000/register", {
                 method: 'POST',
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(userData)
+                body: JSON.stringify({email: userData.email, password: userData.password})
             })
             const row = await results.json()
+            console.log(row)
 
             if (results.status !== 201) {
                 console.log(row)
@@ -53,9 +54,9 @@ const page = (props: Props) => {
                 </div>
                 <button type="submit" className="w-full text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Register</button>
             </form>
-            
+            {error && error}
         </main>
     )
 }
 
-export default page
+export default Page
