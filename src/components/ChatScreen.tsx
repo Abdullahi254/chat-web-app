@@ -3,11 +3,20 @@
 import React, { useEffect, useState } from 'react'
 import { IoMdSend } from "react-icons/io";
 import MessageBubble from './MessageBubble';
+import { io } from 'socket.io-client';
+
 import { Props as MessageInfo } from "./MessageBubble"
+
 type Props = {}
 
-
+//TODO: Come back and reconfigure the sockets according to react hooks
 const ChatScreen = (props: Props) => {
+    const chat_socket = io('http://localhost:4000')
+    const [message, setMessage] = useState<string>('')
+    const [messages, setMessages] = useState([])
+    //NOTE: Might change this to target the other user instead
+    const [onlineStatus, setOnlineStatus] = useState(chat_socket.connected)
+
 
     const [messageList, setMessageList] = useState<MessageInfo[]>()
 
@@ -56,6 +65,41 @@ const ChatScreen = (props: Props) => {
         setMessageList(prevList => [...listOfMessages])
     }, [])
 
+    useEffect(() => {
+        chat_socket.on('connect', () => {
+            setOnlineStatus(true)
+        })
+
+        chat_socket.on('disconnect', () => {
+            setOnlineStatus(false)
+        })
+
+        if (message !== null) {
+            //NOTE: Possibly attach the user id from database
+            chat_socket.emit('message:send', { msg: message })
+        }
+        //NOTE: UI is not updating as message come in.
+        // chat_socket.on('message:sent', (msg) => {
+        //     let msgArray = []
+        //     console.log(msg.msg)
+        //     msgArray.push(msg.msg)
+        //     setMessages(msgArray);
+        // })
+    }, [])
+        // if (message && message.length !== 0) {
+
+        //     //NOTE: Possibly attach the user id from database
+        //     chat_socket.emit('message:send', { msg: message })
+        // }
+        //NOTE: UI is not updating as message come in.
+        // chat_socket.on('message:sent', (msg) => {
+        //     let msgArray = []
+        //     console.log(msg.msg)
+        //     msgArray.push(msg.msg)
+        //     setMessages(msgArray);
+        // })
+    // }, [])
+    
     return (
         <div className='col-span-2 border-l-gray-950 border-l-2 px-6 relative flex flex-col h-full'>
             {/* list of messages being received */}

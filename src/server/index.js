@@ -1,44 +1,47 @@
-// entry to server
-require("dotenv").config();
-const express = require('express');
-const http = require('http')
-const { Server } = require('socket.io')
-const cors = require('cors');
+const express = require("express");
+const socketIO = require("socket.io");
+const { Socket } = require("socket.io");
+const http = require("http")
 
-
-const routes = require('./routes');
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({extended: false}));
-
 const server = http.createServer(app)
-const io = new Server(server, { cors: {
-  origin: 'http://localhost:3000',
-  methods: ['GET', 'POST'],
-},})
 
-const CHAT_BOT = 'ChatBot';
-io.on('connection', (socket) => {
-  socket.emit('send_message', 'Hi', {username: CHAT_BOT})
-  socket.on("recieve_messagge", (data) => {
-    console.log(data)
-  })
-
-  socket.on('create_room', ({roomname}) => {
-
-    
-
-  })
-
-  socket.on('join_room', ({roomname}) => {
-    
-  })
-})
-
-const PORT = process.env.PORT || 5000;
-
-app.use(routes);
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+const socket = new socketIO.Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+  },
 });
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
+/** Send message to user
+ * @param {string} userId User Id from database
+ * @param {string} msg to send
+ * @param {Socket} conn Socket connection
+ */
+function sendMessage(userId, msg, conn) {
+  //NOTE: Possibly configure user id from database
+  console.log(userId);
+  console.log(msg);
+  const message = {
+    from: "cyber monday",
+    to: "random",
+    //BUG: Message isnt passing through
+    messageContent: msg,
+  };
+  //NOTE: Save the message to database
+  //conn.broadcast.to(userRoom).emit('message:sent', {msg: message})
+  conn.emit("message:sent", { msg: message });
+}
+
+/** Function accepts type Socket */
+socket.on("connection", async (soc) => {
+  console.log("Connected");
+  //NOTE: Using socket Id as placeholder for user ID
+  soc.on("message:send", (msg) => sendMessage(soc.id, msg.msg, soc));
+});
+
+const PORT = process.env.PORT || 4000;
+socket.listen(PORT);

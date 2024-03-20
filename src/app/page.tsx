@@ -2,6 +2,8 @@ import ChatScreen from "@/components/ChatScreen";
 import SideChat from "@/components/SideChat";
 import Image from "next/image";
 
+import { io } from 'socket.io-client';
+import { useState, useEffect } from 'react'
 export default function Home() {
   // check the token if is valid
   return (
