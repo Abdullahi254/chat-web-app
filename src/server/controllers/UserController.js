@@ -2,11 +2,16 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
+const { ObjectId } = require('mongodb');
+
 const dbClient = require('../utils/db');
 
-const createToken = (_id) => {
 
-    const jwtkey = process.env.JWT_SECRET_KEY || "my-secret-key-2024";
+const getTokenKey = () => {
+    return process.env.JWT_SECRET_KEY || "my-secret-key-2024";
+}
+
+const createToken = (_id) => {
     return jwt.sign({id: _id}, jwtkey, {expiresIn: "3d"});
 }
 
@@ -28,6 +33,7 @@ const registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
+        const username = email.spit('@')[0];
         await users.insertOne({username, email, password: hashedPassword});
      
         res.status(201).json({ username, email});
@@ -60,7 +66,7 @@ const loginUser = async (req, res) => {
     }
 }
 
-const verifyToken = async (req, res) => {
+const verifyToken = async (req, res, next) => {
     try {
         const authHeader = req.headers['authorization'];
         if (!authHeader) {
@@ -69,15 +75,32 @@ const verifyToken = async (req, res) => {
 
         const token = authHeader.split(' ')[1]; 
 
-        jwt.verify(token, "my-secret-key-2024", (err, decoded) => {
+        return jwt.verify(token, "my-secret-key-2024", (err, decoded) => {
             if (err) {
                 return res.status(403).send('Token is invalid');
             }
-            res.status(200).json({_id: decoded.id});
+            req.userId = decoded.id;
+            next()
         });
     } catch (error) {
-        res.status(403).send('Invalid token');
+        return res.status(403).send('Invalid token');
     }
+}
+
+async function getUserfromToken(token) {
+    try {
+        return jwt.verify(token, "my-secret-key-2024", async (err, decoded) => {
+            if (err) {
+               throw new Error('Token is invalid');
+            }
+            const usersCollection = await dbClient.getCollection('chatDB', 'users')
+            const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(decoded.id)})
+            return user;
+        });
+    } catch(error) {
+        console.log(error)
+    }
+    return null;
 }
 
 module.exports = { registerUser, loginUser, verifyToken };
