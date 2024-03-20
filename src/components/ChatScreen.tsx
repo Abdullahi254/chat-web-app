@@ -17,20 +17,9 @@ const ChatScreen = (props: Props) => {
 
     const handleMessageSent = (formData: FormData) => {
         // handle message sent
-
-        const content = formData.get("chat")
-        if (typeof (content) === 'string') {
-            setMessage(content)
         const message = formData.get("chat")
         if (typeof (message) === 'string') {
             setMessage(message)
-
-        const content = formData.get("chat")
-        if (typeof (content) === 'string') {
-            setMessage(content)
-        }
-
-
     }
     useEffect(() => {
         chat_socket.on('connect', () => {
