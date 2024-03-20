@@ -14,13 +14,13 @@ const page = (props: Props) => {
         }
 
         try {
-            console.log(userData)
             const results = await fetch(process.env.BASE_URL + '/login', {
                 method: 'POST',
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(userData)
             })
             const row = await results.json()
+            console.log(row)
             if (results.status !== 200) {
                 console.log(row)
             } else {
