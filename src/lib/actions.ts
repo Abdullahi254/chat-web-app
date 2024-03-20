@@ -30,7 +30,7 @@ export const handleLogin = async (_currentState: unknown, formData: FormData) =>
             } 
             return response
         } catch (error) {
-            console.log(error)
+            // console.log(error)
             throw error
         }
 }
@@ -61,12 +61,13 @@ export const handleRegistration = async(_currentState: unknown, formData: FormDa
                 maxAge: 60 * 60 * 24 * 7, // One week
                 path: '/',
               })
+
             redirect('/login')
         }
-
         return response
+
     }  catch(error) {
-        console.log(error)
+        // console.log(error)
         throw error
     }
 }
