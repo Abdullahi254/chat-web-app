@@ -46,26 +46,26 @@ const ChatScreen = (props: Props) => {
             chat_socket.emit('message:send', { msg: message })
         }
         //NOTE: UI is not updating as message come in.
-        chat_socket.on('message:sent', (msg) => {
-            let msgArray = []
-            console.log(msg.msg)
-            msgArray.push(msg.msg)
-            setMessages(msgArray);
-        })
+        // chat_socket.on('message:sent', (msg) => {
+        //     let msgArray = []
+        //     console.log(msg.msg)
+        //     msgArray.push(msg.msg)
+        //     setMessages(msgArray);
+        // })
     }, [])
-        if (message && message.length !== 0) {
+        // if (message && message.length !== 0) {
         
-            //NOTE: Possibly attach the user id from database
-            chat_socket.emit('message:send', { msg: message })
-        }
+        //     //NOTE: Possibly attach the user id from database
+        //     chat_socket.emit('message:send', { msg: message })
+        // }
         //NOTE: UI is not updating as message come in.
-        chat_socket.on('message:sent', (msg) => {
-            let msgArray = []
-            console.log(msg.msg)
-            msgArray.push(msg.msg)
-            setMessages(msgArray);
-        })
-    }, [])
+        // chat_socket.on('message:sent', (msg) => {
+        //     let msgArray = []
+        //     console.log(msg.msg)
+        //     msgArray.push(msg.msg)
+        //     setMessages(msgArray);
+        // })
+    // }, [])
 
 
     return (
