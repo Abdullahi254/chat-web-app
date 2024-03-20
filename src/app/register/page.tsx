@@ -19,8 +19,7 @@ const page = (props: Props) => {
         }        
 
         try {
-            console.log(userData)
-            const results = await fetch("http://localhost:8000/register", {
+            const results = await fetch(process.env.BASE_URL + "/register", {
                 method: 'POST',
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(userData)
