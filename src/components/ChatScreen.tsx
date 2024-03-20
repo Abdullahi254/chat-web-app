@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react'
 import { IoMdSend } from "react-icons/io";
-import MessageBubble from './MessageBubble';
 import { io } from 'socket.io-client';
+import MessageBubble from './MessageBubble';
 
 import { Props as MessageInfo } from "./MessageBubble"
 
@@ -13,7 +13,7 @@ type Props = {
 
 //TODO: Come back and reconfigure the sockets according to react hooks
 const ChatScreen = ({userId}: Props) => {
-    const chat_socket = io('http://localhost:4000')
+    const chat_socket = io(process.env.NEXT_PUBLIC_BASE_URL+'')
     const [message, setMessage] = useState<string>('')
     const [messages, setMessages] = useState([])
     //NOTE: Might change this to target the other user instead
@@ -33,6 +33,7 @@ const ChatScreen = ({userId}: Props) => {
                 userName: "Sender One"
             }
             setMessageList(prevList => [...prevList as MessageInfo[], sentMessage])
+            // chat_socket.
         }
     }
 
