@@ -15,6 +15,7 @@ const page = (props: Props) => {
 
         try {
 <<<<<<< HEAD
+<<<<<<< HEAD
             const results = await fetch(process.env.BASE_URL + '/login', {
 =======
             console.log(userData)
@@ -22,6 +23,8 @@ const page = (props: Props) => {
             const results = await fetch("http://localhost:8000/login", {
 >>>>>>> dc843e1 (Add login handler)
 =======
+=======
+>>>>>>> f67e17f (Add base url for api fetching)
             const results = await fetch(process.env.BASE_URL + '/login', {
 >>>>>>> c296a2f (Add login handler)
                 method: 'POST',
@@ -30,9 +33,13 @@ const page = (props: Props) => {
             })
             const row = await results.json()
 <<<<<<< HEAD
+<<<<<<< HEAD
             console.log(row)
 =======
 >>>>>>> dc843e1 (Add login handler)
+=======
+            console.log(row)
+>>>>>>> f67e17f (Add base url for api fetching)
             if (results.status !== 200) {
                 console.log(row)
             } else {

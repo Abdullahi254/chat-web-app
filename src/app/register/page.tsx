@@ -24,7 +24,10 @@ const page = (props: Props) => {
 =======
 >>>>>>> dc843e1 (Add login handler)
         try {
+<<<<<<< HEAD
             console.log(userData)
+=======
+>>>>>>> f67e17f (Add base url for api fetching)
             const results = await fetch(process.env.BASE_URL + "/register", {
                 method: 'POST',
                 headers: {"Content-Type": "application/json"},
