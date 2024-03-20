@@ -20,7 +20,6 @@ const page = (props: Props) => {
                 body: JSON.stringify(userData)
             })
             const row = await results.json()
-
             if (results.status !== 200) {
                 console.log(row)
             } else {
