@@ -102,7 +102,6 @@ const ChatScreen = ({userId}: Props) => {
         // })
     // }, [])
     
-    console.log("my user Id:", userId)
     return (
         <div className='col-span-2 border-l-gray-950 border-l-2 px-6 relative flex flex-col h-full'>
             {/* list of messages being received */}

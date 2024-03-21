@@ -86,27 +86,28 @@ const tokenChecker = async function (req, res, next) {
       next(error)
     }
   }
-// const verifyToken = async (req, res, next) => {
-//     try {
-//         const authHeader = req.headers['authorization'];
-//         console.log(authHeader)
-//         if (!authHeader) {
-//             return res.status(401).send('Token is missing');
-//         }
+  
+const verifyToken = async (req, res, next) => {
+    try {
+        const authHeader = req.headers['authorization'];
+        console.log(authHeader)
+        if (!authHeader) {
+            return res.status(401).send('Token is missing');
+        }
 
-//         const token = authHeader.split(' ')[1]; 
+        const token = authHeader.split(' ')[1]; 
 
-//         return jwt.verify(token, "my-secret-key-2024", (err, decoded) => {
-//             if (err) {
-//                 return res.status(401).send('Token is invalid');
-//             }
+        return jwt.verify(token, "my-secret-key-2024", (err, decoded) => {
+            if (err) {
+                return res.status(401).send('Token is invalid');
+            }
 
-//             return res.status(200).json({ verified: true });
-//         });
-//     } catch (error) {
-//         return res.status(401).send('Invalid token');
-//     }
-// }
+            return res.status(200).json({ verified: true });
+        });
+    } catch (error) {
+        return res.status(401).send('Invalid token');
+    }
+}
 
 
 async function getUserfromToken(token) {
