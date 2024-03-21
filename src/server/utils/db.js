@@ -9,10 +9,10 @@ class DBClient {
         }
         this.client = new MongoClient(connectionString);
     }
-    async getCollection(databaseName, collectionName) {
+    async getCollection(collectionName) {
         try {
             await this.client.connect();
-            const db = this.client.db(databaseName);
+            const db = this.client.db(process.env.DB_NAME);
             const collection = db.collection(collectionName);
             return collection;
         } catch (error) {
@@ -20,6 +20,18 @@ class DBClient {
             throw error;
         }
     }
+
+    async chatCollection() {
+		return await dbClient.getCollection('chats');
+	}
+
+	async chatsMessagesCollection() {
+		return await dbClient.getCollection('chats_messages');
+	}
+
+	async chatsMessagesCollection() {
+		return dbClient.getCollection('rooms');
+	}
 }
 
 const dbClient = new DBClient();

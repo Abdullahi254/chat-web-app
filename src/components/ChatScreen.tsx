@@ -3,8 +3,10 @@
 import React, { useEffect, useState } from 'react'
 import { IoMdSend } from "react-icons/io";
 import { io } from 'socket.io-client';
-import MessageBubble from './MessageBubble';
+import Cookies from 'js-cookie'
 
+import {serverFunction} from '@/lib/utils'
+import MessageBubble from './MessageBubble';
 import { Props as MessageInfo } from "./MessageBubble"
 
 type Props = {
@@ -22,48 +24,56 @@ const ChatScreen = ({userId}: Props) => {
 
     const [messageList, setMessageList] = useState<MessageInfo[]>()
 
+    // get userId from component props
     const handleMessageSent = (formData: FormData) => {
         // handle message sent
         const message = formData.get("chat")
         if (typeof (message) === 'string') {
             const sentMessage: MessageInfo = {
                 message,
-                status: true,
+                userId,
                 timeStamp: "19/03/2024 15:05",
-                userName: "Sender One"
             }
             setMessageList(prevList => [...prevList as MessageInfo[], sentMessage])
-            // chat_socket.
+            chat_socket.emit('message:sent', sentMessage)
         }
     }
-
+    useEffect(() => {
+        const fetchData = async () => {
+          const response = await fetch('/api/get-cookie');
+          const data = await response.json();
+          console.log(data.cookieValue);
+        };
+    
+        fetchData();
+    }, []);
     useEffect(() => {
         // getting a list of messages from the db
-        const listOfMessages = [
-            {
-                message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mattis pellentesque id nibh tortor id aliquet lectus",
-                status: true,
-                timeStamp: '19/03/2024 15:05',
-                userName: 'John Doe'
-            },
-            {
-                message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mattis pellentesque id nibh tortor id aliquet lectus",
-                status: true,
-                timeStamp: '19/03/2024 15:05',
-                userName: 'John Doe'
-            },
-            {
-                message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mattis pellentesque id nibh tortor id aliquet lectus",
-                status: true,
-                timeStamp: '19/03/2024 15:05',
-                userName: 'John Doe'
-            },
-            {
-                message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mattis pellentesque id nibh tortor id aliquet lectus",
-                status: true,
-                timeStamp: '19/03/2024 15:05',
-                userName: 'John Doe'
-            },
+        const listOfMessages: MessageInfo[] = [
+            // {
+            //     message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mattis pellentesque id nibh tortor id aliquet lectus",
+            //     status: true,
+            //     timeStamp: '19/03/2024 15:05',
+            //     userName: 'John Doe'
+            // },
+            // {
+            //     message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mattis pellentesque id nibh tortor id aliquet lectus",
+            //     status: true,
+            //     timeStamp: '19/03/2024 15:05',
+            //     userName: 'John Doe'
+            // },
+            // {
+            //     message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mattis pellentesque id nibh tortor id aliquet lectus",
+            //     status: true,
+            //     timeStamp: '19/03/2024 15:05',
+            //     userName: 'John Doe'
+            // },
+            // {
+            //     message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mattis pellentesque id nibh tortor id aliquet lectus",
+            //     status: true,
+            //     timeStamp: '19/03/2024 15:05',
+            //     userName: 'John Doe'
+            // },
         ]
         setMessageList(prevList => [...listOfMessages])
     }, [])

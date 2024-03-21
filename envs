@@ -2,6 +2,7 @@
 
 <!-- server -->
 REACT_APP_MONGO_URL=
+DB_NAME
 
 <!-- client -->
 REACT_APP_BASE_URL=

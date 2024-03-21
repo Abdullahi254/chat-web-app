@@ -26,7 +26,7 @@ const registerUser = async (req, res) => {
 
         if(!validator.isStrongPassword(password)) return res.status(400).json("The password must be strong password");
 
-        const users = await dbClient.getCollection("chatDB", "users");
+        const users = await dbClient.getCollection("users");
         const existingUser = await users.findOne({email}); 
        
         if (existingUser) return res.status(400).json("User already exists!");
@@ -52,7 +52,7 @@ const loginUser = async (req, res) => {
 
         if(!validator.isEmail(email)) return res.status(400).json("Email must be valid email!");
 
-        const users = await dbClient.getCollection("chatDB", "users");
+        const users = await dbClient.getCollection("users");
         let user = await users.findOne({email}); 
 
         if(!user){
@@ -115,7 +115,7 @@ async function getUserfromToken(token) {
             if (err) {
                throw new Error('Token is invalid');
             }
-            const usersCollection = await dbClient.getCollection('chatDB', 'users')
+            const usersCollection = await dbClient.getCollection('users')
             const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(decoded.id)})
             return user;
         });
