@@ -4,37 +4,39 @@ import { redirect, RedirectType } from 'next/navigation'
 import { cookies } from 'next/headers'
 
 export const handleLogin = async (_currentState: unknown, formData: FormData) => {
-        const userData = {
-            email: formData.get('email'),
-            password: formData.get('password'),
-        }
+    const userData = {
+        email: formData.get('email'),
+        password: formData.get('password'),
+    }
 
-        try {
-            const results = await fetch(process.env.REACT_APP_BASE_URL + '/login', {
-                method: 'POST',
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(userData)
-            })
-            const response = await results.json()
-            if (results.ok) {
-                if (response.token) {
-                    cookies().set('x-token', response.token, {
-                      httpOnly: true,
-                      secure: process.env.NODE_ENV === 'production',
-                      maxAge: 60 * 60 * 24 * 7, // One week
-                      path: '/',
-                    })
-                    console.log('successfully logged in')
-                }
-            }else  return response 
-        } catch (error) {
-            console.log(error)
-            throw error
+    try {
+        const results = await fetch(process.env.REACT_APP_BASE_URL + '/login', {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(userData)
+        })
+        const response = await results.json()
+        if (results.ok) {
+            if (response.token) {
+                cookies().set('x-token', response.token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    maxAge: 60 * 60 * 24 * 7, // One week
+                    path: '/',
+                })
+                console.log('successfully logged in')
+            }
+        } else return response
+    } catch (error) {
+        if (error instanceof Error) {
+            console.log(error.message)
         }
-        redirect('/', RedirectType.replace) ;
+        throw error
+    }
+    redirect('/', RedirectType.replace);
 }
 
-export const handleRegistration = async(_currentState: unknown, formData: FormData) => {
+export const handleRegistration = async (_currentState: unknown, formData: FormData) => {
     const userData = {
         email: formData.get('email'),
         password: formData.get('password'),
@@ -43,13 +45,13 @@ export const handleRegistration = async(_currentState: unknown, formData: FormDa
 
     if (userData.password !== userData.confirmPassword) {
         return "passwords do not match"
-    }   
+    }
 
     try {
         const results = await fetch(process.env.REACT_APP_BASE_URL + '/register', {
             method: 'POST',
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({email: userData.email, password: userData.password})
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: userData.email, password: userData.password })
         })
         const response = await results.json()
 
@@ -59,14 +61,13 @@ export const handleRegistration = async(_currentState: unknown, formData: FormDa
                 secure: process.env.NODE_ENV === 'production',
                 maxAge: 60 * 60 * 24 * 7, // One week
                 path: '/',
-              })
-
-            redirect('/login')
+            })
+        } else return response
+    } catch (error) {
+        if (error instanceof Error) {
+            console.log(error.message)
         }
-        return response
-
-    }  catch(error) {
-        // console.log(error)
         throw error
     }
+    redirect('/login')
 }
