@@ -25,14 +25,13 @@ export const handleLogin = async (_currentState: unknown, formData: FormData) =>
                       path: '/',
                     })
                     console.log('successfully logged in')
-                    redirect('/', RedirectType.replace) ;
                 }
-            } 
-            return response
+            }else  return response 
         } catch (error) {
-            // console.log(error)
+            console.log(error)
             throw error
         }
+        redirect('/', RedirectType.replace) ;
 }
 
 export const handleRegistration = async(_currentState: unknown, formData: FormData) => {

@@ -73,26 +73,40 @@ const loginUser = async (req, res) => {
     }
 }
 
-const verifyToken = async (req, res, next) => {
+// Middleware to check if token is valid.
+const tokenChecker = async function (req, res, next) {
+    const authToken = req.query.token
     try {
-        const authHeader = req.headers['authorization'];
-        if (!authHeader) {
-            return res.status(401).send('Token is missing');
-        }
-
-        const token = authHeader.split(' ')[1]; 
-
-        return jwt.verify(token, "my-secret-key-2024", (err, decoded) => {
-            if (err) {
-                return res.status(401).send('Token is invalid');
-            }
-
-            return res.status(200).json({ verified: true });
-        });
-    } catch (error) {
-        return res.status(401).send('Invalid token');
+      const decoded = jwt.verify(authToken, "my-secret-key-2024")
+      req.body.user_id = decoded
+      next()
+    } catch (er) {
+      const error = new Error("Invalid auth token")
+      error.status = 403
+      next(error)
     }
-}
+  }
+// const verifyToken = async (req, res, next) => {
+//     try {
+//         const authHeader = req.headers['authorization'];
+//         console.log(authHeader)
+//         if (!authHeader) {
+//             return res.status(401).send('Token is missing');
+//         }
+
+//         const token = authHeader.split(' ')[1]; 
+
+//         return jwt.verify(token, "my-secret-key-2024", (err, decoded) => {
+//             if (err) {
+//                 return res.status(401).send('Token is invalid');
+//             }
+
+//             return res.status(200).json({ verified: true });
+//         });
+//     } catch (error) {
+//         return res.status(401).send('Invalid token');
+//     }
+// }
 
 
 async function getUserfromToken(token) {
@@ -111,4 +125,4 @@ async function getUserfromToken(token) {
     return null;
 }
 
-module.exports = { registerUser, loginUser, verifyToken };
+module.exports = { registerUser, loginUser, tokenChecker };

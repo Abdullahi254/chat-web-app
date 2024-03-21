@@ -7,10 +7,12 @@ import { io } from 'socket.io-client';
 
 import { Props as MessageInfo } from "./MessageBubble"
 
-type Props = {}
+type Props = {
+    userId: string
+}
 
 //TODO: Come back and reconfigure the sockets according to react hooks
-const ChatScreen = (props: Props) => {
+const ChatScreen = ({userId}: Props) => {
     const chat_socket = io('http://localhost:4000')
     const [message, setMessage] = useState<string>('')
     const [messages, setMessages] = useState([])
@@ -100,6 +102,7 @@ const ChatScreen = (props: Props) => {
         // })
     // }, [])
     
+    console.log("my user Id:", userId)
     return (
         <div className='col-span-2 border-l-gray-950 border-l-2 px-6 relative flex flex-col h-full'>
             {/* list of messages being received */}
