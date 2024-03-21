@@ -3,8 +3,6 @@ import SideChat from "@/components/SideChat";
 import { cookies } from 'next/headers'
 import { redirect } from "next/navigation";
 
-
-
 export const getSession = async (token?: string) => {
   try {
     const res = await fetch(`${process.env.REACT_APP_BASE_URL}/verify_token?token=${token}`)
@@ -35,8 +33,4 @@ export default async function Home() {
     </main>
   )
 };
-
-
-
-
 
