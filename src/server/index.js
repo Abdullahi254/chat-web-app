@@ -23,11 +23,6 @@ const io = new Server(httpServer, {
   },
 });
 
-app.get((req, res) => {
-  console.log(res);
-  console.log(req);
-});
-
 const PORT = process.env.PORT || 4000;
 /** Send message to user
  * @param {string} userId User Id from database

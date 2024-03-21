@@ -46,13 +46,19 @@ const registerUser = async (req, res) => {
 }
 
 const loginUser = async (req, res) => {
+        const userId = req.userId
     try {
         const {email, password} = req.body;
+        if(!email || !password) return res.status(400).json("All fields are required!");
+
+        if(!validator.isEmail(email)) return res.status(400).json("Email must be valid email!");
 
         const users = await dbClient.getCollection("chatDB", "users");
         let user = await users.findOne({email}); 
 
-        if(!user) return res.status(400).json("Invalid email or password");
+        if(!user){
+            return res.status(401).json("user not found")
+        };
 
         const isValidPassword = await bcrypt.compare(password, user.password);
 
@@ -67,9 +73,24 @@ const loginUser = async (req, res) => {
     }
 }
 
+// Middleware to check if token is valid.
+const tokenChecker = async function (req, res, next) {
+    const authToken = req.query.token
+    try {
+      const decoded = jwt.verify(authToken, "my-secret-key-2024")
+      req.body.user_id = decoded
+      next()
+    } catch (er) {
+      const error = new Error("Invalid auth token")
+      error.status = 403
+      next(error)
+    }
+  }
+  
 const verifyToken = async (req, res, next) => {
     try {
         const authHeader = req.headers['authorization'];
+        console.log(authHeader)
         if (!authHeader) {
             return res.status(401).send('Token is missing');
         }
@@ -78,15 +99,16 @@ const verifyToken = async (req, res, next) => {
 
         return jwt.verify(token, "my-secret-key-2024", (err, decoded) => {
             if (err) {
-                return res.status(403).send('Token is invalid');
+                return res.status(401).send('Token is invalid');
             }
-            req.userId = decoded.id;
-            next()
+
+            return res.status(200).json({ verified: true });
         });
     } catch (error) {
-        return res.status(403).send('Invalid token');
+        return res.status(401).send('Invalid token');
     }
 }
+
 
 async function getUserfromToken(token) {
     try {
@@ -104,4 +126,4 @@ async function getUserfromToken(token) {
     return null;
 }
 
-module.exports = { registerUser, loginUser, verifyToken };
+module.exports = { registerUser, loginUser, tokenChecker };

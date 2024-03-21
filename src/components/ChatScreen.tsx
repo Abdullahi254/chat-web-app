@@ -7,9 +7,12 @@ import { io } from 'socket.io-client';
 
 import { Props as MessageInfo } from "./MessageBubble"
 
-type Props = {}
+type Props = {
+    userId: string
+}
 
-const ChatScreen = (props: Props) => {
+
+const ChatScreen = ({userId}: Props) => {
     const chat_socket = io('http://localhost:4000')
     //NOTE: Might change this to target the other user instead
     //const [onlineStatus, setOnlineStatus] = useState(chat_socket.connected)
