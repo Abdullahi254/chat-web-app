@@ -39,9 +39,9 @@ const ChatScreen = ({userId}: Props) => {
     }, [messageList])
 
 
-    const handleMessageSent = (e) => {
+    const handleMessageSent = (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const formData = new FormData(e.target);
+        const formData = new FormData(e.currentTarget);
         const message = formData.get("chat")
         if (typeof (message) === 'string') {
             const sentMessage: MessageInfo = {
