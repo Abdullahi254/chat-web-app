@@ -73,9 +73,24 @@ const loginUser = async (req, res) => {
     }
 }
 
+// Middleware to check if token is valid.
+const tokenChecker = async function (req, res, next) {
+    const authToken = req.query.token
+    try {
+      const decoded = jwt.verify(authToken, "my-secret-key-2024")
+      req.body.user_id = decoded
+      next()
+    } catch (er) {
+      const error = new Error("Invalid auth token")
+      error.status = 403
+      next(error)
+    }
+  }
+  
 const verifyToken = async (req, res, next) => {
     try {
         const authHeader = req.headers['authorization'];
+        console.log(authHeader)
         if (!authHeader) {
             return res.status(401).send('Token is missing');
         }
@@ -111,4 +126,4 @@ async function getUserfromToken(token) {
     return null;
 }
 
-module.exports = { registerUser, loginUser, verifyToken };
+module.exports = { registerUser, loginUser, tokenChecker };
