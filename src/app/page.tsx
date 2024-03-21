@@ -15,7 +15,10 @@ export const getSession = async (token?: string) => {
       return false
     }
   } catch (er) {
-    console.log(er)
+    if (er instanceof Error) {
+      console.log(er.message)
+  }
+  throw er
   }
 }
 
@@ -23,13 +26,13 @@ export default async function Home() {
   const cookieStore = cookies()
   const token = cookieStore.get('x-token')?.value
   const results = await getSession(token)
+  if (!results) redirect("/login")
   const userId = results.userId["id"]
   // const userId = results.useId.id
-  if (!userId) redirect("/login")
   return (
     <main className="grid grid-cols-3 min-h-screen py-10 px-6 max-w-7xl mx-auto overflow-hidden">
       <SideChat />
-      <ChatScreen userId={userId}/>
+      <ChatScreen userId={userId} />
     </main>
   )
 };
