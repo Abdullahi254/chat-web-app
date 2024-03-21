@@ -36,7 +36,7 @@ const ChatScreen = ({userId}: Props) => {
             chat_socket.off('connect')
             chat_socket.off('message:sent')
         }
-    }, [messageList])
+    }, [chat_socket])
 
 
     const handleMessageSent = (e:React.FormEvent<HTMLFormElement>) => {
@@ -55,9 +55,9 @@ const ChatScreen = ({userId}: Props) => {
     }
 
     return (
-        <div className='col-span-2 border-l-gray-950 border-l-2 px-6 relative flex flex-col h-full'>
+        <div className='col-span-2 border-l-gray-950 border-l-2 px-6 relative overflow-y-auto overflow-x-hidden'>
             {/* list of messages being received */}
-            <div className=' overflow-y-scroll sm:max-h-[700px] md:max-h-[900px] lg:max-h-[1100px] space-y-3'>
+            <div className='space-y-3 mb-24 scrollbar-thumb-gray-400 scrollbar-track-white scrollbar-thin'>
                 {messageList?.map((data, index) => <MessageBubble
                     message={data.message}
                     status={data.status}

@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="scrollbar-thumb-gray-400 scrollbar-track-white scrollbar-thin">
       <body className={inter.className}>{children}</body>
     </html>
   );

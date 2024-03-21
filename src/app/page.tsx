@@ -27,7 +27,7 @@ export default async function Home() {
   // const userId = results.useId.id
   if (!userId) redirect("/login")
   return (
-    <main className="grid grid-cols-3 h-screen py-10 px-6 max-w-7xl mx-auto">
+    <main className="grid grid-cols-3 min-h-screen py-10 px-6 max-w-7xl mx-auto overflow-hidden">
       <SideChat />
       <ChatScreen userId={userId}/>
     </main>
