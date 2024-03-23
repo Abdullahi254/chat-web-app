@@ -1,6 +1,7 @@
 const express = require("express");
 const { registerUser, loginUser, tokenChecker } = require("../controllers/UserController");
-
+const { uploadFile, uploads } = require("../controllers/uploadsController");
+const { Translate } = require("../controllers/transilator");
 
 const router = express.Router();
 
@@ -13,5 +14,7 @@ router.get("/verify_token", tokenChecker, async (req, res) => {
     })
 });
 
+router.post("/upload", uploads.array('files'), uploadFile);
+router.post("/translate", Translate);
 
 module.exports = router;
