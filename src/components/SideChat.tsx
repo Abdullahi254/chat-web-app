@@ -1,6 +1,7 @@
 import React from 'react'
 import { FaSearch } from "react-icons/fa";
 import ChatLink from './ChatLink';
+import AddChat from './AddChat';
 type Props = {}
 
 const SideChat = (props: Props) => {
@@ -25,6 +26,10 @@ const SideChat = (props: Props) => {
           ].map(chatId => <ChatLink chatId={chatId} name={`Chat ${chatId}`} key={chatId}/>)
         }
       </ul>
+
+      {/* add new person or group to chat to */}
+
+      <AddChat/>
 
     </div>
   )
