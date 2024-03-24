@@ -8,11 +8,11 @@ import { io } from 'socket.io-client';
 import { Props as MessageInfo } from "./MessageBubble"
 
 type Props = {
-    userId: string
+    chatId: string
 }
 
 
-const ChatScreen = ({userId}: Props) => {
+const ChatScreen = ({ chatId }: Props) => {
     const chat_socket = io('http://localhost:4000')
     //NOTE: Might change this to target the other user instead
     //const [onlineStatus, setOnlineStatus] = useState(chat_socket.connected)
@@ -39,7 +39,7 @@ const ChatScreen = ({userId}: Props) => {
     }, [chat_socket])
 
 
-    const handleMessageSent = (e:React.FormEvent<HTMLFormElement>) => {
+    const handleMessageSent = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         const message = formData.get("chat")
@@ -55,9 +55,9 @@ const ChatScreen = ({userId}: Props) => {
     }
 
     return (
-        <div className='col-span-2 border-l-gray-950 border-l-2 px-6 relative overflow-y-auto overflow-x-hidden'>
+        <div className='col-span-2 px-6 relative max-h-screen overflow-y-auto overflow-x-hidden scrollbar-thumb-gray-400 scrollbar-track-white scrollbar-thin flex flex-col'>
             {/* list of messages being received */}
-            <div className='space-y-3 mb-24 scrollbar-thumb-gray-400 scrollbar-track-white scrollbar-thin'>
+            <div className='space-y-3 mb-4 flex-grow'>
                 {messageList?.map((data, index) => <MessageBubble
                     message={data.message}
                     status={data.status}
@@ -67,16 +67,18 @@ const ChatScreen = ({userId}: Props) => {
                 />)}
             </div>
 
-            <form className='absolute bottom-1 w-full lg:px-2' onSubmit={handleMessageSent} >
+            {/* chat text area */}
+            <form className='w-full' onSubmit={handleMessageSent} >
                 <label htmlFor="chat" className="sr-only">Your message</label>
                 <div className="flex items-center px-3 py-2 rounded-lg bg-gray-50">
-                    <textarea id="chat" name='chat' rows={2} className="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-gray-500 focus:border-gray-500" placeholder="Your message..."></textarea>
+                    <textarea id="chat" name='chat' rows={2} className="block mx-4 p-2.5 w-[80%] text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-gray-500 focus:border-gray-500" placeholder="Your message..."></textarea>
                     <button type="submit" className="inline-flex justify-center p-2 text-gray-900 rounded-full cursor-pointer hover:bg-gray-100">
                         <IoMdSend className='text-xl' />
                     </button>
                 </div>
             </form>
         </div>
+
     )
 }
 
