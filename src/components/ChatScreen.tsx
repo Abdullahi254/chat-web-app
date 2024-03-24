@@ -12,7 +12,7 @@ type Props = {
 }
 
 
-const ChatScreen = ({chatId}: Props) => {
+const ChatScreen = ({ chatId }: Props) => {
     const chat_socket = io('http://localhost:4000')
     //NOTE: Might change this to target the other user instead
     //const [onlineStatus, setOnlineStatus] = useState(chat_socket.connected)
@@ -39,7 +39,7 @@ const ChatScreen = ({chatId}: Props) => {
     }, [chat_socket])
 
 
-    const handleMessageSent = (e:React.FormEvent<HTMLFormElement>) => {
+    const handleMessageSent = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         const message = formData.get("chat")
@@ -55,9 +55,9 @@ const ChatScreen = ({chatId}: Props) => {
     }
 
     return (
-        <div className='col-span-2 px-6 relative max-h-screen overflow-y-auto overflow-x-hidden scrollbar-thumb-gray-400 scrollbar-track-white scrollbar-thin'>
+        <div className='col-span-2 px-6 relative max-h-screen overflow-y-auto overflow-x-hidden scrollbar-thumb-gray-400 scrollbar-track-white scrollbar-thin flex flex-col'>
             {/* list of messages being received */}
-            <div className='space-y-3 mb-24'>
+            <div className='space-y-3 mb-4 flex-grow'>
                 {messageList?.map((data, index) => <MessageBubble
                     message={data.message}
                     status={data.status}
@@ -66,9 +66,9 @@ const ChatScreen = ({chatId}: Props) => {
                     userName={data.userName}
                 />)}
             </div>
-            
+
             {/* chat text area */}
-            <form className='absolute bottom-1 w-full' onSubmit={handleMessageSent} >
+            <form className='w-full' onSubmit={handleMessageSent} >
                 <label htmlFor="chat" className="sr-only">Your message</label>
                 <div className="flex items-center px-3 py-2 rounded-lg bg-gray-50">
                     <textarea id="chat" name='chat' rows={2} className="block mx-4 p-2.5 w-[80%] text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-gray-500 focus:border-gray-500" placeholder="Your message..."></textarea>
@@ -78,6 +78,7 @@ const ChatScreen = ({chatId}: Props) => {
                 </div>
             </form>
         </div>
+
     )
 }
 
