@@ -18,6 +18,10 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+.pattern {
+  background-image: url('/hero.svg');
+}
+
 
 @layer utilities {
   .text-balance {
