@@ -6,6 +6,7 @@ import MessageBubble from './MessageBubble';
 import { io } from 'socket.io-client';
 
 import { Props as MessageInfo } from "./MessageBubble"
+import ProfileLink from './ProfileLink';
 
 type Props = {
     chatId: string
@@ -56,6 +57,8 @@ const ChatScreen = ({ chatId }: Props) => {
 
     return (
         <div className='col-span-2 px-6 relative max-h-screen overflow-y-auto overflow-x-hidden scrollbar-thumb-gray-400 scrollbar-track-white scrollbar-thin flex flex-col'>
+            {/* Icon that takes you to the profile page */}
+            <ProfileLink />
             {/* list of messages being received */}
             <div className='space-y-3 mb-4 flex-grow'>
                 {messageList?.map((data, index) => <MessageBubble

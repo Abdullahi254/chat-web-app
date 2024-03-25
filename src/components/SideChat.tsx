@@ -1,7 +1,6 @@
 import React from 'react'
 import { FaSearch } from "react-icons/fa";
 import ChatLink from './ChatLink';
-import AddChat from './AddChat';
 type Props = {}
 
 const SideChat = (props: Props) => {
