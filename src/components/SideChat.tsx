@@ -27,10 +27,6 @@ const SideChat = (props: Props) => {
         }
       </ul>
 
-      {/* add new person or group to chat to */}
-
-      <AddChat/>
-
     </div>
   )
 }
