@@ -1,4 +1,3 @@
-const { isDynamicMetadataRoute } = require('next/dist/build/analysis/get-page-static-info');
 const dbClient = require('../utils/db');
 const { ObjectId } = require('mongodb');
 
@@ -52,38 +51,53 @@ const SocketController = {
         }
     },
 
-    async storeChat(req, res) {
-        try {
-            const { chatDocument } = req.body;
-            const chats = await dbClient.getCollection("chatDB", "chats");
-            await chats.insertOne(chatDocument);
-            return res.status(200).send("Stored the chat successully");
-        } catch(err) {
-            return res.status(500).send("Error storing the chat");
-        }
+  async getChat(req, res) {
+    try {
+      const { chatId } = req.params;
+      const chats = await dbClient.getCollection("chatDB", "chats");
+      const chat = await chats.findOne({ chatId });
+      return res.status(200).send(chat);
+    } catch (err) {
+      return res.status(404).send("Chat not found!");
+    }
+  },
 
-    },
+  async storeChat(req, res) {
+    try {
+      const { chatDocument } = req.body;
+      const chats = await dbClient.getCollection("chatDB", "chats");
+      await chats.insertOne(chatDocument);
+      return res.status(200).send("Stored the chat successully");
+    } catch (err) {
+      return res.status(500).send("Error storing the chat");
+    }
+  },
 
-    async storeMessage(req, res) {
-        try {
-            const messages = await dbClient.getCollection("chatDB", "messages");
-            const { sender, recepient, content, chatId } = req.body;
-            const document = {
-                sender,
-                recepient,
-                content,
-                chatId,
-                createdAt: new Date(),
-                updatedAt: new Date()
-            };
-            const result = await messages.insertOne(document);
-            console.log(`Inserted message with ID: ${result.insertedId}`);
-            res.status(200).send("Message stored successfully.");
-        } catch (error) {
-            console.error("Error storing message:", error);
-            res.status(500).send("Error storing message.");
-        }
-    },
+  /**
+   * @param {string} sender Message Sender
+   * @param {string} recepient Message Receiver
+   * @param {string} content Message Content
+   * @param {string} chatId Chat Id of conversation
+   */
+  async storeMessage(sender, recepient, content, chatId) {
+    try {
+      const messages = await dbClient.getCollection("chatDB", "messages");
+      const document = {
+        sender,
+        recepient,
+        content,
+        chatId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      const result = await messages.insertOne(document);
+      console.log(`Inserted message with ID: ${result.insertedId}`);
+      return "Sent!";
+    } catch (error) {
+      console.error("Error storing message:", error);
+      return err;
+    }
+  },
 
     async getChatMessages(req, res) {
         try {
@@ -94,8 +108,8 @@ const SocketController = {
         } catch(err) {
             return res.status(500).send("Error retrieving the chat messages");
         }
-    
     },
+
     async deleteGroup(req, res) {
         try {
             const { chatId, ownerId } = req.body;
@@ -206,8 +220,7 @@ const SocketController = {
             return res.status(404).json({"Error": "User bio not found!"});
         }
     }
-    
-} 
-
+};
 
 module.exports = SocketController;
+
