@@ -1,21 +1,42 @@
 "use client"
-import React, { useState } from 'react'
+import React, { SyntheticEvent, useState } from 'react'
 import { IoIosAdd } from "react-icons/io";
-type Props = {}
+type Props = {
+    userId: string
+}
 
-const AddChat = (props: Props) => {
+const AddChat = ({userId}: Props) => {
     const [search, setSearch] = useState<boolean>(false)
+    
+    const handleCreateGroup = async (e:  React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        setSearch(false)
+        const formData =  new FormData(e.currentTarget);
+        const groupName = formData.get('create');
+
+        if (groupName) {
+            // console.log('000====000', process.env.REACT_APP_BASE_URL)
+           const res = await fetch('http://localhost:8000/create_chat', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    isRoomChat: true,
+                    name: groupName,
+                    userId
+                })
+            })
+        }
+    }
     return (
         <>
             {
                 search ?
-                    <form className="flex items-center max-w-sm mx-auto px-2" onSubmit={(e)=>{
-                        e.preventDefault()
-                        setSearch(false)
-                    }}>
+                    <form className="flex items-center max-w-sm mx-auto px-2" onSubmit={handleCreateGroup}>
                         <label htmlFor="Create" className="sr-only">Create</label>
                         <div className="relative w-full">
-                            <input type="text" id="create" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full ps-10 p-2.5" placeholder="Enter name..."/>
+                            <input type="text" id="create" name="create" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full ps-10 p-2.5" placeholder="Enter name..."/>
                         </div>
                         <button type="submit" className="p-2.5 ms-2 text-xs font-medium text-white bg-gray-700 rounded-lg border border-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300">
                             submit

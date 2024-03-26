@@ -27,12 +27,18 @@ export const getSession = async (token?: string) => {
   }
 }
 
-export default async function Home() {
+export const getUserId = async () => {
   const cookieStore = cookies()
   const token = cookieStore.get('x-token')?.value
   const results = await getSession(token)
-  if (!results) redirect("/login")
-  const userId = results.userId["id"]
+  if (!results) {
+    redirect("/login")
+  }
+  return results.userId["id"]
+}
+
+export default async function Home() {
+    const userId = await getUserId()
   //saving userId in the cookie
   return (
     <main className="grid grid-cols-3 min-h-screen py-10 px-6 max-w-7xl mx-auto">
