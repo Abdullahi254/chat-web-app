@@ -95,6 +95,52 @@ const SocketController = {
             return res.status(500).send("Error retrieving the chat messages");
         }
     
+    },
+    async deleteChat(req, res) {
+        try {
+            const { chatId, ownerId } = req.body;
+            const chats = await dbClient.getCollection("chatDB", "chats");
+            // find the particular chatgroup in database
+            const chat = await chats.findOne({ chatId });
+            if (!chat) {
+                return res.status(404).json({"Error": "Not found"});
+            }
+            // check if the user is the owner of or one created the group
+            if (!chat.ownerId === ObjectId.createFromHexString(ownerId)) {
+                return res.status(401).json({"Error": "unauthorized"});
+            }
+            chats.deleteOne({ chatId, ownerId });
+        } catch(err) {
+            res.status(401).json({"Error": "Unauthorized"});
+        }
+    },
+
+    async addUser(req, res) {
+        try {
+            const {userId, friendId } = req.body;
+            const chats = await dbClient.getCollection("chatDB", "chats");
+            // check first if both users might have a chatRoom and return it
+            const existingChat = await chats.findOne({users: {$in: [userId, friendId]}});
+            if (existingChat) {
+                return res.status(200).send(existingChat);
+            }
+            // gets the friend username
+            const usersCollection = await dbClient.getCollection('chatDB', 'users')
+            const friend = await usersCollection.findOne({_id: friendId});
+
+            const chat = {
+                chatName: friend.username,
+                isRoomChat: false,
+                users: [userId, friendId],
+                latestMessage: ""
+            }
+            // creates the chat for them
+            const newChat = chats.insertOne(chat);
+            return res.status(201).send(newChat);
+        } catch(err) {
+            return res.status(400).send("Cannot add user");
+        }
+
     }
     
 } 
