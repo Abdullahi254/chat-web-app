@@ -12,13 +12,11 @@ type Props = {
     chatId: string
 }
 
-
 const ChatScreen = ({ chatId }: Props) => {
     console.log('--+++++--->', chatId)
     const chat_socket = io('http://localhost:4000')
     //NOTE: Might change this to target the other user instead
     //const [onlineStatus, setOnlineStatus] = useState(chat_socket.connected)
-    const [messageList, setMessageList] = useState<MessageInfo[]>([])
     useEffect(() => {
         /*
          * NOTE: Probably put this back when logic is ready
@@ -30,16 +28,18 @@ const ChatScreen = ({ chatId }: Props) => {
                     setOnlineStatus(false)
                 })
                 */
-        chat_socket.on('message:sent', (msg) => {
+        chat_socket.on(`${chatId}:message:sent`, (msg) => {
+            console.log(msg)
             setMessageList((prevMsg) => [...prevMsg as MessageInfo[], msg])
         })
         return () => {
             //NOTE: Necessary to avoid double messages.
             chat_socket.off('connect')
-            chat_socket.off('message:sent')
+            chat_socket.off(`${chatId}:message:sent`)
         }
     }, [chat_socket])
 
+    const [messageList, setMessageList] = useState<MessageInfo[]>([])
 
     const handleMessageSent = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -52,7 +52,17 @@ const ChatScreen = ({ chatId }: Props) => {
                 timeStamp: "19/03/2024 15:05",
                 userName: "Sender One"
             }
-            chat_socket.timeout(3000).emit('message:send', { msg: sentMessage })
+            chat_socket.timeout(3000).emit('message:send', {
+                msg: {
+                    //TODO: Replace with senderId(the currently logged in user)
+                    sender: 'Sender One',
+                    //TODO: Replace with receiverId/friend(the currently logged in user)
+                    recepient: chatId,
+                    content: message,
+                    //TODO: Replace with chatId in url
+                    chatId: chatId
+                }
+            })
         }
     }
 
