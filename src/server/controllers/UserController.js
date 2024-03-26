@@ -126,24 +126,5 @@ async function getUserfromToken(token) {
     return null;
 }
 
-const getUserBio = async (req, res) => {
-    try {
-        const { userId } = req.body;
-        const usersCollection = await dbClient.getCollection('chatDB', 'users')
-        const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(userId)});
-        const chats = await dbClient.getCollection("chatDB", "chats");
 
-        // gets all groups chats the user is member of
-        const chatGroups = chats.find({users: {$in: ObjectId.createFromHexString(userId)}, isRoomChat: true})
-        const bio = {
-            username: user.username,
-            email: user.email,
-            groups: chatGroups
-        }
-        return res.status(200).send(bio);
-    } catch(err) {
-        return res.status(404).json({"Error": "User bio not found!"});
-    }
-}
-
-module.exports = { registerUser, loginUser, tokenChecker, getUserBio };
+module.exports = { registerUser, loginUser, tokenChecker };
