@@ -96,7 +96,7 @@ const SocketController = {
         }
     
     },
-    async deleteChat(req, res) {
+    async deleteGroup(req, res) {
         try {
             const { chatId, ownerId } = req.body;
             const chats = await dbClient.getCollection("chatDB", "chats");
