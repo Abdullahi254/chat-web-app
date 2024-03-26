@@ -36,7 +36,7 @@ export default async function Home() {
   //saving userId in the cookie
   return (
     <main className="grid grid-cols-3 min-h-screen py-10 px-6 max-w-7xl mx-auto">
-      <SideChat />
+      <SideChat/>
       <div className=" col-span-2">
         <BlankScreen />
       </div>

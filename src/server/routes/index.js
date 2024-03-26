@@ -17,8 +17,7 @@ router.get("/verify_token", tokenChecker, async (req, res) => {
 
 router.post("/upload", uploads.array('files'), uploadFile);
 router.post("/translate", Translate);
-router.post("/create_room", SocketController.createRoom);
-router.get("/:id/rooms", SocketController.getRoomList);
+router.get("/:id/chats", SocketController.getUserChats);
 router.post("/create_chat", SocketController.createChat);
 router.get("/chats/:chatId", SocketController.getChat);
 router.get("/get_chat_history", SocketController.getChatMessages);

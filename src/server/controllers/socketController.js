@@ -4,24 +4,17 @@ const { ObjectId } = require('mongodb');
 
 
 const SocketController = {
-	async createRoom(req, res) {
+	async createChat(req, res) {
 		try {
 			const {userId, name, isRoomChat} = req.body
 
-			if (!name || !userId) {
-				throw new Error('name and creator id required')
-			}
-			const timeStamp = new Date();
-			console.log(timeStamp)
-			const rooms = await dbClient.getCollection("chatDB", "rooms");
-			const room = await rooms.insertOne({name, created_by: userId, created_at: timeStamp});
-			if (!room.insertedId) {
-				throw new Error('failed to store chat room');
-			}
+			const createdAt = new Date()
 			const newChat = {
-				room_id: room.insertedId,
-				is_room_chat: isRoomChat,
+				name,
+				isRoomChat: isRoomChat,
 				users: [userId],
+				createdBy: userId,
+				createdAt
 			}
 			const chats = await dbClient.getCollection("chatDB", "chats");
 			const chat = await chats.insertOne(newChat);
@@ -32,7 +25,7 @@ const SocketController = {
 		}
     },
 
-	async getRoomList(req, res) {
+	async getUserChats(req, res) {
         try {
             const { id } = req.params;
 			if (!id) {
@@ -41,28 +34,11 @@ const SocketController = {
             const chats = await dbClient.getCollection("chatDB", "chats");
 			const userChats = await chats.find({ users: { $elemMatch: { $eq: id } } }).toArray();
 
-			let userRooms = []
-			for (let chat of userChats) {
-				const rooms = await dbClient.getCollection("chatDB", "rooms");
-				userRooms = await rooms.find({ _id: chat.room_id }).toArray();
-			}
-
-            return res.status(200).json(userRooms);
+            return res.status(200).json(userChats);
         } catch(err) {
 			console.log(err)
             return res.status(500).send("an error occured");
         }
-    },
-
-    async createChat(req, res) {
-        const { chatName, isRoomChat, users, latestMessage } = req.body;
-        const chats = await dbClient.getCollection("chatDB", "chats");
-        const chat = await chats.findOne({ chatName, isRoomChat, users, latestMessage });
-        if (chat) {
-            res.status(200).send(chat);
-        }
-        chat = await chats.insertOne({ chatName, isRoomChat, users, latestMessage })
-        return res.status(200).send(chat);
     },
 
     async getChat(req, res) {
@@ -74,7 +50,6 @@ const SocketController = {
         } catch(err) {
             return res.status(404).send("Chat not found!");
         }
-
     },
 
     async storeChat(req, res) {

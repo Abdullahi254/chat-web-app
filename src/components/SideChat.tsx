@@ -1,9 +1,33 @@
-import React from 'react'
+// 'use client'
+import React, { useEffect, useState } from 'react'
 import { FaSearch } from "react-icons/fa";
 import ChatLink from './ChatLink';
-type Props = {}
+import { cookies } from 'next/headers';
+import { getSession } from '@/app/page';
 
-const SideChat = (props: Props) => {
+type Props = {
+}
+
+// This function runs on the server and fetches data
+export async function getData() {
+  const cookieStore = cookies()
+  const token = cookieStore.get('x-token')?.value
+  const results = await getSession(token)
+
+  const userId = results.userId["id"]
+  const response = await fetch(process.env.REACT_APP_BASE_URL + `/${userId}/chats`);
+ 
+  if (!response.ok) {
+    // This will activate the closest `error.js` Error Boundary
+    throw new Error('Failed to fetch data')
+  }
+  // Pass data to the page component as props
+  return await response.json();
+}
+
+const SideChat = async (props: Props) => {
+  const rooms: {name: string, _id: string}[] = await getData()
+
   return (
     <div className='border-r-gray-400 border-r-2 col-span-1 flex flex-col space-y-10 items-center max-h-screen overflow-y-auto scrollbar-thumb-gray-400 scrollbar-track-white scrollbar-thin'>
 
@@ -21,8 +45,7 @@ const SideChat = (props: Props) => {
       {/* list of private chats and group chats */}
       <ul className='w-full px-1'>
         {
-          [1, 2, 3, 4, 5, 6, 7
-          ].map(chatId => <ChatLink chatId={chatId} name={`Chat ${chatId}`} key={chatId}/>)
+          rooms.map(room => <ChatLink chatId={room._id} name={room.name} key={room._id}/>)
         }
       </ul>
 
