@@ -130,11 +130,11 @@ const getUserBio = async (req, res) => {
     try {
         const { userId } = req.body;
         const usersCollection = await dbClient.getCollection('chatDB', 'users')
-        const user = await usersCollection.findOne({_id: userId});
+        const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(userId)});
         const chats = await dbClient.getCollection("chatDB", "chats");
 
         // gets all groups chats the user is member of
-        const chatGroups = chats.find({users: {$in: userId}, isRoomChat: true})
+        const chatGroups = chats.find({users: {$in: ObjectId.createFromHexString(userId)}, isRoomChat: true})
         const bio = {
             username: user.username,
             email: user.email,

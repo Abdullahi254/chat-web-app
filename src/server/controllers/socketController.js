@@ -101,15 +101,17 @@ const SocketController = {
             const { chatId, ownerId } = req.body;
             const chats = await dbClient.getCollection("chatDB", "chats");
             // find the particular chatgroup in database
-            const chat = await chats.findOne({ chatId });
+            const actualChatId = ObjectId.createFromHexString(chatId)
+            const actualOwnerId = ObjectId.createFromHexString(ownerId);
+            const chat = await chats.findOne({ chatId: actualChatId });
             if (!chat) {
                 return res.status(404).json({"Error": "Not found"});
             }
             // check if the user is the owner of or one created the group
-            if (!chat.ownerId === ObjectId.createFromHexString(ownerId)) {
+            if (!chat.ownerId === actualOwnerId) {
                 return res.status(401).json({"Error": "unauthorized"});
             }
-            chats.deleteOne({ chatId, ownerId });
+            chats.deleteOne({ chatId: actualChatId, ownerId: actualOwnerId });
         } catch(err) {
             res.status(401).json({"Error": "Unauthorized"});
         }
@@ -120,13 +122,14 @@ const SocketController = {
             const {userId, friendId } = req.body;
             const chats = await dbClient.getCollection("chatDB", "chats");
             // check first if both users might have a chatRoom and return it
-            const existingChat = await chats.findOne({users: {$in: [userId, friendId]}});
+            const actualFriendId = ObjectId.createFromHexString(friendId);
+            const existingChat = await chats.findOne({users: {$in: [friendId, userId]}});
             if (existingChat) {
                 return res.status(200).send(existingChat);
             }
             // gets the friend username
             const usersCollection = await dbClient.getCollection('chatDB', 'users')
-            const friend = await usersCollection.findOne({_id: friendId});
+            const friend = await usersCollection.findOne({_id: actualFriendId});
 
             const chat = {
                 chatName: friend.username,
