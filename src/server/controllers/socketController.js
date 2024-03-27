@@ -17,21 +17,22 @@ const SocketController = {
 			}
 			const chats = await dbClient.getCollection("chatDB", "chats");
 			const chat = await chats.insertOne(newChat);
+            const createdChat = await chats.findOne({ _id: chat.insertedId });
 
-			return res.status(200).send(chat);
+			return res.status(200).send(createdChat);
 		} catch(error) {
-            return res.status(500).send("an error occured");
+            return res.status(500).send("Error occured when creating chat!");
 		}
     },
 
 	async getUserChats(req, res) {
         try {
-            const { id } = req.params;
-			if (!id) {
+            const { userId } = req.params;
+			if (!userId) {
 				return res.status(400).json({'error': 'user id required'});
 			}
             const chats = await dbClient.getCollection("chatDB", "chats");
-			const userChats = await chats.find({ users: { $elemMatch: { $eq: id } } }).toArray();
+			const userChats = await chats.find({ users: { $elemMatch: { $eq: userId } } }).toArray();
 
             return res.status(200).json(userChats);
         } catch(err) {
@@ -44,16 +45,16 @@ const SocketController = {
         try {
             const { chatId } = req.params;
             const chats = await dbClient.getCollection("chatDB", "chats");
-            const chat = await chats.findOne({ chatId });
+            const chat = await chats.findOne({ _id: ObjectId.createFromHexString(chatId) });
             return res.status(200).send(chat);
         } catch(err) {
             return res.status(404).send("Chat not found!");
         }
     },
 
-    async storeChat(req, res) {
+    async storeChat(chatDocument) {
         try {
-            const { chatDocument } = req.body;
+            // const { chatDocument } = req.body;
             const chats = await dbClient.getCollection("chatDB", "chats");
             await chats.insertOne(chatDocument);
             return res.status(200).send("Stored the chat successully");
@@ -91,29 +92,33 @@ const SocketController = {
         try {
             const { chatId } = req.params;
             const messages = await dbClient.getCollection("chatDB", "messages");
-            const chats = messages.find({ chatId });
+           // const actualChatId = ObjectId.createFromHexString(chatId);
+            // gets the sorted messages based createdAt attribute
+            const chats = await messages.find({ chatId: chatId}).sort({ createdAt: 1 }).toArray();
             return res.status(200).send(chats);
         } catch(err) {
+            console.log(err);
             return res.status(500).send("Error retrieving the chat messages");
         }
     },
 
     async deleteGroup(req, res) {
         try {
-            const { chatId, ownerId } = req.body;
+            const { chatId, userId } = req.body;
             const chats = await dbClient.getCollection("chatDB", "chats");
             // find the particular chatgroup in database
             const actualChatId = ObjectId.createFromHexString(chatId)
-            const actualOwnerId = ObjectId.createFromHexString(ownerId);
-            const chat = await chats.findOne({ chatId: actualChatId });
+
+            const chat = await chats.findOne({ _id: actualChatId });
             if (!chat) {
                 return res.status(404).json({"Error": "Not found"});
             }
             // check if the user is the owner of or one created the group
-            if (!chat.ownerId === actualOwnerId) {
+            if (!chat.createdBy === userId) {
                 return res.status(401).json({"Error": "unauthorized"});
             }
-            chats.deleteOne({ chatId: actualChatId, ownerId: actualOwnerId });
+            await chats.deleteOne({ _id: actualChatId, createdBy: userId });
+            res.status(200).send("Deteted the group successfully!");
         } catch(err) {
             res.status(401).json({"Error": "Unauthorized"});
         }
@@ -125,13 +130,18 @@ const SocketController = {
             const chats = await dbClient.getCollection("chatDB", "chats");
             // check first if both users might have a chatRoom and return it
             const actualFriendId = ObjectId.createFromHexString(friendId);
-            const existingChat = await chats.findOne({users: {$in: [friendId, userId]}, isRoomChat: false});
+            const existingChat = await chats.findOne({users: {$all: [friendId, userId]}, isRoomChat: false});
             if (existingChat) {
+                console.log("User is already a friend!", existingChat.users);
                 return res.status(200).send(existingChat);
             }
             // gets the friend username
             const usersCollection = await dbClient.getCollection('chatDB', 'users')
             const friend = await usersCollection.findOne({_id: actualFriendId});
+
+            if (!friend) {
+                return res.status(403).send("This user doesn't exist yet!");
+            }
 
             const chat = {
                 chatName: friend.username,
@@ -142,8 +152,9 @@ const SocketController = {
      //           latestMessage: ""
             }
             // creates the chat for them
-            const newChat = chats.insertOne(chat);
-            return res.status(201).send(newChat);
+            const newChat = await chats.insertOne(chat);
+            const createdChat = await chats.findOne({ _id: newChat.insertedId });
+            return res.status(201).send(createdChat);
         } catch(err) {
             return res.status(400).send("Cannot add user");
         }
@@ -156,7 +167,7 @@ const SocketController = {
             const chats = await dbClient.getCollection("chatDB", "chats");
             // check first if the user is already a member of group
             const actualChatId = ObjectId.createFromHexString(chatId);
-            const existingChat = await chats.findOne({users: {$in: [userId]}, isRoomChat: true, _id: actualChatId});
+            const existingChat = await chats.findOne({users: { $elemMatch: { $eq: userId } }, isRoomChat: true, _id: actualChatId});
             if (existingChat) {
                 return res.status(403).send("User already a member of the group");
             }
@@ -164,6 +175,7 @@ const SocketController = {
             await chats.updateMany({_id: actualChatId}, {$addToSet: {users: userId}});
             return res.status(200).send("User successully added to the group");
         } catch(err) {
+            console.log(err);
             return res.status(403).send("Unable to add user to group");
         }
     },
@@ -176,7 +188,7 @@ const SocketController = {
             }
             const chats = await dbClient.getCollection("chatDB", "chats");
             // check first if the user is already a friend
-            const existingChat = await chats.findOne({users: {$in: [userId, friendId]}, isRoomChat: false});
+            const existingChat = await chats.findOne({users: {$all: [userId, friendId]}, isRoomChat: false});
             if (existingChat) {
                 return true
             } else {
@@ -191,21 +203,26 @@ const SocketController = {
         try {
             const { userId, friendId } = req.body;
             const usersCollection = await dbClient.getCollection('chatDB', 'users')
-            const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(userId)});
+            const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(friendId)});
+
+            if(!user) {
+                return res.status(403).send("user doesn't exist");
+            }
             const chats = await dbClient.getCollection("chatDB", "chats");
     
             // gets all groups chats the user is member of
-            const chatGroups = chats.find({users: {$in: ObjectId.createFromHexString(userId)}, isRoomChat: true});
+            const userChatGroups = await chats.find({ users: { $elemMatch: { $eq: friendId } }, isRoomChat: false }).toArray();
             // check for friendship
-            const isFriend = await this.isFriend(userId, friendId);
+            const isFriend = await SocketController.isFriend(userId, friendId);
             const bio = {
                 username: user.username,
                 email: user.email,
-                groups: chatGroups,
+                groups: userChatGroups,
                 isFriend: isFriend // if it is true, the button should disappear in frontend
             }
             return res.status(200).send(bio);
         } catch(err) {
+            console.log(err);
             return res.status(404).json({"Error": "User bio not found!"});
         }
     },
