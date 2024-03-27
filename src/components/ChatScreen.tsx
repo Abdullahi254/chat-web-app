@@ -19,7 +19,7 @@ type SentMessage = {
     userId: string
 } & MessageInfo
 
-const ChatScreen = ({userId, chatId, msgHistory }: Props) => {
+const ChatScreen = ({ userId, chatId, msgHistory }: Props) => {
     console.log('--+++++--->', chatId)
     //TODO: Make base url consistent
     const chat_socket = io(process.env.NEXT_PUBLIC_BASE_URL + '')
@@ -63,13 +63,14 @@ const ChatScreen = ({userId, chatId, msgHistory }: Props) => {
                 status: true,
                 timeStamp: Date.now()
             }
+            console.log(sentMessage)
             chat_socket.timeout(3000).emit('message:send', sentMessage)
         }
     }
 
     return (
         <div className='col-span-2 px-6 relative max-h-screen overflow-y-auto overflow-x-hidden scrollbar-thumb-gray-400 scrollbar-track-white scrollbar-thin flex flex-col'>
-            <ChatHeader userId={userId} chatId={chatId}/>
+            <ChatHeader userId={userId} chatId={chatId} />
             {/* list of messages being received */}
             <div className='space-y-3 mb-4 flex-grow'>
                 {messageList?.map((data, index) => <MessageBubble
