@@ -1,12 +1,17 @@
 import React from 'react'
-import hero from "../../public/hero.svg"
 import ProfileLink from './ProfileLink'
-type Props = {}
+type Props = {
+  userId: string
+}
 
-const BlankScreen = (props: Props) => {
+const BlankScreen = ({
+  userId
+}: Props) => {
   return (
     <div className="pattern h-full w-full">
-      <ProfileLink/>
+      <div className='w-full p-4 flex justify-end'>
+        <ProfileLink userId={userId} />
+      </div>
     </div>
   )
 }

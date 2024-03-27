@@ -27,7 +27,7 @@ export const getSession = async (token?: string) => {
   }
 }
 
-export const getUserId = async () => {
+export const getUserId = async ():Promise<string> => {
   const cookieStore = cookies()
   const token = cookieStore.get('x-token')?.value
   const results = await getSession(token)
@@ -37,14 +37,26 @@ export const getUserId = async () => {
   return results.userId["id"]
 }
 
+// This function runs on the server and fetches data
+export async function getSideChatData(userId:string) {
+  const response = await fetch(process.env.REACT_APP_BASE_URL + `/${userId}/chats`);
+ 
+  if (!response.ok) {
+    // This will activate the closest `error.js` Error Boundary
+    throw new Error('Failed to fetch data')
+  }
+  // Pass data to the page component as props
+  return await response.json();
+}
+
 export default async function Home() {
-    const userId = await getUserId()
-  //saving userId in the cookie
+  const userId = await getUserId()
+  const rooms: {name: string, _id: string}[] = await getSideChatData(userId)
   return (
     <main className="grid grid-cols-3 min-h-screen py-10 px-6 max-w-7xl mx-auto">
-      <SideChat/>
+      <SideChat rooms = {rooms}/>
       <div className=" col-span-2">
-        <BlankScreen />
+        <BlankScreen userId={userId}/>
       </div>
 
     </main>

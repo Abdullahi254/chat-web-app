@@ -7,12 +7,14 @@ import { io } from 'socket.io-client';
 
 import { Props as MessageInfo } from "./MessageBubble"
 import ProfileLink from './ProfileLink';
+import ChatHeader from './ChatHeader';
 
 type Props = {
     chatId: string
+    userId: string
 }
 
-const ChatScreen = ({ chatId }: Props) => {
+const ChatScreen = ({ chatId, userId }: Props) => {
     console.log('--+++++--->', chatId)
     const chat_socket = io('http://localhost:4000')
     //NOTE: Might change this to target the other user instead
@@ -37,7 +39,7 @@ const ChatScreen = ({ chatId }: Props) => {
             chat_socket.off('connect')
             chat_socket.off(`${chatId}:message:sent`)
         }
-    }, [chat_socket])
+    }, [chat_socket, chatId])
 
     const [messageList, setMessageList] = useState<MessageInfo[]>([])
 
@@ -68,8 +70,7 @@ const ChatScreen = ({ chatId }: Props) => {
 
     return (
         <div className='col-span-2 px-6 relative max-h-screen overflow-y-auto overflow-x-hidden scrollbar-thumb-gray-400 scrollbar-track-white scrollbar-thin flex flex-col'>
-            {/* Icon that takes you to the profile page */}
-            <ProfileLink />
+            <ChatHeader userId={userId} chatId={chatId}/>
             {/* list of messages being received */}
             <div className='space-y-3 mb-4 flex-grow'>
                 {messageList?.map((data, index) => <MessageBubble
