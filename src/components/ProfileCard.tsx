@@ -24,14 +24,12 @@ type BioData = {
 // You can fetch the user data using profileId
 
 const fetchBio = async (userId: string, profileId: string) => {
-    // const res = await fetch(process.env.REACT_APP_BASE_URL + `/get_user_bio/?user=${userId}&guest=${profileId}`);
-    // return await res.json()
-    return {
-        username: "string",
-        groups: [],
-        email: "string",
-        isFriend: true
-    }
+    const response = await fetch(process.env.REACT_APP_BASE_URL + `/get_user_bio/${userId}/${profileId}`);
+    if (!response.ok) {
+        // This will activate the closest `error.js` Error Boundary
+        throw new Error('Failed to fetch data')
+      }
+    return await response.json()
 }
 
 const ProfileCard = async ({ profileId }: Props) => {

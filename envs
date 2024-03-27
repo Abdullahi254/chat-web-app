@@ -5,4 +5,4 @@ REACT_APP_MONGO_URL=mongodb://localhost:27017/chatDB
 
 <!-- client -->
 REACT_APP_BASE_URL=http://localhost:8000
-NEXT_PUBLIC_BASE_URL=http://localhost:8000
+NEXT_PUBLIC_B_URL=http://localhost:8000
