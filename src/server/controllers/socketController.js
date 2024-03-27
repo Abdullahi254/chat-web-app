@@ -201,7 +201,7 @@ const SocketController = {
 
     async getUserBio(req, res) {
         try {
-            const { userId, friendId } = req.body;
+            const { userId, friendId } = req.params;
             const usersCollection = await dbClient.getCollection('chatDB', 'users')
             const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(friendId)});
 
@@ -222,7 +222,7 @@ const SocketController = {
             }
             return res.status(200).send(bio);
         } catch(err) {
-            console.log(err);
+            // console.log(err);
             return res.status(404).json({"Error": "User bio not found!"});
         }
     },
