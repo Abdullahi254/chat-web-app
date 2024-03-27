@@ -53,7 +53,7 @@ export const handleRegistration = async (_currentState: unknown, formData: FormD
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email: userData.email, password: userData.password })
         })
-        const response = await results.json()
+        const response = await results.json();
 
         if (results.ok) {
             cookies().set('session', btoa(response.username), {

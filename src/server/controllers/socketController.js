@@ -258,7 +258,45 @@ const SocketController = {
 		} else {
 		console.log("Failed to send message");
 		}
-  }
+  },
+
+  async searchChat(req, res) {
+    try {
+        const { name } = req.params;
+        if (!name) {
+            return res.status(400).json({ "Error": "Missing name parameter" });
+        }
+
+        const chatsCollection = await dbClient.getCollection("chatDB", "chats");
+        const chats = await chatsCollection.find({ chatName: { $regex: `${name}`, $options: 'i' } }).toArray();
+        const chatNames = chats.map((chat) => {
+            return { 
+                name: chat.chatName,
+                id: chat._id
+            }
+        });
+
+        const usersCollection = await dbClient.getCollection('chatDB', 'users');
+        const users = await usersCollection.find({ username: { $regex: `${name}`, $options: 'i' } }).toArray();
+        const userNames = users.map((user) => {
+            return {
+                name: user.username,
+                id: user._id
+            }
+        });
+
+        const results = [...chatNames, ...userNames];
+
+        if (results.length === 0) {
+            return res.status(404).json({ "Error": "No results found" });
+        }
+
+        return res.status(200).json(results);
+    } catch (err) {
+        console.error("Error searching:", err);
+        return res.status(500).json({ "Error": "Internal server error" });
+    }
+}
 
 } 
 
