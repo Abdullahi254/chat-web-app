@@ -10,14 +10,19 @@ import ProfileLink from './ProfileLink';
 
 type Props = {
     chatId: string
+    msgHistory: []
 }
 
-const ChatScreen = ({ chatId }: Props) => {
+const ChatScreen = ({ chatId, msgHistory }: Props) => {
     console.log('--+++++--->', chatId)
-    const chat_socket = io('http://localhost:4000')
+    //TODO: Make base url consistent
+    const chat_socket = io('http://localhost:4000', { autoConnect: true })
+    const [messageList, setMessageList] = useState<MessageInfo[]>(msgHistory ?? [])
+
     //NOTE: Might change this to target the other user instead
     //const [onlineStatus, setOnlineStatus] = useState(chat_socket.connected)
     useEffect(() => {
+
         /*
          * NOTE: Probably put this back when logic is ready
                 chat_socket.on('connect', () => {
@@ -27,19 +32,20 @@ const ChatScreen = ({ chatId }: Props) => {
                 chat_socket.on('disconnect', () => {
                     setOnlineStatus(false)
                 })
+
                 */
         chat_socket.on(`${chatId}:message:sent`, (msg) => {
-            console.log(msg)
             setMessageList((prevMsg) => [...prevMsg as MessageInfo[], msg])
         })
         return () => {
             //NOTE: Necessary to avoid double messages.
             chat_socket.off('connect')
             chat_socket.off(`${chatId}:message:sent`)
+            chat_socket.off(`${chatId}:messageHistory`)
+
         }
     }, [chat_socket])
 
-    const [messageList, setMessageList] = useState<MessageInfo[]>([])
 
     const handleMessageSent = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
