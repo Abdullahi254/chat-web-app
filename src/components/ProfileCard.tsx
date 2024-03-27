@@ -16,7 +16,7 @@ type Props = {
 
 type BioData = {
     username: string
-    groups: {id: string, name: string}[],
+    groups: {_id: string, name: string}[],
     email: string
     isFriend: boolean
 }
@@ -35,8 +35,6 @@ const fetchBio = async (userId: string, profileId: string) => {
 const ProfileCard = async ({ profileId }: Props) => {
     const userId = await getUserId();
     const bioData: BioData = await fetchBio(userId, profileId);
-    console.log(bioData)
-
 
     return (
         <div className='bg-gray-200 max-w-screen-md mx-auto p-6 flex flex-col space-y-6 items-center rounded-lg shadow-xl shadow-gray-800'>
@@ -68,7 +66,7 @@ const ProfileCard = async ({ profileId }: Props) => {
                 <h1 className='font-bold ml-2'>Groups:</h1>
                 {
                     bioData.groups.map(group => (
-                        <div className='space-x-2 flex' key={group.id}>
+                        <div className='space-x-2 flex' key={group._id}>
                         <li className='text-sm text-gray-900'>{group.name}</li>
                         <span className='cursor-pointer hover:text-red-500'><MdDelete /></span>
                         </div>  
