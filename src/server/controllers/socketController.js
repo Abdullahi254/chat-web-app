@@ -69,7 +69,7 @@ const SocketController = {
    * @param {string} content Message Content
    * @param {string} chatId Chat Id of conversation
    */
-    async storeMessage({sender, content, chatId, timeStamp}) {
+    async storeMessage(sender, content, chatId, timeStamp) {
         try {
             const messages = await dbClient.getCollection("chatDB", "messages");
             const document = {
@@ -216,12 +216,8 @@ const SocketController = {
 	 * @param {Socket} conn Socket connection
 	 */
 	async sendMessage(msg, conn) {
-		let result = await this.storeMessage(
-		msg.userId,
-		msg.message,
-		msg.chatId,
-		msg.timeStamp
-		);
+		const { userId, message, chatId, timeStamp } = msg;
+		let result = await this.storeMessage( userId, message, chatId, timeStamp);
 		const usersCollection = await dbClient.getCollection('chatDB', 'users')
 		const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(msg.userId)})
 		//NOTE: Only emit once message is saved to database.

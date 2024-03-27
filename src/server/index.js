@@ -30,7 +30,7 @@ io.on("connection", (soc) => {
   console.log("Connected");
   //NOTE: Using socket Id as placeholder for user ID
   soc.on("message:send", async (msg) => {
-    await socketController.sendMessage(msg.msg, soc);
+    await socketController.sendMessage(msg, soc);
   });
 });
 httpServer.listen(PORT, () => console.log("Sever running on port " + PORT));

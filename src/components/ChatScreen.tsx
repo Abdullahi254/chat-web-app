@@ -59,17 +59,7 @@ const ChatScreen = ({userId, chatId }: Props) => {
                 status: true,
                 timeStamp: Date.now()
             }
-            chat_socket.timeout(3000).emit('message:send', {
-                msg: {
-                    //TODO: Replace with senderId(the currently logged in user)
-                    sender: 'Sender One',
-                    //TODO: Replace with receiverId/friend(the currently logged in user)
-                    recepient: chatId,
-                    content: message,
-                    //TODO: Replace with chatId in url
-                    chatId: chatId
-                }
-            })
+            chat_socket.timeout(3000).emit('message:send', sentMessage)
         }
     }
 
