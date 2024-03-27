@@ -47,7 +47,7 @@ const ChatScreen = ({ userId, chatId, msgHistory }: Props) => {
             chat_socket.off('connect')
             chat_socket.off(`${chatId}:message:sent`)
         }
-    }, [chat_socket, chatId])
+    }, [chatId])
 
 
     const handleMessageSent = (e: React.FormEvent<HTMLFormElement>) => {

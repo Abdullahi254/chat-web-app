@@ -1,8 +1,8 @@
 <!-- all envs should be listed here -->
 
 <!-- server -->
-REACT_APP_MONGO_URL=
+REACT_APP_MONGO_URL=mongodb://localhost:27017/chatDB
 
 <!-- client -->
-REACT_APP_BASE_URL=
-NEXT_PUBLIC_BASE_URL=
+REACT_APP_BASE_URL=http://localhost:8000
+NEXT_PUBLIC_BASE_URL=http://localhost:8000
