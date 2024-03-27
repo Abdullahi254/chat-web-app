@@ -6,7 +6,7 @@ import dp from "../../public/dp.jpg"
 import { usePathname } from 'next/navigation'
 // chat link---- when clicked it goes to the text
 type Props = {
-  chatId: number
+  chatId: string
   name: string
 }
 

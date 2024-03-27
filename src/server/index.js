@@ -1,5 +1,4 @@
 require("dotenv").config();
-console.log(process.env);
 const express = require("express");
 const http = require("http");
 const { Server, Socket } = require("socket.io");

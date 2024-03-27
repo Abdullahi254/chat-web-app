@@ -14,6 +14,7 @@ type Props = {
 
 
 const ChatScreen = ({ chatId }: Props) => {
+    console.log('--+++++--->', chatId)
     const chat_socket = io('http://localhost:4000')
     //NOTE: Might change this to target the other user instead
     //const [onlineStatus, setOnlineStatus] = useState(chat_socket.connected)

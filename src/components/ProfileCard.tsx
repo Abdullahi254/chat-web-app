@@ -5,9 +5,11 @@ import { CiCamera } from "react-icons/ci";
 import { CiEdit } from "react-icons/ci";
 import { MdDelete } from "react-icons/md";
 import AddChat from './AddChat';
+import { getUserId } from '@/app/page';
 type Props = {}
 
-const ProfileCard = (props: Props) => {
+const ProfileCard = async (props: Props) => {
+    const userId = await getUserId()
     return (
         <div className='bg-gray-200 max-w-screen-md mx-auto p-6 flex flex-col space-y-6 items-center rounded-lg shadow-xl shadow-gray-800'>
             <div className='relative'>
@@ -45,11 +47,11 @@ const ProfileCard = (props: Props) => {
 
             <div className='space-x-4 flex flex-col py-2 space-y-2 w-full justify-center'>
                 <h1 className='font-bold ml-2'>Add Friend:</h1>
-                <AddChat />
+                <AddChat userId={userId}/>
             </div>
             <div className='space-x-4 flex flex-col py-2 space-y-2 w-full justify-center'>
                 <h1 className='font-bold ml-2'>Create Group:</h1>
-                <AddChat />
+                <AddChat userId={userId}/>
             </div>
         </div>
     )
