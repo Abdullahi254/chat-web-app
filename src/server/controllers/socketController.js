@@ -216,18 +216,67 @@ const SocketController = {
     }
   },
 
-  async getUserBio(req, res) {
-    try {
-      const { userId, friendId } = req.body;
-      const usersCollection = await dbClient.getCollection("chatDB", "users");
-      const user = await usersCollection.findOne({
-        _id: ObjectId.createFromHexString(friendId),
-      });
 
-      if (!user) {
-        return res.status(403).send("user doesn't exist");
-      }
-      const chats = await dbClient.getCollection("chatDB", "chats");
+    async getUserBio(req, res) {
+        try {
+            const { userId, friendId } = req.params;
+            const usersCollection = await dbClient.getCollection('chatDB', 'users')
+            const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(friendId)});
+
+            if(!user) {
+                return res.status(403).send("user doesn't exist");
+            }
+            const chats = await dbClient.getCollection("chatDB", "chats");
+    
+            // gets all groups chats the user is member of
+            const userChatGroups = await chats.find({ users: { $elemMatch: { $eq: friendId } }, isRoomChat: false }).toArray();
+            // check for friendship
+            const isFriend = await SocketController.isFriend(userId, friendId);
+            const bio = {
+                username: user.username,
+                email: user.email,
+                groups: userChatGroups,
+                isFriend: isFriend // if it is true, the button should disappear in frontend
+            }
+            return res.status(200).send(bio);
+        } catch(err) {
+            // console.log(err);
+            return res.status(404).json({"Error": "User bio not found!"});
+        }
+    },
+    
+	/** Send message to user
+	 * @param {string} userId User Id from database
+	 * @param {string} msg to send
+	 * @param {Socket} conn Socket connection
+	 */
+	async sendMessage(msg, conn) {
+		const { userId, message, chatId, timeStamp } = msg;
+		let result = await this.storeMessage( userId, message, chatId, timeStamp);
+		const usersCollection = await dbClient.getCollection('chatDB', 'users')
+		const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(msg.userId)})
+		//NOTE: Only emit once message is saved to database.
+		if (result === true) {
+		//NOTE: Send message to other client on the socket.
+		conn.broadcast.emit(`${msg.chatId}:message:sent`, {
+			message: msg.message,
+			status: msg.status,
+			userName: user.name,
+			chatId: msg.chatId,
+			timeStamp: msg.timeStamp
+		});
+		//NOTE: Send message to this client
+		conn.emit(`${msg.chatId}:message:sent`, {
+			message: msg.message,
+			status: msg.status,
+			userName: user.name,
+			chatId: msg.chatId,
+			timeStamp: msg.timeStamp
+		})
+		} else {
+		console.log("Failed to send message");
+		}
+  }
 
       // gets all groups chats the user is member of
       const userChatGroups = await chats

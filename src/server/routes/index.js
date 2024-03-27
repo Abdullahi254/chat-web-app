@@ -25,7 +25,7 @@ router.get("/get_chat_history/:chatId", SocketController.getChatMessages);
 // router.post("/store_chat_history", SocketController.storeMessage);
 router.post("/delete_group", SocketController.deleteGroup);
 router.post("/add_user_to_group", SocketController.addUserToRoom);
-router.post("/get_user_bio", SocketController.getUserBio);
+router.get("/get_user_bio/:userId/:friendId", SocketController.getUserBio);
 router.post("add_friend", SocketController.addFriend);
 //NOTE: Commented out since it will be used with sockets directly
 //router.post("/store_chat_history", SocketController.storeMessage);
