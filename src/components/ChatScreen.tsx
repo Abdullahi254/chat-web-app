@@ -7,22 +7,27 @@ import { io } from 'socket.io-client';
 
 import { Props as MessageInfo } from "./MessageBubble"
 import ProfileLink from './ProfileLink';
+import ChatHeader from './ChatHeader';
 
 type Props = {
-    chatId: string
+    chatId: string,
+    userId: string,
     msgHistory: []
 }
+type SentMessage = {
+    chatId: string
+    userId: string
+} & MessageInfo
 
-const ChatScreen = ({ chatId, msgHistory }: Props) => {
+const ChatScreen = ({userId, chatId, msgHistory }: Props) => {
     console.log('--+++++--->', chatId)
     //TODO: Make base url consistent
-    const chat_socket = io('http://localhost:4000', { autoConnect: true })
+    const chat_socket = io(process.env.NEXT_PUBLIC_BASE_URL + '')
     const [messageList, setMessageList] = useState<MessageInfo[]>(msgHistory ?? [])
 
     //NOTE: Might change this to target the other user instead
     //const [onlineStatus, setOnlineStatus] = useState(chat_socket.connected)
     useEffect(() => {
-
         /*
          * NOTE: Probably put this back when logic is ready
                 chat_socket.on('connect', () => {
@@ -32,19 +37,17 @@ const ChatScreen = ({ chatId, msgHistory }: Props) => {
                 chat_socket.on('disconnect', () => {
                     setOnlineStatus(false)
                 })
-
                 */
         chat_socket.on(`${chatId}:message:sent`, (msg) => {
+            console.log(msg)
             setMessageList((prevMsg) => [...prevMsg as MessageInfo[], msg])
         })
         return () => {
             //NOTE: Necessary to avoid double messages.
             chat_socket.off('connect')
             chat_socket.off(`${chatId}:message:sent`)
-            chat_socket.off(`${chatId}:messageHistory`)
-
         }
-    }, [chat_socket])
+    }, [chat_socket, chatId])
 
 
     const handleMessageSent = (e: React.FormEvent<HTMLFormElement>) => {
@@ -52,30 +55,21 @@ const ChatScreen = ({ chatId, msgHistory }: Props) => {
         const formData = new FormData(e.currentTarget);
         const message = formData.get("chat")
         if (typeof (message) === 'string') {
-            const sentMessage: MessageInfo = {
+            const sentMessage: SentMessage = {
+                userName: "",
+                userId,
+                chatId,
                 message,
                 status: true,
-                timeStamp: "19/03/2024 15:05",
-                userName: "Sender One"
+                timeStamp: Date.now()
             }
-            chat_socket.timeout(3000).emit('message:send', {
-                msg: {
-                    //TODO: Replace with senderId(the currently logged in user)
-                    sender: 'Sender One',
-                    //TODO: Replace with receiverId/friend(the currently logged in user)
-                    recepient: chatId,
-                    content: message,
-                    //TODO: Replace with chatId in url
-                    chatId: chatId
-                }
-            })
+            chat_socket.timeout(3000).emit('message:send', sentMessage)
         }
     }
 
     return (
         <div className='col-span-2 px-6 relative max-h-screen overflow-y-auto overflow-x-hidden scrollbar-thumb-gray-400 scrollbar-track-white scrollbar-thin flex flex-col'>
-            {/* Icon that takes you to the profile page */}
-            <ProfileLink />
+            <ChatHeader userId={userId} chatId={chatId}/>
             {/* list of messages being received */}
             <div className='space-y-3 mb-4 flex-grow'>
                 {messageList?.map((data, index) => <MessageBubble

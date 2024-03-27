@@ -6,12 +6,27 @@ import { CiEdit } from "react-icons/ci";
 import { MdDelete } from "react-icons/md";
 import AddChat from './AddChat';
 import { getUserId } from '@/app/page';
-type Props = {}
+import { IoReturnDownBack } from "react-icons/io5";
+import Link from 'next/link';
+import AddFriend from './AddFriend';
+type Props = {
+    profileId: string
+}
 
-const ProfileCard = async (props: Props) => {
+// You can fetch the user data using profileId
+
+const ProfileCard = async ({ profileId }: Props) => {
     const userId = await getUserId()
     return (
         <div className='bg-gray-200 max-w-screen-md mx-auto p-6 flex flex-col space-y-6 items-center rounded-lg shadow-xl shadow-gray-800'>
+            <div className='flex items-center w-full px-2 justify-end'>
+                <Link href="/">
+                    <div className='text-lg p-2 hover:rounded-full hover:bg-gray-50'>
+                        <IoReturnDownBack />
+                    </div>
+                </Link>
+
+            </div>
             <div className='relative'>
                 <Image width={100} height={100} className="h-[100px] w-[100px] rounded-full" src={dp} alt="Dp" priority />
                 <CiCamera className='absolute bottom-0 right-0 cursor-pointer hover:font-bold' />
@@ -45,14 +60,28 @@ const ProfileCard = async (props: Props) => {
                 </div>
             </div>
 
-            <div className='space-x-4 flex flex-col py-2 space-y-2 w-full justify-center'>
-                <h1 className='font-bold ml-2'>Add Friend:</h1>
-                <AddChat userId={userId}/>
-            </div>
-            <div className='space-x-4 flex flex-col py-2 space-y-2 w-full justify-center'>
-                <h1 className='font-bold ml-2'>Create Group:</h1>
-                <AddChat userId={userId}/>
-            </div>
+            {/* if the profile is not equal to user id, can't add friend
+            We can also check here if user is already your friend, if so don't display ui
+            als check if chatId is for a group chat, If it is don't display ui */}
+            {
+                profileId !== userId && 
+                // !isFriend
+                // !isGroup
+                <div className='space-x-4 flex flex-col py-2 space-y-2 w-full justify-center'>
+                    <h1 className='font-bold ml-2'>Add Friend:</h1>
+                    <AddFriend userId={userId}/>
+                </div>
+
+            }
+            {/* You can only create a group if you are accessing your own bio */}
+            {
+                profileId === userId &&
+                <div className='space-x-4 flex flex-col py-2 space-y-2 w-full justify-center'>
+                    <h1 className='font-bold ml-2'>Create Group:</h1>
+                    <AddChat userId={userId} />
+                </div>
+            }
+
         </div>
     )
 }
