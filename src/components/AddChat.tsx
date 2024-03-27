@@ -1,5 +1,5 @@
 "use client"
-import React, { SyntheticEvent, useState } from 'react'
+import React, {useState } from 'react'
 import { IoIosAdd } from "react-icons/io";
 type Props = {
     userId: string
@@ -16,7 +16,7 @@ const AddChat = ({userId}: Props) => {
 
         if (groupName) {
             // console.log('000====000', process.env.REACT_APP_BASE_URL)
-           const res = await fetch('http://localhost:8000/create_chat', {
+           const res = await fetch(`${process.env.NEXT_PUBLIC_B_URL}/create_chat`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
