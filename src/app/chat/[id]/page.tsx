@@ -4,9 +4,9 @@ import React from 'react'
 import {getSideChatData, getUserId} from "@/app/page"
 
 type Props = {
-    params: {
-        id: string
-    }
+  params:{
+    id: string
+  }
 }
 
 //fetch text thread from database use chatId to get the data

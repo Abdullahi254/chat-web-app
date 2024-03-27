@@ -51,53 +51,41 @@ const SocketController = {
         }
     },
 
-  async getChat(req, res) {
-    try {
-      const { chatId } = req.params;
-      const chats = await dbClient.getCollection("chatDB", "chats");
-      const chat = await chats.findOne({ chatId });
-      return res.status(200).send(chat);
-    } catch (err) {
-      return res.status(404).send("Chat not found!");
-    }
-  },
+    async storeChat(req, res) {
+        try {
+            const { chatDocument } = req.body;
+            const chats = await dbClient.getCollection("chatDB", "chats");
+            await chats.insertOne(chatDocument);
+            return res.status(200).send("Stored the chat successully");
+        } catch(err) {
+            return res.status(500).send("Error storing the chat");
+        }
 
-  async storeChat(req, res) {
-    try {
-      const { chatDocument } = req.body;
-      const chats = await dbClient.getCollection("chatDB", "chats");
-      await chats.insertOne(chatDocument);
-      return res.status(200).send("Stored the chat successully");
-    } catch (err) {
-      return res.status(500).send("Error storing the chat");
-    }
-  },
+    },
 
-  /**
+	/**
    * @param {string} sender Message Sender
    * @param {string} recepient Message Receiver
    * @param {string} content Message Content
    * @param {string} chatId Chat Id of conversation
    */
-  async storeMessage(sender, recepient, content, chatId) {
-    try {
-      const messages = await dbClient.getCollection("chatDB", "messages");
-      const document = {
-        sender,
-        recepient,
-        content,
-        chatId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      const result = await messages.insertOne(document);
-      console.log(`Inserted message with ID: ${result.insertedId}`);
-      return "Sent!";
-    } catch (error) {
-      console.error("Error storing message:", error);
-      return err;
-    }
-  },
+    async storeMessage(sender, content, chatId, timeStamp) {
+        try {
+            const messages = await dbClient.getCollection("chatDB", "messages");
+            const document = {
+                sender,
+                content,
+                chatId,
+                createdAt: timeStamp,
+            };
+            const result = await messages.insertOne(document);
+            console.log(`Inserted message with ID: ${result.insertedId}`);
+			return true
+		} catch (error) {
+            console.error("Error storing message:", error);
+			return false
+        }
+    },
 
     async getChatMessages(req, res) {
         try {
@@ -133,7 +121,7 @@ const SocketController = {
 
     async addFriend(req, res) {
         try {
-            const {userId, friendId } = req.body;
+            const { userId, friendId } = req.body;
             const chats = await dbClient.getCollection("chatDB", "chats");
             // check first if both users might have a chatRoom and return it
             const actualFriendId = ObjectId.createFromHexString(friendId);
@@ -198,6 +186,7 @@ const SocketController = {
             return false
         }
     },
+
     async getUserBio(req, res) {
         try {
             const { userId, friendId } = req.body;
@@ -219,8 +208,42 @@ const SocketController = {
         } catch(err) {
             return res.status(404).json({"Error": "User bio not found!"});
         }
-    }
-};
+    },
+    
+	/** Send message to user
+	 * @param {string} userId User Id from database
+	 * @param {string} msg to send
+	 * @param {Socket} conn Socket connection
+	 */
+	async sendMessage(msg, conn) {
+		const { userId, message, chatId, timeStamp } = msg;
+		let result = await this.storeMessage( userId, message, chatId, timeStamp);
+		const usersCollection = await dbClient.getCollection('chatDB', 'users')
+		const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(msg.userId)})
+		//NOTE: Only emit once message is saved to database.
+		if (result === true) {
+		//NOTE: Send message to other client on the socket.
+		conn.broadcast.emit(`${msg.chatId}:message:sent`, {
+			message: msg.message,
+			status: msg.status,
+			userName: user.name,
+			chatId: msg.chatId,
+			timeStamp: msg.timeStamp
+		});
+		//NOTE: Send message to this client
+		conn.emit(`${msg.chatId}:message:sent`, {
+			message: msg.message,
+			status: msg.status,
+			userName: user.name,
+			chatId: msg.chatId,
+			timeStamp: msg.timeStamp
+		})
+		} else {
+		console.log("Failed to send message");
+		}
+  }
+
+} 
 
 module.exports = SocketController;
 
