@@ -10,13 +10,17 @@ import ProfileLink from './ProfileLink';
 import ChatHeader from './ChatHeader';
 
 type Props = {
-    chatId: string
+    chatId: string,
     userId: string
 }
+type SentMessage = {
+    chatId: string
+    userId: string
+} & MessageInfo
 
-const ChatScreen = ({ chatId, userId }: Props) => {
-    console.log('--+++++--->', chatId)
-    const chat_socket = io('http://localhost:4000')
+
+const ChatScreen = ({userId, chatId }: Props) => {
+    const chat_socket = io(process.env.NEXT_PUBLIC_BASE_URL + '')
     //NOTE: Might change this to target the other user instead
     //const [onlineStatus, setOnlineStatus] = useState(chat_socket.connected)
     useEffect(() => {
@@ -31,7 +35,6 @@ const ChatScreen = ({ chatId, userId }: Props) => {
                 })
                 */
         chat_socket.on(`${chatId}:message:sent`, (msg) => {
-            console.log(msg)
             setMessageList((prevMsg) => [...prevMsg as MessageInfo[], msg])
         })
         return () => {
@@ -48,11 +51,13 @@ const ChatScreen = ({ chatId, userId }: Props) => {
         const formData = new FormData(e.currentTarget);
         const message = formData.get("chat")
         if (typeof (message) === 'string') {
-            const sentMessage: MessageInfo = {
+            const sentMessage: SentMessage = {
+                userName: "",
+                userId,
+                chatId,
                 message,
                 status: true,
-                timeStamp: "19/03/2024 15:05",
-                userName: "Sender One"
+                timeStamp: Date.now()
             }
             chat_socket.timeout(3000).emit('message:send', {
                 msg: {

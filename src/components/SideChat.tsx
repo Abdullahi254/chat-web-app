@@ -10,10 +10,7 @@ type Props = {
   }[]
 }
 
-
-
 const SideChat = async ({rooms}: Props) => {
-
 
   return (
     <div className='border-r-gray-400 border-r-2 col-span-1 flex flex-col space-y-10 items-center max-h-screen overflow-y-auto scrollbar-thumb-gray-400 scrollbar-track-white scrollbar-thin'>
