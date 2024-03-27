@@ -1,5 +1,5 @@
 const express = require("express");
-const { registerUser, loginUser, tokenChecker } = require("../controllers/UserController");
+const { registerUser, loginUser, tokenChecker, getUserBio } = require("../controllers/UserController");
 const { uploadFile, uploads } = require("../controllers/uploadsController");
 const { Translate } = require("../controllers/transilator");
 const SocketController = require("../controllers/socketController");
@@ -23,5 +23,9 @@ router.get("/chats/:chatId", SocketController.getChat);
 router.get("/get_chat_history", SocketController.getChatMessages);
 router.post("/store_chat", SocketController.storeChat);
 router.post("/store_chat_history", SocketController.storeMessage);
+router.post("/delete_group", SocketController.deleteGroup);
+router.post("/add_user_to_group", SocketController.addUserToRoom);
+router.post("/get_user_bio", SocketController.getUserBio);
+router.post("add_friend", SocketController.addFriend);
 
 module.exports = router;

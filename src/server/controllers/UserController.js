@@ -126,4 +126,5 @@ async function getUserfromToken(token) {
     return null;
 }
 
+
 module.exports = { registerUser, loginUser, tokenChecker };
