@@ -121,7 +121,7 @@ const SocketController = {
 
     async addFriend(req, res) {
         try {
-            const {userId, friendId } = req.body;
+            const { userId, friendId } = req.body;
             const chats = await dbClient.getCollection("chatDB", "chats");
             // check first if both users might have a chatRoom and return it
             const actualFriendId = ObjectId.createFromHexString(friendId);
