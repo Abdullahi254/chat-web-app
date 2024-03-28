@@ -5,15 +5,21 @@ type Props = {
     userId: string
 }
 
+type Suggestion = {
+    name: string
+     _id: string
+}
+
 const AddMember = ({
     userId
 }: Props) => {
     const [search, setSearch] = useState<boolean>(false)
     const [inputValue, setInputValue] = useState('');
-    const [suggestions, setSuggestions] = useState<string[]>([]);
+    const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+    const [selectedFriend, setSelectedFriend] = useState<Suggestion[]>([]);
 
-    const handleAddMember = (e)=>{
-        
+    const handleAddMember = async ()=>{
+
     }
 
     const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -27,14 +33,13 @@ const AddMember = ({
         if (!res.ok) {
             throw new Error('Failed to fetch data')
         }
-        const results: {name: string, _id: string}[] = await res.json()
+        const results: Suggestion[] = await res.json()
         console.log(results)
-        const suggestions = results.map(suggestion => suggestion.name);
-        setSuggestions(suggestions);
+        setSuggestions(results);
     };
 
-    const handleSelectSuggestion = (suggestion: string) => {
-        setInputValue(suggestion);
+    const handleSelectSuggestion = (suggestion: Suggestion) => {
+        setInputValue(suggestion.name);
         setSuggestions([]);
     };
 
@@ -55,7 +60,7 @@ const AddMember = ({
                 <ul className='items-center max-w-sm mx-auto px-2'>
                 {suggestions.map((suggestion, index) => (
                     <li key={index} onClick={() => handleSelectSuggestion(suggestion)}>
-                        {suggestion}
+                        {suggestion.name}
                     </li>
                 ))}
             </ul>
