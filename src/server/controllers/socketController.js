@@ -166,13 +166,14 @@ const SocketController = {
   },
 
   async addFriend(req, res) {
+    console.log(req.params);
     try {
-      const { userId, friendId } = req.params;
+      const { userId, profileId } = req.params;
       const chats = await dbClient.getCollection("chatDB", "chats");
       // check first if both users might have a chatRoom and return it
-      const actualFriendId = ObjectId.createFromHexString(friendId);
+      const actualFriendId = ObjectId.createFromHexString(profileId);
       const existingChat = await chats.findOne({
-        users: { $all: [friendId, userId] },
+        users: { $all: [profileId, userId] },
         isRoomChat: false,
       });
       if (existingChat) {
@@ -184,13 +185,13 @@ const SocketController = {
       const friend = await usersCollection.findOne({ _id: actualFriendId });
 
       if (!friend) {
-        return res.status(403).json({ Error: "This user doesn't exist yet!" });
+        return res.status(403).json({ error: "This user doesn't exist yet!" });
       }
 
       const chat = {
         name: friend.username,
         isRoomChat: false,
-        users: [userId, friendId],
+        users: [userId, profileId],
         createdBy: userId,
         createdAt: new Date(),
         //           latestMessage: ""
@@ -341,6 +342,19 @@ const SocketController = {
     } catch (err) {
       console.error("Error searching:", err);
       return res.status(500).json({ Error: "Internal server error" });
+    }
+  },
+
+  async fetchUserName(userId) {
+    try {
+      const usersCollection = await dbClient.getCollection("chatDB", "users");
+      const user = await usersCollection.findOne({
+        _id: ObjectId.createFromHexString(userId),
+      });
+      return user.username;
+    } catch (e) {
+      console.log("no user found");
+      return null;
     }
   },
 

@@ -2,7 +2,8 @@ import SideChat from '@/components/SideChat'
 import ChatScreen from '@/components/ChatScreen'
 import React from 'react'
 import { getSideChatData, getUserId } from "@/app/page"
-import {Props as MessageInfo} from "@/components/MessageBubble"
+import SocketController from '@/server/controllers/socketController'
+import { Props as MessageInfo } from "@/components/MessageBubble"
 
 type Props = {
     params: {
@@ -31,9 +32,21 @@ async function formatMessages(chatId: string) {
 
 const page = async ({ params }: Props) => {
     const userId = await getUserId()
-    const rooms: { name: string, _id: string }[] = await getSideChatData(userId)
+    const rooms: { name: string, _id: string, users: string[], isRoomChat: boolean }[] = await getSideChatData(userId)
+    //NOTE: Temp fix for private chat
+    rooms.map(async (v, k) => {
+        if (v.users[0] === userId && !v.isRoomChat) {
+            let name = await SocketController.fetchUserName(v.users[1])
+            v.name = name
+        } else if (v.users[1] === userId && !v.isRoomChat) {
+            let name = await SocketController.fetchUserName(v.users[0])
+            v.name = name
+        } else {
+            console.log('Group Chat')
+        }
+    })
     //NOTE: This is easier to get chat history per chat
-    let messages:MessageInfo[] | undefined = await formatMessages(params.id)
+    let messages: MessageInfo[] | undefined = await formatMessages(params.id)
     return (
         <main className="grid grid-cols-3 min-h-screen py-10 px-6 max-w-7xl mx-auto">
             <SideChat rooms={rooms} />
