@@ -35,10 +35,12 @@ const page = async ({ params }: Props) => {
     const rooms = await getSideChatData(userId)
     //NOTE: This is easier to get chat history per chat
     let messages: MessageInfo[] | undefined = await formatMessages(params.id)
+    const fileteredRooms = rooms.filter((room:any) =>room._id.toString() === params.id)
+    const room = fileteredRooms[0]
     return (
         <main className="grid grid-cols-3 min-h-screen py-10 px-6 max-w-7xl mx-auto">
             <SideChat rooms={rooms} userId={userId}/>
-            <ChatScreen chatId={params.id} userId={userId} msgHistory={messages} />
+            <ChatScreen chatId={params.id} userId={userId} msgHistory={messages} room={room}/>
         </main>
     )
 }

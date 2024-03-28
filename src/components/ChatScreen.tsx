@@ -12,14 +12,15 @@ import ChatHeader from './ChatHeader';
 type Props = {
     chatId: string,
     userId: string,
-    msgHistory?: MessageInfo[]
+    msgHistory?: MessageInfo[],
+    room:any
 }
 type SentMessage = {
     chatId: string
     userId: string
 } & MessageInfo
 
-const ChatScreen = ({ userId, chatId, msgHistory }: Props) => {
+const ChatScreen = ({ userId, chatId, msgHistory, room }: Props) => {
     //TODO: Make base url consistent
     const chat_socket = io(process.env.NEXT_PUBLIC_BASE_URL + '')
     const [messageList, setMessageList] = useState<MessageInfo[]>()
@@ -72,7 +73,7 @@ const ChatScreen = ({ userId, chatId, msgHistory }: Props) => {
 
     return (
         <div className='col-span-2 px-6 relative max-h-screen overflow-y-auto overflow-x-hidden scrollbar-thumb-gray-400 scrollbar-track-white scrollbar-thin flex flex-col'>
-            <ChatHeader userId={userId} chatId={chatId} />
+            <ChatHeader userId={userId} chatId={chatId} room={room}/>
             {/* list of messages being received */}
             <div className='space-y-3 mb-4 flex-grow'>
                 {messageList?.map((data, index) => <MessageBubble
