@@ -50,32 +50,34 @@ const SocketController = {
         _id: ObjectId.createFromHexString(chatId),
       });
 
-	  const usersCollection = await dbClient.getCollection("chatDB", "users");
+      const usersCollection = await dbClient.getCollection("chatDB", "users");
 
-	  if (!chat) {
-		return res.status(200).json([])
-	  }
+      if (!chat) {
+        return res.status(200).json([]);
+      }
 
-	  const users = [];
-	  for (let userId of chat.users) {
-		const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(userId)})
-		if (!user) {
-			throw new Error('not really expected')
-		}
-		users.push({
-			id: user._id,
-			username: user.username,
-			email: user.email,
-		})
-	  }
+      const users = [];
+      for (let userId of chat.users) {
+        const user = await usersCollection.findOne({
+          _id: ObjectId.createFromHexString(userId),
+        });
+        if (!user) {
+          throw new Error("not really expected");
+        }
+        users.push({
+          id: user._id,
+          username: user.username,
+          email: user.email,
+        });
+      }
 
       return res.status(200).json({
-		...chat,
-		users,
-	});
+        ...chat,
+        users,
+      });
     } catch (err) {
-		console.log(err)
-      return res.status(500).json({"error": "an error occured!"});
+      console.log(err);
+      return res.status(500).json({ error: "an error occured!" });
     }
   },
 
@@ -124,14 +126,16 @@ const SocketController = {
         .find({ chatId: chatId })
         .sort({ createdAt: 1 })
         .toArray();
-		console.log(chats)
+      console.log(chats);
 
-	  const usersCollection = await dbClient.getCollection("chatDB", "users");
-	  const chat = chats.map(async (msg) => {
-		const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(msg.senderId)})
+      const usersCollection = await dbClient.getCollection("chatDB", "users");
+      const chat = chats.map(async (msg) => {
+        const user = await usersCollection.findOne({
+          _id: ObjectId.createFromHexString(msg.senderId),
+        });
 
-		return {...chat, userName: user.username}
-	  })
+        return { ...chat, userName: user.username };
+      });
 
       return res.status(200).send(chats);
     } catch (err) {
@@ -163,31 +167,32 @@ const SocketController = {
   },
 
   async addFriend(req, res) {
+    console.log(req.params);
     try {
-      const { userId, friendId } = req.params;
+      const { userId, profileId } = req.params;
       const chats = await dbClient.getCollection("chatDB", "chats");
       // check first if both users might have a chatRoom and return it
-      const actualFriendId = ObjectId.createFromHexString(friendId);
+      const actualFriendId = ObjectId.createFromHexString(profileId);
       const existingChat = await chats.findOne({
-        users: { $all: [friendId, userId] },
+        users: { $all: [profileId, userId] },
         isRoomChat: false,
       });
       if (existingChat) {
         console.log("User is already a friend!", existingChat.users);
-        return res.status(400).json({"error": "User already a friend!"});
+        return res.status(400).json({ error: "User already a friend!" });
       }
       // gets the friend username
       const usersCollection = await dbClient.getCollection("chatDB", "users");
       const friend = await usersCollection.findOne({ _id: actualFriendId });
 
       if (!friend) {
-        return res.status(403).json({"error": "This user doesn't exist yet!"});
+        return res.status(403).json({ error: "This user doesn't exist yet!" });
       }
 
       const chat = {
         name: friend.username,
         isRoomChat: false,
-        users: [userId, friendId],
+        users: [userId, profileId],
         createdBy: userId,
         createdAt: new Date(),
         //           latestMessage: ""
@@ -195,9 +200,11 @@ const SocketController = {
       // creates the chat for them
       const newChat = await chats.insertOne(chat);
       const createdChat = await chats.findOne({ _id: newChat.insertedId });
-      return res.status(201).json({"message": "successfully added friend!"});
+      return res
+        .status(201)
+        .json({ message: "successfully added friend!", chatId: createdChat });
     } catch (err) {
-      return res.status(400).json({"error": "Cannot add user"});
+      return res.status(400).json({ error: "Cannot add user" });
     }
   },
 
@@ -249,7 +256,7 @@ const SocketController = {
     }
   },
 
-  // NOTE: missing isgroup parameter and bio(i.e Can't Talk What's up?), 
+  // NOTE: missing isgroup parameter and bio(i.e Can't Talk What's up?),
   async getUserBio(req, res) {
     try {
       const { userId, friendId } = req.params;
@@ -258,61 +265,80 @@ const SocketController = {
         _id: ObjectId.createFromHexString(friendId),
       });
 
-            if(!user) {
-                return res.status(404).json({"Error":"user doesn't exist"});
-            }
-            const chats = await dbClient.getCollection("chatDB", "chats");
-    
-            // gets all groups chats the user is member of
-            const userChatGroups = await chats.find({ users: { $elemMatch: { $eq: friendId } }, createdBy: friendId }).toArray();
-            // check for friendship
-            const isFriend = await SocketController.isFriend(userId, friendId);
-            const bio = {
-                username: user.username,
-                email: user.email,
-                groups: userChatGroups,
-                isFriend: isFriend // if it is true, the button should disappear in frontend
-            }
-            return res.status(200).send(bio);
-        } catch(err) {
-            // console.log(err);
-            return res.status(404).json({"Error": "User bio not found!"});
-        }
-    },
+      if (!user) {
+        return res.status(404).json({ Error: "user doesn't exist" });
+      }
+      const chats = await dbClient.getCollection("chatDB", "chats");
 
-	async searchChat(req, res) {
-		try {
-			const { name } = req.params;
-			if (!name) {
-				return res.status(400).json({ "Error": "Missing name parameter" });
-			}
-	
-			const chatsCollection = await dbClient.getCollection("chatDB", "chats");
-			const chats = await chatsCollection.find({ chatName: { $regex: `${name}`, $options: 'i' } }).toArray();
-			const chatNames = chats.map((chat) => {
-				return { 
-					name: chat.chatName,
-					_id: chat._id,
-				}
-			});
-	
-			const usersCollection = await dbClient.getCollection('chatDB', 'users');
-			const users = await usersCollection.find({ username: { $regex: `${name}`, $options: 'i' } }).toArray();
-			const userNames = users.map((user) => {
-				return {
-					name: user.username,
-					_id: user._id
-				}
-			});
-	
-			const results = [...chatNames, ...userNames];
-	
-			return res.status(200).json(results);
-		} catch (err) {
-			console.error("Error searching:", err);
-			return res.status(500).json({ "Error": "Internal server error" });
-		}
-	},
+      // gets all groups chats the user is member of
+      const userChatGroups = await chats
+        .find({ users: { $elemMatch: { $eq: friendId } }, createdBy: friendId })
+        .toArray();
+      // check for friendship
+      const isFriend = await SocketController.isFriend(userId, friendId);
+      const bio = {
+        username: user.username,
+        email: user.email,
+        groups: userChatGroups,
+        isFriend: isFriend, // if it is true, the button should disappear in frontend
+      };
+      return res.status(200).send(bio);
+    } catch (err) {
+      // console.log(err);
+      return res.status(404).json({ Error: "User bio not found!" });
+    }
+  },
+
+  async searchChat(req, res) {
+    try {
+      const { name } = req.params;
+      if (!name) {
+        return res.status(400).json({ Error: "Missing name parameter" });
+      }
+
+      const chatsCollection = await dbClient.getCollection("chatDB", "chats");
+      const chats = await chatsCollection
+        .find({ chatName: { $regex: `${name}`, $options: "i" } })
+        .toArray();
+      const chatNames = chats.map((chat) => {
+        return {
+          name: chat.chatName,
+          _id: chat._id,
+        };
+      });
+
+      const usersCollection = await dbClient.getCollection("chatDB", "users");
+      const users = await usersCollection
+        .find({ username: { $regex: `${name}`, $options: "i" } })
+        .toArray();
+      const userNames = users.map((user) => {
+        return {
+          name: user.username,
+          _id: user._id,
+        };
+      });
+
+      const results = [...chatNames, ...userNames];
+
+      return res.status(200).json(results);
+    } catch (err) {
+      console.error("Error searching:", err);
+      return res.status(500).json({ Error: "Internal server error" });
+    }
+  },
+
+  async fetchUserName(userId) {
+    try {
+      const usersCollection = await dbClient.getCollection("chatDB", "users");
+      const user = await usersCollection.findOne({
+        _id: ObjectId.createFromHexString(userId),
+      });
+      return user.username;
+    } catch (e) {
+      console.log("no user found");
+      return null;
+    }
+  },
 
   /** Send message to user
    * @param {string} userId User Id from database
@@ -341,7 +367,7 @@ const SocketController = {
       conn.emit(`${msg.chatId}:message:sent`, {
         message: msg.message,
         status: msg.status,
-        userName: '',
+        userName: "",
         chatId: msg.chatId,
         timeStamp: msg.timeStamp,
       });
