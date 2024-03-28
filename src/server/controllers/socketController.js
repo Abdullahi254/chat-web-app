@@ -1,3 +1,4 @@
+const { useId } = require("react");
 const dbClient = require("../utils/db");
 const { ObjectId } = require("mongodb");
 
@@ -18,9 +19,9 @@ const SocketController = {
       const chat = await chats.insertOne(newChat);
       const createdChat = await chats.findOne({ _id: chat.insertedId });
 
-      return res.status(200).send(createdChat);
+      return res.status(200).json({ createdChat: createdChat });
     } catch (error) {
-      return res.status(500).send("Error occured when creating chat!");
+      return res.status(500).send({ Error: "Failed to create a chat!" });
     }
   },
 
@@ -28,17 +29,16 @@ const SocketController = {
     try {
       const { userId } = req.params;
       if (!userId) {
-        return res.status(400).json({ error: "user id required" });
+        return res.status(400).json({ Error: "user id required" });
       }
       const chats = await dbClient.getCollection("chatDB", "chats");
       const userChats = await chats
         .find({ users: { $elemMatch: { $eq: userId } } })
         .toArray();
 
-      return res.status(200).json(userChats);
+      return res.status(200).json({ userChats: userChats });
     } catch (err) {
-      console.log(err);
-      return res.status(500).send("an error occured");
+      return res.status(500).json({ Error: "Failed to get user chats" });
     }
   },
 
@@ -83,10 +83,10 @@ const SocketController = {
     try {
       // const { chatDocument } = req.body;
       const chats = await dbClient.getCollection("chatDB", "chats");
-      await chats.insertOne(chatDocument);
-      return res.status(200).send("Stored the chat successully");
+      const storedChat = await chats.insertOne(chatDocument);
+      return res.status(200).json({storedChat: storedChat});
     } catch (err) {
-      return res.status(500).send("Error storing the chat");
+      return res.status(500).json({ Error: "Error storing the chat" });
     }
   },
 
@@ -106,10 +106,10 @@ const SocketController = {
         createdAt: timeStamp,
       };
       const result = await messages.insertOne(document);
-      console.log(`Inserted message with ID: ${result.insertedId}`);
+      // console.log(`Inserted message with ID: ${result.insertedId}`);
       return true;
     } catch (error) {
-      console.error("Error storing message:", error);
+      // console.error("Error storing message:", error);
       return false;
     }
   },
@@ -136,7 +136,7 @@ const SocketController = {
       return res.status(200).send(chats);
     } catch (err) {
       console.log(err);
-      return res.status(500).send("Error retrieving the chat messages");
+      return res.status(500).json({ Error: "Error retrieving the chat messages" });
     }
   },
 
@@ -156,7 +156,7 @@ const SocketController = {
         return res.status(401).json({ Error: "unauthorized" });
       }
       await chats.deleteOne({ _id: actualChatId, createdBy: userId });
-      res.status(200).send("Deteted the group successfully!");
+      res.status(200).json({});
     } catch (err) {
       res.status(401).json({ Error: "Unauthorized" });
     }
@@ -174,14 +174,14 @@ const SocketController = {
       });
       if (existingChat) {
         console.log("User is already a friend!", existingChat.users);
-        return res.status(400).json({"error": "User already a friend!"});
+        return res.status(200).json({ existingChat: existingChat });
       }
       // gets the friend username
       const usersCollection = await dbClient.getCollection("chatDB", "users");
       const friend = await usersCollection.findOne({ _id: actualFriendId });
 
       if (!friend) {
-        return res.status(403).json({"error": "This user doesn't exist yet!"});
+        return res.status(403).json({ Error: "This user doesn't exist yet!" });
       }
 
       const chat = {
@@ -195,9 +195,9 @@ const SocketController = {
       // creates the chat for them
       const newChat = await chats.insertOne(chat);
       const createdChat = await chats.findOne({ _id: newChat.insertedId });
-      return res.status(201).json({"message": "successfully added friend!"});
+      return res.status(201).json({ createdChat: createdChat });
     } catch (err) {
-      return res.status(400).json({"error": "Cannot add user"});
+      return res.status(400).json({ Error: "Cannot add user" });
     }
   },
 
@@ -213,22 +213,23 @@ const SocketController = {
         _id: actualChatId,
       });
       if (existingChat) {
-        return res.status(403).send("User already a member of the group");
+        return res.status(403).json({ Error: "User already a member of the group" });
       }
 
       await chats.updateMany(
         { _id: actualChatId },
         { $addToSet: { users: userId } },
       );
-      return res.status(200).send("User successully added to the group");
+      return res.status(200).json({});
     } catch (err) {
-      console.log(err);
-      return res.status(403).send("Unable to add user to group");
+      // console.log(err);
+      return res.status(403).json({ Error: "Unable to add user to group" });
     }
   },
 
   async isFriend(userId, friendId) {
     try {
+
       // this is when you are trying to add yourself as a friend
       if (userId === friendId) {
         return true;
@@ -259,7 +260,7 @@ const SocketController = {
       });
 
             if(!user) {
-                return res.status(404).json({"Error":"user doesn't exist"});
+                return res.status(403).json({ Error: "user doesn't exist" });
             }
             const chats = await dbClient.getCollection("chatDB", "chats");
     
@@ -273,44 +274,58 @@ const SocketController = {
                 groups: userChatGroups,
                 isFriend: isFriend // if it is true, the button should disappear in frontend
             }
-            return res.status(200).send(bio);
+            return res.status(200).json({ bio: bio });
         } catch(err) {
             // console.log(err);
-            return res.status(404).json({"Error": "User bio not found!"});
+            return res.status(404).json({Error: "User bio not found!"});
         }
     },
 
 	async searchChat(req, res) {
 		try {
-			const { name } = req.params;
-			if (!name) {
-				return res.status(400).json({ "Error": "Missing name parameter" });
+			const { name, userId } = req.params;
+			if (!name || !userId) {
+				return res.status(400).json({ Error: "Missing a parameter" });
 			}
 	
 			const chatsCollection = await dbClient.getCollection("chatDB", "chats");
 			const chats = await chatsCollection.find({ chatName: { $regex: `${name}`, $options: 'i' } }).toArray();
-			const chatNames = chats.map((chat) => {
-				return { 
-					name: chat.chatName,
-					_id: chat._id,
-				}
-			});
+
+      const chatNames = await Promise.all(chats.map(async (chat) => {
+        const checkFriendShip = await Promise.all(chat.users.map(async (id) => {
+          const isFriend = await SocketController.isFriend(userId, id);
+          return isFriend;
+        }));
+      
+        return { 
+          name: chat.chatName,
+          _id: chat._id,
+          isRoomChat: chat.isRoomChat,
+          isFriend: checkFriendShip.includes(true)
+        };
+      }));
+      
 	
 			const usersCollection = await dbClient.getCollection('chatDB', 'users');
 			const users = await usersCollection.find({ username: { $regex: `${name}`, $options: 'i' } }).toArray();
-			const userNames = users.map((user) => {
-				return {
-					name: user.username,
-					_id: user._id
-				}
-			});
+      const userNames = await Promise.all(users.map(async (user) => {
+        const stringId = user._id.toString();
+
+        let isfriend = await SocketController.isFriend(userId, stringId);    
+        return {
+            name: user.username,
+            _id: user._id,
+            isRoomChat: false,
+            isFriend: isfriend
+          };
+        }));
 	
 			const results = [...chatNames, ...userNames];
 	
-			return res.status(200).json(results);
+			return res.status(200).json({ result: results });
 		} catch (err) {
 			console.error("Error searching:", err);
-			return res.status(500).json({ "Error": "Internal server error" });
+			return res.status(500).json({ Error: "Internal server error" });
 		}
 	},
 
