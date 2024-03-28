@@ -49,9 +49,33 @@ const SocketController = {
       const chat = await chats.findOne({
         _id: ObjectId.createFromHexString(chatId),
       });
-      return res.status(200).send(chat);
+
+	  const usersCollection = await dbClient.getCollection("chatDB", "users");
+
+	  if (!chat) {
+		return res.status(200).json([])
+	  }
+
+	  const users = [];
+	  for (let userId of chat.users) {
+		const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(userId)})
+		if (!user) {
+			throw new Error('not really expected')
+		}
+		users.push({
+			id: user._id,
+			username: user.username,
+			email: user.email,
+		})
+	  }
+
+      return res.status(200).json({
+		...chat,
+		users,
+	});
     } catch (err) {
-      return res.status(404).send("Chat not found!");
+		console.log(err)
+      return res.status(500).json({"error": "an error occured!"});
     }
   },
 
@@ -155,7 +179,7 @@ const SocketController = {
         name: friend.username,
         isRoomChat: false,
         users: [userId, friendId],
-        createdBy: "",
+        createdBy: userId,
         createdAt: new Date(),
         //           latestMessage: ""
       };
