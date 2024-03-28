@@ -1,6 +1,6 @@
 const express = require("express");
 const { registerUser, loginUser, tokenChecker, getUserBio } = require("../controllers/UserController");
-const { uploadFile, uploads } = require("../controllers/uploadsController");
+const { uploadFile, generalUploads, uploadProfile, profileUpload } = require("../controllers/uploadsController");
 const { Translate } = require("../controllers/transilator");
 const SocketController = require("../controllers/socketController");
 
@@ -15,7 +15,7 @@ router.get("/verify_token", tokenChecker, async (req, res) => {
   });
 });
 
-router.post("/upload", uploads.array("files"), uploadFile);
+// router.post("/upload", uploads.array("files"), uploadFile);
 router.post("/translate", Translate);
 router.get("/:userId/chats", SocketController.getUserChats);
 router.post("/create_chat", SocketController.createChat);
@@ -30,6 +30,8 @@ router.post("add_friend", SocketController.addFriend);
 //NOTE: Commented out since it will be used with sockets directly
 //router.post("/store_chat_history", SocketController.storeMessage);
 router.get("/search/:name", SocketController.searchChat);
+router.post("/upload", generalUploads.array("files"), uploadFile);
+router.post("/profile", profileUpload.single("profile"), uploadProfile);
 
 module.exports = router;
 
