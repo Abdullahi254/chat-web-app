@@ -125,20 +125,18 @@ const SocketController = {
         .find({ chatId: chatId })
         .sort({ createdAt: 1 })
         .toArray();
-      console.log(chats);
 
       const usersCollection = await dbClient.getCollection("chatDB", "users");
-      const chat = chats.map(async (msg) => {
+      const chatsMessages = chats.map(async (msg) => {
         const user = await usersCollection.findOne({
           _id: ObjectId.createFromHexString(msg.senderId),
         });
-
-        return { ...chat, userName: user.username };
+        return { ...msg, username: user.username };
       });
+	  const results = await Promise.all(chatsMessages)
 
-      return res.status(200).send(chats);
+      return res.status(200).send(results);
     } catch (err) {
-      console.log(err);
       return res
         .status(500)
         .json({ Error: "Error retrieving the chat messages" });
