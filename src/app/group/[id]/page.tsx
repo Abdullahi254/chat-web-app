@@ -15,8 +15,27 @@ type Props = {
     }
 }
 
+type BioData = {
+    name: string
+    users: string[]
+}
+
+// You can fetch the user data using profileId
+
+const fetchGroupBio = async (chatId: string) => {
+    const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + `/chats/${chatId}`);
+
+    if (!response.ok) {
+        // This will activate the closest `error.js` Error Boundary
+        throw new Error('Failed to fetch data')
+      }
+    return await response.json()
+}
+
 const page = async ({params}: Props) => {
-    const userId = await getUserId()
+    const userId = await getUserId();
+    const groubBio: BioData = await fetchGroupBio(params.id);
+
     return (
         <main className="h-screen py-10 px-6 pattern w-full">
                     <div className='bg-gray-200 max-w-screen-md mx-auto p-6 flex flex-col space-y-6 items-center rounded-lg shadow-xl shadow-gray-800'>
@@ -34,7 +53,7 @@ const page = async ({params}: Props) => {
             </div>
 
             <div className='space-x-2 flex items-center w-full px-2 justify-center'>
-                <h1 className='tracking-widest text-sm font-semibold'>Cohort 13</h1>
+                <h1 className='tracking-widest text-sm font-semibold'>{groubBio.name}</h1>
                 <span className='cursor-pointer'><CiEdit /></span>
             </div>
 
@@ -46,18 +65,14 @@ const page = async ({params}: Props) => {
 
             <div className='space-x-4 flex flex-col py-2 space-y-2 w-full justify-center'>
                 <h1 className='font-bold ml-2'>Members:</h1>
-                <div className='space-x-2 flex '>
-                    <li className='text-sm text-gray-900'>Ahmed </li>
-                    <span className='cursor-pointer hover:text-red-500'><MdDelete /></span>
-                </div>
-                <div className='space-x-2 flex '>
-                    <li className='text-sm text-gray-900'>Oliver</li>
-                    <span className='cursor-pointer hover:text-red-500'><MdDelete /></span>
-                </div>
-                <div className='space-x-2 flex '>
-                    <li className='text-sm text-gray-900'>Sean</li>
-                    <span className='cursor-pointer hover:text-red-500'><MdDelete /></span>
-                </div>
+                {
+                    groubBio.users.map(user => (
+                        <div className='space-x-2 flex' key={user}>
+                            <li className='text-sm text-gray-900'>{user} </li>
+                            <span className='cursor-pointer hover:text-red-500'><MdDelete /></span>
+                        </div>
+                    ))
+                }
             </div>
 
                 <div className='space-x-4 flex flex-col py-2 space-y-2 w-full justify-center'>
