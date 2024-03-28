@@ -29,7 +29,7 @@ async function getUserBio(userId: string, friendId: string): Promise<BioData> {
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/get_user_bio/${userId}/${friendId}`);
         if (!response.ok) {
-            redirect(`/group/${friendId}`)
+            // redirect(`/group/${friendId}`)
         }
         const data: BioData = await response.json();
         console.log(data);
@@ -89,7 +89,7 @@ const ProfileCard = async ({ profileId }: Props) => {
                 profileId !== userId && !bioData.isFriend && 
                 <div className='space-x-4 flex flex-col py-2 space-y-2 w-full justify-center'>
                     <h1 className='font-bold ml-2'>Add Friend:</h1>
-                    <AddFriend userId={userId} />
+                    <AddFriend userId={userId} profileId={profileId}/>
                 </div>
 
             }

@@ -20,6 +20,7 @@ const SideChat = ({ rooms }: Props) => {
 
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
+    console.log(rooms)
     setChats(rooms)
   }, [rooms])
 

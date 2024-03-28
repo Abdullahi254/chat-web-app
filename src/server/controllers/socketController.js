@@ -131,7 +131,7 @@ const SocketController = {
 
   async addFriend(req, res) {
     try {
-      const { userId, friendId } = req.body;
+      const { userId, friendId } = req.params;
       const chats = await dbClient.getCollection("chatDB", "chats");
       // check first if both users might have a chatRoom and return it
       const actualFriendId = ObjectId.createFromHexString(friendId);
@@ -141,18 +141,18 @@ const SocketController = {
       });
       if (existingChat) {
         console.log("User is already a friend!", existingChat.users);
-        return res.status(200).send(existingChat);
+        return res.status(400).json({"error": "User already a friend!"});
       }
       // gets the friend username
       const usersCollection = await dbClient.getCollection("chatDB", "users");
       const friend = await usersCollection.findOne({ _id: actualFriendId });
 
       if (!friend) {
-        return res.status(403).send("This user doesn't exist yet!");
+        return res.status(403).json({"error": "This user doesn't exist yet!"});
       }
 
       const chat = {
-        chatName: friend.username,
+        name: friend.username,
         isRoomChat: false,
         users: [userId, friendId],
         createdBy: "",
@@ -162,9 +162,9 @@ const SocketController = {
       // creates the chat for them
       const newChat = await chats.insertOne(chat);
       const createdChat = await chats.findOne({ _id: newChat.insertedId });
-      return res.status(201).send(createdChat);
+      return res.status(201).json({"message": "successfully added friend!"});
     } catch (err) {
-      return res.status(400).send("Cannot add user");
+      return res.status(400).json({"error": "Cannot add user"});
     }
   },
 
