@@ -50,31 +50,29 @@ const SocketController = {
         _id: ObjectId.createFromHexString(chatId),
       });
 
-      const usersCollection = await dbClient.getCollection("chatDB", "users");
+	  const usersCollection = await dbClient.getCollection("chatDB", "users");
 
-      if (!chat) {
-        return res.status(200).json([]);
-      }
+	  if (!chat) {
+		return res.status(200).json([])
+	  }
 
-      const users = [];
-      for (let userId of chat.users) {
-        const user = await usersCollection.findOne({
-          _id: ObjectId.createFromHexString(userId),
-        });
-        if (!user) {
-          throw new Error("not really expected");
-        }
-        users.push({
-          id: user._id,
-          username: user.username,
-          email: user.email,
-        });
-      }
+	  const users = [];
+	  for (let userId of chat.users) {
+		const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(userId)})
+		if (!user) {
+			throw new Error('not really expected')
+		}
+		users.push({
+			id: user._id,
+			username: user.username,
+			email: user.email,
+		})
+	  }
 
       return res.status(200).json({
-        ...chat,
-        users,
-      });
+		...chat,
+		users,
+	});
     } catch (err) {
       console.log(err);
       return res.status(500).json({ error: "an error occured!" });
@@ -85,10 +83,10 @@ const SocketController = {
     try {
       // const { chatDocument } = req.body;
       const chats = await dbClient.getCollection("chatDB", "chats");
-      await chats.insertOne(chatDocument);
-      return res.status(200).send("Stored the chat successully");
+      const storedChat = await chats.insertOne(chatDocument);
+      return res.status(200).json(storedChat);
     } catch (err) {
-      return res.status(500).send("Error storing the chat");
+      return res.status(500).json({ Error: "Error storing the chat" });
     }
   },
 
@@ -126,21 +124,21 @@ const SocketController = {
         .find({ chatId: chatId })
         .sort({ createdAt: 1 })
         .toArray();
-      console.log(chats);
+		console.log(chats)
 
-      const usersCollection = await dbClient.getCollection("chatDB", "users");
-      const chat = chats.map(async (msg) => {
-        const user = await usersCollection.findOne({
-          _id: ObjectId.createFromHexString(msg.senderId),
-        });
+	  const usersCollection = await dbClient.getCollection("chatDB", "users");
+	  const chat = chats.map(async (msg) => {
+		const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(msg.senderId)})
 
-        return { ...chat, userName: user.username };
-      });
+		return {...chat, userName: user.username}
+	  })
 
       return res.status(200).send(chats);
     } catch (err) {
       console.log(err);
-      return res.status(500).send("Error retrieving the chat messages");
+      return res
+        .status(500)
+        .json({ Error: "Error retrieving the chat messages" });
     }
   },
 
@@ -160,39 +158,38 @@ const SocketController = {
         return res.status(401).json({ Error: "unauthorized" });
       }
       await chats.deleteOne({ _id: actualChatId, createdBy: userId });
-      res.status(200).send("Deteted the group successfully!");
+      res.status(200).json({});
     } catch (err) {
       res.status(401).json({ Error: "Unauthorized" });
     }
   },
 
   async addFriend(req, res) {
-    console.log(req.params);
     try {
-      const { userId, profileId } = req.params;
+      const { userId, friendId } = req.params;
       const chats = await dbClient.getCollection("chatDB", "chats");
       // check first if both users might have a chatRoom and return it
-      const actualFriendId = ObjectId.createFromHexString(profileId);
+      const actualFriendId = ObjectId.createFromHexString(friendId);
       const existingChat = await chats.findOne({
-        users: { $all: [profileId, userId] },
+        users: { $all: [friendId, userId] },
         isRoomChat: false,
       });
       if (existingChat) {
         console.log("User is already a friend!", existingChat.users);
-        return res.status(400).json({ error: "User already a friend!" });
+        return res.status(200).json(existingChat);
       }
       // gets the friend username
       const usersCollection = await dbClient.getCollection("chatDB", "users");
       const friend = await usersCollection.findOne({ _id: actualFriendId });
 
       if (!friend) {
-        return res.status(403).json({ error: "This user doesn't exist yet!" });
+        return res.status(403).json({ Error: "This user doesn't exist yet!" });
       }
 
       const chat = {
         name: friend.username,
         isRoomChat: false,
-        users: [userId, profileId],
+        users: [userId, friendId],
         createdBy: userId,
         createdAt: new Date(),
         //           latestMessage: ""
@@ -200,11 +197,9 @@ const SocketController = {
       // creates the chat for them
       const newChat = await chats.insertOne(chat);
       const createdChat = await chats.findOne({ _id: newChat.insertedId });
-      return res
-        .status(201)
-        .json({ message: "successfully added friend!", chatId: createdChat });
+      return res.status(201).json(createdChat);
     } catch (err) {
-      return res.status(400).json({ error: "Cannot add user" });
+      return res.status(400).json({ Error: "Cannot add user" });
     }
   },
 
@@ -220,17 +215,19 @@ const SocketController = {
         _id: actualChatId,
       });
       if (existingChat) {
-        return res.status(403).send("User already a member of the group");
+        return res
+          .status(403)
+          .json({ Error: "User already a member of the group" });
       }
 
       await chats.updateMany(
         { _id: actualChatId },
         { $addToSet: { users: userId } },
       );
-      return res.status(200).send("User successully added to the group");
+      return res.status(200).json({});
     } catch (err) {
-      console.log(err);
-      return res.status(403).send("Unable to add user to group");
+      // console.log(err);
+      return res.status(403).json({ Error: "Unable to add user to group" });
     }
   },
 
@@ -266,7 +263,7 @@ const SocketController = {
       });
 
       if (!user) {
-        return res.status(404).json({ Error: "user doesn't exist" });
+        return res.status(403).json({ Error: "user doesn't exist" });
       }
       const chats = await dbClient.getCollection("chatDB", "chats");
 
@@ -282,7 +279,7 @@ const SocketController = {
         groups: userChatGroups,
         isFriend: isFriend, // if it is true, the button should disappear in frontend
       };
-      return res.status(200).send(bio);
+      return res.status(200).json(bio);
     } catch (err) {
       // console.log(err);
       return res.status(404).json({ Error: "User bio not found!" });
@@ -291,32 +288,51 @@ const SocketController = {
 
   async searchChat(req, res) {
     try {
-      const { name } = req.params;
-      if (!name) {
-        return res.status(400).json({ Error: "Missing name parameter" });
+      const { name, userId } = req.params;
+      if (!name || !userId) {
+        return res.status(400).json({ Error: "Missing a parameter" });
       }
 
       const chatsCollection = await dbClient.getCollection("chatDB", "chats");
       const chats = await chatsCollection
         .find({ chatName: { $regex: `${name}`, $options: "i" } })
         .toArray();
-      const chatNames = chats.map((chat) => {
-        return {
-          name: chat.chatName,
-          _id: chat._id,
-        };
-      });
+
+      const chatNames = await Promise.all(
+        chats.map(async (chat) => {
+          const checkFriendShip = await Promise.all(
+            chat.users.map(async (id) => {
+              const isFriend = await SocketController.isFriend(userId, id);
+              return isFriend;
+            }),
+          );
+
+          return {
+            name: chat.chatName,
+            _id: chat._id,
+            isRoomChat: chat.isRoomChat,
+            isFriend: checkFriendShip.includes(true),
+          };
+        }),
+      );
 
       const usersCollection = await dbClient.getCollection("chatDB", "users");
       const users = await usersCollection
         .find({ username: { $regex: `${name}`, $options: "i" } })
         .toArray();
-      const userNames = users.map((user) => {
-        return {
-          name: user.username,
-          _id: user._id,
-        };
-      });
+      const userNames = await Promise.all(
+        users.map(async (user) => {
+          const stringId = user._id.toString();
+
+          let isfriend = await SocketController.isFriend(userId, stringId);
+          return {
+            name: user.username,
+            _id: user._id,
+            isRoomChat: false,
+            isFriend: isfriend,
+          };
+        }),
+      );
 
       const results = [...chatNames, ...userNames];
 
@@ -324,19 +340,6 @@ const SocketController = {
     } catch (err) {
       console.error("Error searching:", err);
       return res.status(500).json({ Error: "Internal server error" });
-    }
-  },
-
-  async fetchUserName(userId) {
-    try {
-      const usersCollection = await dbClient.getCollection("chatDB", "users");
-      const user = await usersCollection.findOne({
-        _id: ObjectId.createFromHexString(userId),
-      });
-      return user.username;
-    } catch (e) {
-      console.log("no user found");
-      return null;
     }
   },
 
@@ -367,7 +370,7 @@ const SocketController = {
       conn.emit(`${msg.chatId}:message:sent`, {
         message: msg.message,
         status: msg.status,
-        userName: "",
+        userName: '',
         chatId: msg.chatId,
         timeStamp: msg.timeStamp,
       });

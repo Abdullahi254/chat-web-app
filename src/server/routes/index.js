@@ -34,6 +34,6 @@ router.get("/get_user_bio/:userId/:friendId", SocketController.getUserBio);
 router.get("/add_friend/:userId/:profileId", SocketController.addFriend);
 //NOTE: Commented out since it will be used with sockets directly
 //router.post("/store_chat_history", SocketController.storeMessage);
-router.get("/search/:name", SocketController.searchChat);
+router.get("/search/:name/:userId", SocketController.searchChat);
 
 module.exports = router;
