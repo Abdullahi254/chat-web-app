@@ -1,5 +1,10 @@
 const express = require("express");
-const { registerUser, loginUser, tokenChecker, getUserBio } = require("../controllers/UserController");
+const {
+  registerUser,
+  loginUser,
+  tokenChecker,
+  getUserBio,
+} = require("../controllers/UserController");
 const { uploadFile, uploads } = require("../controllers/uploadsController");
 const { Translate } = require("../controllers/transilator");
 const SocketController = require("../controllers/socketController");
@@ -29,7 +34,6 @@ router.get("/get_user_bio/:userId/:friendId", SocketController.getUserBio);
 router.post("/add_friend", SocketController.addFriend);
 //NOTE: Commented out since it will be used with sockets directly
 //router.post("/store_chat_history", SocketController.storeMessage);
-router.get("/search/:name", SocketController.searchChat);
+router.get("/search/:name/:userId", SocketController.searchChat);
 
 module.exports = router;
-
