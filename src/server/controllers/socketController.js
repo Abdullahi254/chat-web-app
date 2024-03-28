@@ -245,39 +245,40 @@ const SocketController = {
             return res.status(404).json({"Error": "User bio not found!"});
         }
     },
-    
-	/** Send message to user
-	 * @param {string} userId User Id from database
-	 * @param {string} msg to send
-	 * @param {Socket} conn Socket connection
-	 */
-	async sendMessage(msg, conn) {
-		const { userId, message, chatId, timeStamp } = msg;
-		let result = await this.storeMessage( userId, message, chatId, timeStamp);
-		const usersCollection = await dbClient.getCollection('chatDB', 'users')
-		const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(msg.userId)})
-		//NOTE: Only emit once message is saved to database.
-		if (result === true) {
-		//NOTE: Send message to other client on the socket.
-		conn.broadcast.emit(`${msg.chatId}:message:sent`, {
-			message: msg.message,
-			status: msg.status,
-			userName: user.name,
-			chatId: msg.chatId,
-			timeStamp: msg.timeStamp
-		});
-		//NOTE: Send message to this client
-		conn.emit(`${msg.chatId}:message:sent`, {
-			message: msg.message,
-			status: msg.status,
-			userName: user.name,
-			chatId: msg.chatId,
-			timeStamp: msg.timeStamp
-		})
-		} else {
-		console.log("Failed to send message");
+
+	async searchChat(req, res) {
+		try {
+			const { name } = req.params;
+			if (!name) {
+				return res.status(400).json({ "Error": "Missing name parameter" });
+			}
+	
+			const chatsCollection = await dbClient.getCollection("chatDB", "chats");
+			const chats = await chatsCollection.find({ chatName: { $regex: `${name}`, $options: 'i' } }).toArray();
+			const chatNames = chats.map((chat) => {
+				return { 
+					name: chat.chatName,
+					id: chat._id
+				}
+			});
+	
+			const usersCollection = await dbClient.getCollection('chatDB', 'users');
+			const users = await usersCollection.find({ username: { $regex: `${name}`, $options: 'i' } }).toArray();
+			const userNames = users.map((user) => {
+				return {
+					name: user.username,
+					id: user._id
+				}
+			});
+	
+			const results = [...chatNames, ...userNames];
+	
+			return res.status(200).json(results);
+		} catch (err) {
+			console.error("Error searching:", err);
+			return res.status(500).json({ "Error": "Internal server error" });
 		}
-  },
+	},
 
   /** Send message to user
    * @param {string} userId User Id from database
@@ -292,42 +293,7 @@ const SocketController = {
       _id: ObjectId.createFromHexString(msg.userId),
     });
     //NOTE: Only emit once message is saved to database.
-    if (result === true) {
-      //NOTE: Send message to other client on the socket.
-      conn.broadcast.emit(`${msg.chatId}:message:sent`, {
-        message: msg.message,
-        status: msg.status,
-        userName: user.name,
-        chatId: msg.chatId,
-        timeStamp: msg.timeStamp,
-      });
-      //NOTE: Send message to this client
-      conn.emit(`${msg.chatId}:message:sent`, {
-        message: msg.message,
-        status: msg.status,
-        userName: user.name,
-        chatId: msg.chatId,
-        timeStamp: msg.timeStamp,
-      });
-    } else {
-      console.log("Failed to send message");
-    }
-  },
-
-  /** Send message to user
-   * @param {string} userId User Id from database
-   * @param {string} msg to send
-   * @param {Socket} conn Socket connection
-   */
-  async sendMessage(msg, conn) {
-    const { userId, message, chatId, timeStamp } = msg;
-    let result = await this.storeMessage(userId, message, chatId, timeStamp);
-    const usersCollection = await dbClient.getCollection("chatDB", "users");
-    const user = await usersCollection.findOne({
-      _id: ObjectId.createFromHexString(msg.userId),
-    });
-    //NOTE: Only emit once message is saved to database.
-    if (result === true) {
+    if (result) {
       //NOTE: Send message to other client on the socket.
       conn.broadcast.emit(`${msg.chatId}:message:sent`, {
         message: msg.message,
