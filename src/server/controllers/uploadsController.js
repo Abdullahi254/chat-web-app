@@ -18,7 +18,7 @@ const generalUploads = multer({ storage: generalStorage });
 
 const uploadFile = async (req, res) => {
     if (!req.files || req.files.length === 0) {
-        return res.status(400).send('No files were uploaded.');
+        return res.status(400).json({ Error: 'No files were uploaded.' });
     }
 
     // getting an array of file paths
@@ -44,7 +44,7 @@ const profileUpload = multer({ storage: profileStorage });
 
 const uploadProfile = async (req, res) => {
     if (!req.file) {
-        return res.status(400).send('No profile were uploaded.');
+        return res.status(400).json({Error: 'No profile were uploaded.'});
     }
 
     // Send file paths to the client
