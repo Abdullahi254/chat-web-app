@@ -96,11 +96,11 @@ const SocketController = {
    * @param {string} content Message Content
    * @param {string} chatId Chat Id of conversation
    */
-  async storeMessage(sender, content, chatId, timeStamp) {
+  async storeMessage(senderId, content, chatId, timeStamp) {
     try {
       const messages = await dbClient.getCollection("chatDB", "messages");
       const document = {
-        sender,
+        senderId,
         content,
         chatId,
         createdAt: timeStamp,
@@ -124,6 +124,15 @@ const SocketController = {
         .find({ chatId: chatId })
         .sort({ createdAt: 1 })
         .toArray();
+		console.log(chats)
+
+	  const usersCollection = await dbClient.getCollection("chatDB", "users");
+	  const chat = chats.map(async (msg) => {
+		const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(msg.senderId)})
+
+		return {...chat, userName: user.username}
+	  })
+
       return res.status(200).send(chats);
     } catch (err) {
       console.log(err);
@@ -317,13 +326,14 @@ const SocketController = {
     const user = await usersCollection.findOne({
       _id: ObjectId.createFromHexString(msg.userId),
     });
+
     //NOTE: Only emit once message is saved to database.
     if (result) {
       //NOTE: Send message to other client on the socket.
       conn.broadcast.emit(`${msg.chatId}:message:sent`, {
         message: msg.message,
         status: msg.status,
-        userName: user.name,
+        userName: user.username,
         chatId: msg.chatId,
         timeStamp: msg.timeStamp,
       });
@@ -331,7 +341,7 @@ const SocketController = {
       conn.emit(`${msg.chatId}:message:sent`, {
         message: msg.message,
         status: msg.status,
-        userName: user.name,
+        userName: '',
         chatId: msg.chatId,
         timeStamp: msg.timeStamp,
       });
