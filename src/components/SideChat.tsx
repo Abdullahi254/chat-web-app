@@ -23,22 +23,22 @@ const SideChat = ({ rooms }: Props) => {
     setChats(rooms)
   }, [rooms])
 
-  // useEffect(() => {
-  //   const fetchData = async (inputValue: string) => {
-  //     try {
-  //       setLoading(true)
-  //       const response = await fetch('your-api-endpoint');
-  //       const result = await response.json();
-  //       setChats(result);
-  //       setLoading(false)
-  //     } catch (error) {
-  //       setLoading(false)
-  //       console.error('Error fetching data:', error);
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchData = async (inputValue: string) => {
+      try {
+        setLoading(true)
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/search/${inputValue}`);
+        const result = await response.json();
+        setChats(result);
+        setLoading(false)
+      } catch (error) {
+        setLoading(false)
+        console.error('Error fetching data:', error);
+      }
+    };
 
-  //   fetchData(inputValue); // Call the async function immediately
-  // }, [inputValue]);
+    fetchData(inputValue); // Call the async function immediately
+  }, [inputValue]);
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -52,6 +52,7 @@ const SideChat = ({ rooms }: Props) => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
+    setChats(rooms)
     setShow(false)
   }
   return (

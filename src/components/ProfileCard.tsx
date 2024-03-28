@@ -24,12 +24,18 @@ type BioData = {
 // You can fetch the user data using profileId
 
 const fetchBio = async (userId: string, profileId: string) => {
-    const response = await fetch(process.env.REACT_APP_BASE_URL + `/get_user_bio/${userId}/${profileId}`);
-    if (!response.ok) {
-        // This will activate the closest `error.js` Error Boundary
-        throw new Error('Failed to fetch data')
-      }
-    return await response.json()
+    try{
+        const response = await fetch(process.env.REACT_APP_BASE_URL + `/get_user_bio/${userId}/${profileId}`);
+        if (!response.ok) {
+            // This will activate the closest `error.js` Error Boundary
+            throw new Error('Failed to fetch data')
+          }
+          return await response.json()
+    }catch(er){
+        console.log(er)
+    }
+
+    
 }
 
 const ProfileCard = async ({ profileId }: Props) => {
@@ -52,7 +58,7 @@ const ProfileCard = async ({ profileId }: Props) => {
             </div>
 
             <div className='space-x-2 flex items-center w-full px-2 justify-center'>
-                <h1 className='tracking-widest text-sm font-semibold'>{bioData.username}</h1>
+                <h1 className='tracking-widest text-sm font-semibold'>{bioData?.username}</h1>
                 <span className='cursor-pointer'><CiEdit /></span>
             </div>
 
@@ -65,7 +71,7 @@ const ProfileCard = async ({ profileId }: Props) => {
             <div className='space-x-4 flex flex-col py-2 space-y-2 w-full justify-center'>
                 <h1 className='font-bold ml-2'>Groups:</h1>
                 {
-                    bioData.groups.map(group => (
+                    bioData?.groups.map(group => (
                         <div className='space-x-2 flex' key={group._id}>
                         <li className='text-sm text-gray-900'>{group.name}</li>
                         <span className='cursor-pointer hover:text-red-500'><MdDelete /></span>

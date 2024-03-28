@@ -8,14 +8,12 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 export type Props = {
   userName: string
   message: string
-  status: boolean
   timeStamp: number
 }
 
 const MessageBubble = ({
   userName,
   message,
-  status,
   timeStamp
 }: Props) => {
 
@@ -45,7 +43,7 @@ const MessageBubble = ({
           <span className="text-sm font-normal text-gray-500">{new Date(timeStamp).toLocaleTimeString()}</span>
         </div>
         <p className="text-sm font-normal py-2.5 text-gray-900">{message}</p>
-        <span className="text-xs font-normal text-gray-500">{status ? "Delivered" : "Pending"}</span>
+        {/* <span className="text-xs font-normal text-gray-500">{status ? "Delivered" : "Pending"}</span> */}
       </div>
       <button className="inline-flex self-center items-center p-2 text-xs font-medium text-center text-gray-900 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50" type="button" onClick={triggerMenu}>
         <BsThreeDotsVertical />

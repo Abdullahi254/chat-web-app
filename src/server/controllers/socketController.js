@@ -258,7 +258,7 @@ const SocketController = {
 			const chatNames = chats.map((chat) => {
 				return { 
 					name: chat.chatName,
-					id: chat._id
+					_id: chat._id,
 				}
 			});
 	
@@ -267,7 +267,7 @@ const SocketController = {
 			const userNames = users.map((user) => {
 				return {
 					name: user.username,
-					id: user._id
+					_id: user._id
 				}
 			});
 	
