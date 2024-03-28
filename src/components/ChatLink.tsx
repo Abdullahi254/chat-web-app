@@ -26,7 +26,7 @@ const ChatLink = ({ chatId, name }: Props) => {
       }
       >
         <Image src={dp} alt='dp' width={60} height={60} className='rounded-full h-[42px] w-[42px] cursor-pointer' onClick={handleProfileView} />
-        <Link href={`/chat/${chatId}`} className='cursor-default'>
+        <Link href={`/chat/${chatId}`} className='cursor-pointer'>
           <p className='text-sm'>{name}</p>
         </Link>
       </li>

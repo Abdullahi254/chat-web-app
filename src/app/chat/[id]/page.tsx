@@ -3,6 +3,7 @@ import ChatScreen from '@/components/ChatScreen'
 import SocketController from '@/server/controllers/socketController'
 import React from 'react'
 import { getSideChatData, getUserId } from "@/app/page"
+import {Props as MessageInfo} from "@/components/MessageBubble"
 
 type Props = {
     params: {
@@ -34,7 +35,7 @@ const page = async ({ params }: Props) => {
     const userId = await getUserId()
     const rooms: { name: string, _id: string }[] = await getSideChatData(userId)
     //NOTE: This is easier to get chat history per chat
-    let messages = await formatMessages(params.id)
+    let messages:MessageInfo[] | undefined = await formatMessages(params.id)
     return (
         <main className="grid grid-cols-3 min-h-screen py-10 px-6 max-w-7xl mx-auto">
             <SideChat rooms={rooms} />

@@ -6,12 +6,13 @@ import MessageBubble from './MessageBubble';
 import { io } from 'socket.io-client';
 
 import { Props as MessageInfo } from "./MessageBubble"
+import ProfileLink from './ProfileLink';
 import ChatHeader from './ChatHeader';
 
 type Props = {
     chatId: string,
     userId: string,
-    msgHistory: []
+    msgHistory?: MessageInfo[]
 }
 type SentMessage = {
     chatId: string
@@ -19,9 +20,14 @@ type SentMessage = {
 } & MessageInfo
 
 const ChatScreen = ({ userId, chatId, msgHistory }: Props) => {
+    console.log('--+++++--->', chatId)
     //TODO: Make base url consistent
     const chat_socket = io(process.env.NEXT_PUBLIC_BASE_URL + '')
-    const [messageList, setMessageList] = useState<MessageInfo[]>(msgHistory ?? [])
+    const [messageList, setMessageList] = useState<MessageInfo[]>()
+
+    useEffect(()=>{
+        setMessageList(msgHistory)
+    },[msgHistory])
 
     //NOTE: Might change this to target the other user instead
     //const [onlineStatus, setOnlineStatus] = useState(chat_socket.connected)
@@ -58,7 +64,6 @@ const ChatScreen = ({ userId, chatId, msgHistory }: Props) => {
                 userId,
                 chatId,
                 message,
-                status: true,
                 timeStamp: Date.now()
             }
             console.log(sentMessage)
@@ -73,7 +78,6 @@ const ChatScreen = ({ userId, chatId, msgHistory }: Props) => {
             <div className='space-y-3 mb-4 flex-grow'>
                 {messageList?.map((data, index) => <MessageBubble
                     message={data.message}
-                    status={data.status}
                     timeStamp={data.timeStamp}
                     key={index}
                     userName={data.userName}
