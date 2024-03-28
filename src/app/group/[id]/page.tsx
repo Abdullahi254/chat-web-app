@@ -17,14 +17,14 @@ type Props = {
 
 type BioData = {
     name: string
-    users: string[]
+    users: {id:string, username: string}[]
 }
 
 // You can fetch the user data using profileId
 
 const fetchGroupBio = async (chatId: string) => {
     const response = await fetch(process.env.NEXT_PUBLIC_BASE_URL + `/chats/${chatId}`);
-
+    console.log(response)
     if (!response.ok) {
         // This will activate the closest `error.js` Error Boundary
         throw new Error('Failed to fetch data')
@@ -35,7 +35,7 @@ const fetchGroupBio = async (chatId: string) => {
 const page = async ({params}: Props) => {
     const userId = await getUserId();
     const groubBio: BioData = await fetchGroupBio(params.id);
-
+    console.log('====>', groubBio)
     return (
         <main className="h-screen py-10 px-6 pattern w-full">
                     <div className='bg-gray-200 max-w-screen-md mx-auto p-6 flex flex-col space-y-6 items-center rounded-lg shadow-xl shadow-gray-800'>
@@ -67,8 +67,8 @@ const page = async ({params}: Props) => {
                 <h1 className='font-bold ml-2'>Members:</h1>
                 {
                     groubBio.users.map(user => (
-                        <div className='space-x-2 flex' key={user}>
-                            <li className='text-sm text-gray-900'>{user} </li>
+                        <div className='space-x-2 flex' key={user.id}>
+                            <li className='text-sm text-gray-900'>{user.username} </li>
                             <span className='cursor-pointer hover:text-red-500'><MdDelete /></span>
                         </div>
                     ))
