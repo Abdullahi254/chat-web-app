@@ -51,11 +51,11 @@ export async function getSideChatData(userId:string) {
 
 export default async function Home() {
   const userId = await getUserId()
-  const rooms: {name: string, _id: string}[] = await getSideChatData(userId)
+  const rooms = await getSideChatData(userId)
 
   return (
     <main className="grid grid-cols-3 min-h-screen py-10 px-6 max-w-7xl mx-auto">
-      <SideChat rooms={rooms} />
+      <SideChat rooms={rooms} userId={userId}/>
       <div className=" col-span-2">
         <BlankScreen userId={userId}/>
       </div>

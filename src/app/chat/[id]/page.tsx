@@ -31,12 +31,12 @@ async function formatMessages(chatId: string) {
 
 const page = async ({ params }: Props) => {
     const userId = await getUserId()
-    const rooms: { name: string, _id: string }[] = await getSideChatData(userId)
+    const rooms = await getSideChatData(userId)
     //NOTE: This is easier to get chat history per chat
     let messages:MessageInfo[] | undefined = await formatMessages(params.id)
     return (
         <main className="grid grid-cols-3 min-h-screen py-10 px-6 max-w-7xl mx-auto">
-            <SideChat rooms={rooms} />
+            <SideChat rooms={rooms} userId={userId}/>
             <ChatScreen chatId={params.id} userId={userId} msgHistory={messages} />
         </main>
     )

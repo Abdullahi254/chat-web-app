@@ -14,7 +14,7 @@ function AddFriend({ userId, profileId }: Props) {
     const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/add_friend/${userId}/${profileId}`);
     const results = await response.json()
     if (!response.ok) {
-      setError(results.error)
+      setError(results.Error)
       return
     }
     setSuccess(results.message)

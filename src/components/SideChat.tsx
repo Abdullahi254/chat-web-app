@@ -3,17 +3,16 @@ import React, { useEffect, useState, useRef } from 'react'
 import { FaBackspace } from "react-icons/fa";
 import { AiOutlineLoading } from "react-icons/ai";
 import ChatLink from './ChatLink';
-
+import SearchLink, { Props as Search } from "./SearchLink"
 
 type Props = {
-  rooms: {
-    name: string
-    _id: string
-  }[]
+  rooms:any[],
+  userId: string
 }
 
-const SideChat = ({ rooms }: Props) => {
+const SideChat = ({ rooms, userId }: Props) => {
   const [chats, setChats] = useState<Props["rooms"]>()
+  const [searches, setSearches] = useState<Search[]>()
   const [inputValue, setInputValue] = useState<string>('');
   const [show, setShow] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
@@ -28,9 +27,10 @@ const SideChat = ({ rooms }: Props) => {
     const fetchData = async (inputValue: string) => {
       try {
         setLoading(true)
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/search/${inputValue}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/search/${inputValue}/${userId}`);
         const result = await response.json();
-        setChats(result);
+        console.log(result)
+        setSearches(result);
         setLoading(false)
       } catch (error) {
         setLoading(false)
@@ -39,7 +39,7 @@ const SideChat = ({ rooms }: Props) => {
     };
 
     fetchData(inputValue); // Call the async function immediately
-  }, [inputValue]);
+  }, [inputValue, userId]);
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -72,13 +72,18 @@ const SideChat = ({ rooms }: Props) => {
         </div>
       </form>
 
-      {/* list of private chats and group chats */}
-      {
-        loading ? <div className='text-3xl p-2'><AiOutlineLoading className='animate-spin'/></div> :
 
+      {
+        inputValue ?
+          loading ? <div className='text-3xl p-2'><AiOutlineLoading className='animate-spin' /></div> :
+            <ul className='w-full px-1'>
+              {
+                searches?.map(search => <SearchLink isFriend={search.isFriend} isRoomChat={search.isRoomChat} name={search.name} _id={search._id} key={search._id} />)
+              }
+            </ul> :
           <ul className='w-full px-1'>
             {
-              chats?.map(room => <ChatLink chatId={room._id} name={room.name} key={room._id} />)
+              chats?.map(room => <ChatLink room={room} userId={userId} key={room._id} />)
             }
           </ul>
       }

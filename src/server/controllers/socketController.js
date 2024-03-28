@@ -170,29 +170,42 @@ const SocketController = {
   async addFriend(req, res) {
     try {
       const { userId, friendId } = req.params;
+      console.log("userId", userId)
+      console.log("friendId", friendId)
       const chats = await dbClient.getCollection("chatDB", "chats");
       // check first if both users might have a chatRoom and return it
       const actualFriendId = ObjectId.createFromHexString(friendId);
+      const actualUserId = ObjectId.createFromHexString(userId);
       const existingChat = await chats.findOne({
         users: { $all: [friendId, userId] },
         isRoomChat: false,
       });
       if (existingChat) {
         console.log("User is already a friend!", existingChat.users);
-        return res.status(200).json(existingChat);
+        return res.status(401).json({Error: "User Already Exists!"});
       }
       // gets the friend username
       const usersCollection = await dbClient.getCollection("chatDB", "users");
       const friend = await usersCollection.findOne({ _id: actualFriendId });
+      const user = await usersCollection.findOne({_id: actualUserId})
 
       if (!friend) {
         return res.status(403).json({ Error: "This user doesn't exist yet!" });
       }
 
-      const chat = {
-        name: friend.username,
+      const chat = { 
         isRoomChat: false,
         users: [userId, friendId],
+        info: [
+          {
+            id: user._id.toString(),
+            name: user.username
+          },
+          {
+            id: friend._id.toString(),
+            name: friend.username
+          }
+        ],
         createdBy: userId,
         createdAt: new Date(),
         //           latestMessage: ""
@@ -200,7 +213,7 @@ const SocketController = {
       // creates the chat for them
       const newChat = await chats.insertOne(chat);
       const createdChat = await chats.findOne({ _id: newChat.insertedId });
-      return res.status(201).json(createdChat);
+      return res.status(201).json({message:"User Added as Friend!"});
     } catch (err) {
       return res.status(400).json({ Error: "Cannot add user" });
     }
@@ -298,7 +311,7 @@ const SocketController = {
 
       const chatsCollection = await dbClient.getCollection("chatDB", "chats");
       const chats = await chatsCollection
-        .find({ chatName: { $regex: `${name}`, $options: "i" } })
+        .find({ name: { $regex: `${name}`, $options: "i" } })
         .toArray();
 
       const chatNames = await Promise.all(
@@ -311,7 +324,7 @@ const SocketController = {
           );
 
           return {
-            name: chat.chatName,
+            name: chat.name,
             _id: chat._id,
             isRoomChat: chat.isRoomChat,
             isFriend: checkFriendShip.includes(true),
@@ -338,7 +351,6 @@ const SocketController = {
       );
 
       const results = [...chatNames, ...userNames];
-
       return res.status(200).json(results);
     } catch (err) {
       console.error("Error searching:", err);
