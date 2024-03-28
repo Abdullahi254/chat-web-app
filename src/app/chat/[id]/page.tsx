@@ -1,6 +1,5 @@
 import SideChat from '@/components/SideChat'
 import ChatScreen from '@/components/ChatScreen'
-import SocketController from '@/server/controllers/socketController'
 import React from 'react'
 import { getSideChatData, getUserId } from "@/app/page"
 import {Props as MessageInfo} from "@/components/MessageBubble"
@@ -23,7 +22,7 @@ async function formatMessages(chatId: string) {
         let tmpMsg = {
             message: v.content,
             timeStamp: v.createdAt,
-            userName: v.sender,
+            userName: v.username,
         };
         return tmpMsg;
     });
