@@ -1,8 +1,13 @@
 "use client"
-import React, {ChangeEvent, useState } from 'react'
+import { handleAddMember, handleLogin } from '@/lib/actions';
+import React, {ChangeEvent, SyntheticEvent, useState } from 'react'
+import { useFormState, useFormStatus } from 'react-dom';
 import { IoIosAdd } from "react-icons/io";
+
+
 type Props = {
     userId: string
+    chatId: string
 }
 
 type Suggestion = {
@@ -11,24 +16,20 @@ type Suggestion = {
 }
 
 const AddMember = ({
-    userId
+    userId,
+    chatId
 }: Props) => {
     const [search, setSearch] = useState<boolean>(false)
     const [inputValue, setInputValue] = useState('');
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-    const [selectedFriend, setSelectedFriend] = useState<Suggestion[]>([]);
+    const [selectedFriend, setSelectedFriend] = useState<Suggestion>();
+    const [errorMessage, dispatch] = useFormState(handleAddMember, undefined)
 
-    const handleAddMember = async ()=>{
-
-    }
-
+ 
     const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
         const {value} = event.target
         setInputValue(value);
 
-        // Implement your logic to fetch suggestions based on the input value
-        // For example, you can fetch suggestions from an API
-        // For now, we'll use a simple static list
         const res = await fetch(process.env.NEXT_PUBLIC_BASE_URL + `/search/${value.toLowerCase()}`)
         if (!res.ok) {
             throw new Error('Failed to fetch data')
@@ -40,6 +41,7 @@ const AddMember = ({
 
     const handleSelectSuggestion = (suggestion: Suggestion) => {
         setInputValue(suggestion.name);
+        setSelectedFriend(suggestion)
         setSuggestions([]);
     };
 
@@ -48,14 +50,15 @@ const AddMember = ({
     {
         search ?
             <div>
-                <form className="flex items-center max-w-sm mx-auto px-2" onSubmit={handleAddMember}>
+                <form className="flex items-center max-w-sm mx-auto px-2" action={dispatch}>
                     <label htmlFor="Create" className="sr-only">Create</label>
                     <div className="relative w-full">
                         <input type="text" id="search" name="search" onChange={handleChange} value={inputValue} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full ps-10 p-2.5" placeholder="Enter name..."/>
+                        <input type="text" id="chatId" name="chatId" defaultValue={chatId} hidden/>
+                        <input type="text" id="friendId" name="friendId" defaultValue={selectedFriend?._id} hidden/>
                     </div>
-                    <button type="submit" className="p-2.5 ms-2 text-xs font-medium text-white bg-gray-700 rounded-lg border border-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300">
-                        submit
-                    </button>
+                    {/* <div>{errorMessage && <p className='text-sm font-medium text-red-500'>{errorMessage}</p>}</div> */}
+                    <AddMemberButton/>
                 </form>
                 <ul className='items-center max-w-sm mx-auto px-2'>
                 {suggestions.map((suggestion, index) => (
@@ -76,5 +79,13 @@ const AddMember = ({
 </>
   )
 }
-
+function AddMemberButton() {
+    const { pending } = useFormStatus()
+   
+    return (
+        <button aria-disabled={pending} type="submit" className="p-2.5 ms-2 text-xs font-medium text-white bg-gray-700 rounded-lg border border-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300">
+            submit
+        </button>
+    )
+}
 export default AddMember

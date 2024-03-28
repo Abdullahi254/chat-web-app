@@ -155,7 +155,7 @@ const SocketController = {
         name: friend.username,
         isRoomChat: false,
         users: [userId, friendId],
-        createdBy: "",
+        createdBy: userId,
         createdAt: new Date(),
         //           latestMessage: ""
       };

@@ -8,9 +8,14 @@ import Image from 'next/image';
 import {getUserId} from "@/app/page"
 import AddMember from '@/components/AddMember';
 import { MdDelete } from "react-icons/md";
-type Props = {}
 
-const page = async (props: Props) => {
+type Props = {
+    params:{
+        id: string
+    }
+}
+
+const page = async ({params}: Props) => {
     const userId = await getUserId()
     return (
         <main className="h-screen py-10 px-6 pattern w-full">
@@ -57,7 +62,7 @@ const page = async (props: Props) => {
 
                 <div className='space-x-4 flex flex-col py-2 space-y-2 w-full justify-center'>
                     <h1 className='font-bold ml-2'>Add Member:</h1>
-                    <AddMember userId={userId}/>
+                    <AddMember userId={userId} chatId={params.id as string}/>
                 </div>
 
 

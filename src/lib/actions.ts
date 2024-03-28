@@ -71,3 +71,27 @@ export const handleRegistration = async (_currentState: unknown, formData: FormD
     }
     redirect('/login')
 }
+
+export const handleAddMember = async (_currentState: unknown, formData: FormData)=>{
+    const userId = formData.get('friendId')
+    const chatId = formData.get('chatId')
+
+    try {
+        const res = await fetch(process.env.NEXT_PUBLIC_BASE_URL + '/add_user_to_group', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId,
+                chatId
+            })
+        })
+        if (!res.ok) {
+            return res
+        }
+    } catch(error) {
+        throw error;
+    }
+    redirect(`/chat/${chatId}`)
+}
