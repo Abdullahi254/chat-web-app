@@ -35,7 +35,7 @@ const fetchGroupBio = async (chatId: string) => {
 const page = async ({params}: Props) => {
     const userId = await getUserId();
     const groubBio: BioData = await fetchGroupBio(params.id);
-    console.log('====>', groubBio)
+
     return (
         <main className="h-screen py-10 px-6 pattern w-full">
                     <div className='bg-gray-200 max-w-screen-md mx-auto p-6 flex flex-col space-y-6 items-center rounded-lg shadow-xl shadow-gray-800'>
