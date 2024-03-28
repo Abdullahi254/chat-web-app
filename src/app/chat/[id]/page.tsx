@@ -23,7 +23,8 @@ async function formatMessages(chatId: string) {
         let tmpMsg = {
             message: v.content,
             timeStamp: v.createdAt,
-            userName: v.username,
+            //TODO: Display the username on the actual message
+            userName: v.senderId,
         };
         return tmpMsg;
     });
@@ -34,12 +35,15 @@ const page = async ({ params }: Props) => {
     const userId = await getUserId()
     const rooms: { name: string, _id: string, users: string[], isRoomChat: boolean }[] = await getSideChatData(userId)
     //NOTE: Temp fix for private chat
+    //NOTE: This will make sure the chat name will show up on SideChat
     rooms.map(async (v, k) => {
         if (v.users[0] === userId && !v.isRoomChat) {
             let name = await SocketController.fetchUserName(v.users[1])
+            console.log(name)
             v.name = name
         } else if (v.users[1] === userId && !v.isRoomChat) {
             let name = await SocketController.fetchUserName(v.users[0])
+            console.log(name)
             v.name = name
         } else {
             console.log('Group Chat')

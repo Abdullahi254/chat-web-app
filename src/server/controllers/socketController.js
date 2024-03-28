@@ -50,29 +50,31 @@ const SocketController = {
         _id: ObjectId.createFromHexString(chatId),
       });
 
-	  const usersCollection = await dbClient.getCollection("chatDB", "users");
+      const usersCollection = await dbClient.getCollection("chatDB", "users");
 
-	  if (!chat) {
-		return res.status(200).json([])
-	  }
+      if (!chat) {
+        return res.status(200).json([]);
+      }
 
-	  const users = [];
-	  for (let userId of chat.users) {
-		const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(userId)})
-		if (!user) {
-			throw new Error('not really expected')
-		}
-		users.push({
-			id: user._id,
-			username: user.username,
-			email: user.email,
-		})
-	  }
+      const users = [];
+      for (let userId of chat.users) {
+        const user = await usersCollection.findOne({
+          _id: ObjectId.createFromHexString(userId),
+        });
+        if (!user) {
+          throw new Error("not really expected");
+        }
+        users.push({
+          id: user._id,
+          username: user.username,
+          email: user.email,
+        });
+      }
 
       return res.status(200).json({
-		...chat,
-		users,
-	});
+        ...chat,
+        users,
+      });
     } catch (err) {
       console.log(err);
       return res.status(500).json({ error: "an error occured!" });
@@ -124,14 +126,16 @@ const SocketController = {
         .find({ chatId: chatId })
         .sort({ createdAt: 1 })
         .toArray();
-		console.log(chats)
+      console.log(chats);
 
-	  const usersCollection = await dbClient.getCollection("chatDB", "users");
-	  const chat = chats.map(async (msg) => {
-		const user = await usersCollection.findOne({_id: ObjectId.createFromHexString(msg.senderId)})
+      const usersCollection = await dbClient.getCollection("chatDB", "users");
+      const chat = chats.map(async (msg) => {
+        const user = await usersCollection.findOne({
+          _id: ObjectId.createFromHexString(msg.senderId),
+        });
 
-		return {...chat, userName: user.username}
-	  })
+        return { ...chat, userName: user.username };
+      });
 
       return res.status(200).send(chats);
     } catch (err) {
@@ -139,6 +143,18 @@ const SocketController = {
       return res
         .status(500)
         .json({ Error: "Error retrieving the chat messages" });
+    }
+  },
+
+  async fetchUserName(userId) {
+    try {
+      const wrappedId = ObjectId.createFromHexString(userId);
+      const usersCollection = await dbClient.getCollection("chatDB", "users");
+      const friend = await usersCollection.findOne({ _id: wrappedId });
+      return friend.username;
+    } catch (err) {
+      console.log(err);
+      return null;
     }
   },
 
@@ -370,7 +386,7 @@ const SocketController = {
       conn.emit(`${msg.chatId}:message:sent`, {
         message: msg.message,
         status: msg.status,
-        userName: '',
+        userName: "",
         chatId: msg.chatId,
         timeStamp: msg.timeStamp,
       });
