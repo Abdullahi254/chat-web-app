@@ -216,6 +216,7 @@ const SocketController = {
     }
   },
 
+  // NOTE: missing isgroup parameter and bio(i.e Can't Talk What's up?), 
   async getUserBio(req, res) {
     try {
       const { userId, friendId } = req.params;
@@ -225,7 +226,7 @@ const SocketController = {
       });
 
             if(!user) {
-                return res.status(403).send("user doesn't exist");
+                return res.status(404).json({"Error":"user doesn't exist"});
             }
             const chats = await dbClient.getCollection("chatDB", "chats");
     

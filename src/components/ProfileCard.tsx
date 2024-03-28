@@ -5,43 +5,45 @@ import { CiCamera } from "react-icons/ci";
 import { CiEdit } from "react-icons/ci";
 import { MdDelete } from "react-icons/md";
 import AddChat from './AddChat';
-import { getUserId } from '@/app/page';
 import { IoReturnDownBack } from "react-icons/io5";
 import Link from 'next/link';
 import AddFriend from './AddFriend';
-import { group } from 'console';
+
+import { getUserId } from '@/app/page';
+import { redirect } from 'next/navigation';
+
 type Props = {
-    profileId: string
+    userId: string
+    profileId: string,
 }
 
-type BioData = {
-    username: string
-    groups: {_id: string, name: string}[],
-    email: string
-    isFriend: boolean
+export type BioData = {
+    username: string;
+    email: string;
+    groups: any[];
+    isFriend: boolean;
 }
 
-// You can fetch the user data using profileId
 
-const fetchBio = async (userId: string, profileId: string) => {
-    try{
-        const response = await fetch(process.env.REACT_APP_BASE_URL + `/get_user_bio/${userId}/${profileId}`);
+async function getUserBio(userId: string, friendId: string): Promise<BioData> {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/get_user_bio/${userId}/${friendId}`);
         if (!response.ok) {
-            // This will activate the closest `error.js` Error Boundary
-            throw new Error('Failed to fetch data')
-          }
-          return await response.json()
-    }catch(er){
-        console.log(er)
+            redirect(`/group/${friendId}`)
+        }
+        const data: BioData = await response.json();
+        console.log(data);
+        return data;
+    } catch (error) {
+        console.error('There was a problem with your fetch operation:', error);
+        throw error;
     }
-
-    
 }
+
 
 const ProfileCard = async ({ profileId }: Props) => {
     const userId = await getUserId();
-    const bioData: BioData = await fetchBio(userId, profileId);
-
+    const bioData = await getUserBio(userId, profileId)
     return (
         <div className='bg-gray-200 max-w-screen-md mx-auto p-6 flex flex-col space-y-6 items-center rounded-lg shadow-xl shadow-gray-800'>
             <div className='flex items-center w-full px-2 justify-end'>
@@ -71,25 +73,23 @@ const ProfileCard = async ({ profileId }: Props) => {
             <div className='space-x-4 flex flex-col py-2 space-y-2 w-full justify-center'>
                 <h1 className='font-bold ml-2'>Groups:</h1>
                 {
-                    bioData?.groups.map(group => (
+                    bioData?.groups?.map(group => (
                         <div className='space-x-2 flex' key={group._id}>
-                        <li className='text-sm text-gray-900'>{group.name}</li>
-                        <span className='cursor-pointer hover:text-red-500'><MdDelete /></span>
-                        </div>  
+                            <li className='text-sm text-gray-900'>{group.name}</li>
+                            <span className='cursor-pointer hover:text-red-500'><MdDelete /></span>
+                        </div>
                     ))
                 }
             </div>
 
             {/* if the profile is not equal to user id, can't add friend
-            We can also check here if user is already your friend, if so don't display ui
-            als check if chatId is for a group chat, If it is don't display ui */}
+            if user is already your friend, don't display ui
+            chatId is for a group chat, user gets redirected*/}
             {
-                profileId !== userId && 
-                // !isFriend
-                // !isGroup
+                profileId !== userId && !bioData.isFriend && 
                 <div className='space-x-4 flex flex-col py-2 space-y-2 w-full justify-center'>
                     <h1 className='font-bold ml-2'>Add Friend:</h1>
-                    <AddFriend userId={userId}/>
+                    <AddFriend userId={userId} />
                 </div>
 
             }
