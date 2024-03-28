@@ -15,6 +15,7 @@ type Props = {
  * @returns [array[]] return messages
  */
 async function formatMessages(chatId: string) {
+  console.log('', process.env.NEXT_PUBLIC_BASE_URL)
     let data = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/get_chat_history/${chatId}`, { method: 'GET' })
     let results = await data.json()
 
