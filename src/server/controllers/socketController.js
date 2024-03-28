@@ -304,7 +304,7 @@ const SocketController = {
   async searchChat(req, res) {
     try {
       const { name, userId } = req.params;
-      if (!name || !userId) {
+      if (!userId) {
         return res.status(400).json({ Error: "Missing a parameter" });
       }
 

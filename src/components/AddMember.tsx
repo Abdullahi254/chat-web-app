@@ -30,12 +30,11 @@ const AddMember = ({
         const {value} = event.target
         setInputValue(value);
 
-        const res = await fetch(process.env.NEXT_PUBLIC_BASE_URL + `/search/${value.toLowerCase()}`)
+        const res = await fetch(process.env.NEXT_PUBLIC_BASE_URL + `/search/${value.toLowerCase()}/${userId}`)
         if (!res.ok) {
             throw new Error('Failed to fetch data')
         }
         const results: Suggestion[] = await res.json()
-        console.log(results)
         setSuggestions(results);
     };
 

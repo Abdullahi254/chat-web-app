@@ -15,7 +15,7 @@ type Props = {
  * @param chatId - chat id from url params
  * @returns [array[]] return messages
  */
-async function formatMessages(chatId: string) {
+async function formatMessages(chatId: string, userId: string) {
     let data = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/get_chat_history/${chatId}`, { method: 'GET' })
     let results = await data.json()
 
@@ -23,7 +23,7 @@ async function formatMessages(chatId: string) {
         let tmpMsg = {
             message: v.content,
             timeStamp: v.createdAt,
-            userName: v.username,
+            userName: userId === v.senderId ? null : v.username,
         };
         return tmpMsg;
     });
@@ -34,7 +34,7 @@ const page = async ({ params }: Props) => {
     const userId = await getUserId()
     const rooms = await getSideChatData(userId)
     //NOTE: This is easier to get chat history per chat
-    let messages: MessageInfo[] | undefined = await formatMessages(params.id)
+    let messages: MessageInfo[] | undefined = await formatMessages(params.id, userId)
     const fileteredRooms = rooms.filter((room:any) =>room._id.toString() === params.id)
     const room = fileteredRooms[0]
     return (
