@@ -2,8 +2,8 @@
 import React, { useState } from 'react'
 import { IoIosAdd } from "react-icons/io";
 type Props = {
-  userId: string
-  profileId: string
+    userId: string
+    profileId: string
 }
 
 

@@ -125,20 +125,18 @@ const SocketController = {
         .find({ chatId: chatId })
         .sort({ createdAt: 1 })
         .toArray();
-      console.log(chats);
 
       const usersCollection = await dbClient.getCollection("chatDB", "users");
-      const chat = chats.map(async (msg) => {
+      const chatsMessages = chats.map(async (msg) => {
         const user = await usersCollection.findOne({
           _id: ObjectId.createFromHexString(msg.senderId),
         });
-
-        return { ...chat, userName: user.username };
+        return { ...msg, username: user.username };
       });
+	  const results = await Promise.all(chatsMessages)
 
-      return res.status(200).send(chats);
+      return res.status(200).send(results);
     } catch (err) {
-      console.log(err);
       return res
         .status(500)
         .json({ Error: "Error retrieving the chat messages" });
@@ -168,6 +166,7 @@ const SocketController = {
   },
 
   async addFriend(req, res) {
+    console.log(req.params);
     try {
       const { userId, friendId } = req.params;
       console.log("userId", userId)
@@ -177,7 +176,7 @@ const SocketController = {
       const actualFriendId = ObjectId.createFromHexString(friendId);
       const actualUserId = ObjectId.createFromHexString(userId);
       const existingChat = await chats.findOne({
-        users: { $all: [friendId, userId] },
+        users: { $all: [profileId, userId] },
         isRoomChat: false,
       });
       if (existingChat) {
@@ -190,7 +189,7 @@ const SocketController = {
       const user = await usersCollection.findOne({_id: actualUserId})
 
       if (!friend) {
-        return res.status(403).json({ Error: "This user doesn't exist yet!" });
+        return res.status(403).json({ error: "This user doesn't exist yet!" });
       }
 
       const chat = { 
@@ -355,6 +354,19 @@ const SocketController = {
     } catch (err) {
       console.error("Error searching:", err);
       return res.status(500).json({ Error: "Internal server error" });
+    }
+  },
+
+  async fetchUserName(userId) {
+    try {
+      const usersCollection = await dbClient.getCollection("chatDB", "users");
+      const user = await usersCollection.findOne({
+        _id: ObjectId.createFromHexString(userId),
+      });
+      return user.username;
+    } catch (e) {
+      console.log("no user found");
+      return null;
     }
   },
 
