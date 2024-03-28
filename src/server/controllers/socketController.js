@@ -166,7 +166,6 @@ const SocketController = {
   },
 
   async addFriend(req, res) {
-    console.log(req.params);
     try {
       const { userId, friendId } = req.params;
       console.log("userId", userId)
@@ -176,7 +175,7 @@ const SocketController = {
       const actualFriendId = ObjectId.createFromHexString(friendId);
       const actualUserId = ObjectId.createFromHexString(userId);
       const existingChat = await chats.findOne({
-        users: { $all: [profileId, userId] },
+        users: { $all: [friendId, userId] },
         isRoomChat: false,
       });
       if (existingChat) {
@@ -189,7 +188,7 @@ const SocketController = {
       const user = await usersCollection.findOne({_id: actualUserId})
 
       if (!friend) {
-        return res.status(403).json({ error: "This user doesn't exist yet!" });
+        return res.status(403).json({ Error: "This user doesn't exist yet!" });
       }
 
       const chat = { 
@@ -214,6 +213,7 @@ const SocketController = {
       const createdChat = await chats.findOne({ _id: newChat.insertedId });
       return res.status(201).json({message:"User Added as Friend!"});
     } catch (err) {
+      console.log(err)
       return res.status(400).json({ Error: "Cannot add user" });
     }
   },

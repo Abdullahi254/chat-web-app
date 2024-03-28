@@ -33,7 +33,10 @@ const ChatLink = ({ room, userId }: Props) => {
 
 
         <Link href={`/chat/${room._id}`} className='cursor-pointer'>
-          <p className='text-sm'>{room.info[0].id === userId ? room.info[1].name : room.info[0].name}</p>
+          <p className='text-sm'>{
+            room.isRoomChat ? room.name :
+              room.info[0].id === userId ? room.info[1].name : room.info[0].name
+          }</p>
         </Link>
       </li>
     </>
