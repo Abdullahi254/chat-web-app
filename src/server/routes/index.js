@@ -1,5 +1,10 @@
 const express = require("express");
-const { registerUser, loginUser, tokenChecker, getUserBio } = require("../controllers/UserController");
+const {
+  registerUser,
+  loginUser,
+  tokenChecker,
+  getUserBio,
+} = require("../controllers/UserController");
 const { uploadFile, uploads } = require("../controllers/uploadsController");
 const { Translate } = require("../controllers/transilator");
 const SocketController = require("../controllers/socketController");
@@ -32,4 +37,3 @@ router.post("/add_friend", SocketController.addFriend);
 router.get("/search/:name/:userId", SocketController.searchChat);
 
 module.exports = router;
-
