@@ -40,7 +40,7 @@ export const getUserId = async ():Promise<string> => {
 // This function runs on the server and fetches data
 export async function getSideChatData(userId:string) {
   const response = await fetch(process.env.REACT_APP_BASE_URL + `/${userId}/chats`);
- 
+
   if (!response.ok) {
     // This will activate the closest `error.js` Error Boundary
     throw new Error('Failed to fetch data')
@@ -52,6 +52,7 @@ export async function getSideChatData(userId:string) {
 export default async function Home() {
   const userId = await getUserId()
   const rooms: {name: string, _id: string}[] = await getSideChatData(userId)
+
   return (
     <main className="grid grid-cols-3 min-h-screen py-10 px-6 max-w-7xl mx-auto">
       <SideChat rooms={rooms} />

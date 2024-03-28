@@ -15,7 +15,6 @@ const AddChat = ({userId}: Props) => {
         const groupName = formData.get('create');
 
         if (groupName) {
-            // console.log('000====000', process.env.REACT_APP_BASE_URL)
            const res = await fetch(`${process.env.NEXT_PUBLIC_B_URL}/create_chat`, {
                 method: "POST",
                 headers: {

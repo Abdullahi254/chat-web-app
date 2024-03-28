@@ -9,14 +9,33 @@ import { getUserId } from '@/app/page';
 import { IoReturnDownBack } from "react-icons/io5";
 import Link from 'next/link';
 import AddFriend from './AddFriend';
+import { group } from 'console';
 type Props = {
     profileId: string
 }
 
+type BioData = {
+    username: string
+    groups: {_id: string, name: string}[],
+    email: string
+    isFriend: boolean
+}
+
 // You can fetch the user data using profileId
 
+const fetchBio = async (userId: string, profileId: string) => {
+    const response = await fetch(process.env.REACT_APP_BASE_URL + `/get_user_bio/${userId}/${profileId}`);
+    if (!response.ok) {
+        // This will activate the closest `error.js` Error Boundary
+        throw new Error('Failed to fetch data')
+      }
+    return await response.json()
+}
+
 const ProfileCard = async ({ profileId }: Props) => {
-    const userId = await getUserId()
+    const userId = await getUserId();
+    const bioData: BioData = await fetchBio(userId, profileId);
+
     return (
         <div className='bg-gray-200 max-w-screen-md mx-auto p-6 flex flex-col space-y-6 items-center rounded-lg shadow-xl shadow-gray-800'>
             <div className='flex items-center w-full px-2 justify-end'>
@@ -33,7 +52,7 @@ const ProfileCard = async ({ profileId }: Props) => {
             </div>
 
             <div className='space-x-2 flex items-center w-full px-2 justify-center'>
-                <h1 className='tracking-widest text-sm font-semibold'>Jane Doe</h1>
+                <h1 className='tracking-widest text-sm font-semibold'>{bioData.username}</h1>
                 <span className='cursor-pointer'><CiEdit /></span>
             </div>
 
@@ -45,19 +64,14 @@ const ProfileCard = async ({ profileId }: Props) => {
 
             <div className='space-x-4 flex flex-col py-2 space-y-2 w-full justify-center'>
                 <h1 className='font-bold ml-2'>Groups:</h1>
-
-                <div className='space-x-2 flex '>
-                    <li className='text-sm text-gray-900'>ALX GROUP </li>
-                    <span className='cursor-pointer hover:text-red-500'><MdDelete /></span>
-                </div>
-                <div className='space-x-2 flex '>
-                    <li className='text-sm text-gray-900'>ALX GROUP </li>
-                    <span className='cursor-pointer hover:text-red-500'><MdDelete /></span>
-                </div>
-                <div className='space-x-2 flex '>
-                    <li className='text-sm text-gray-900'>ALX GROUP </li>
-                    <span className='cursor-pointer hover:text-red-500'><MdDelete /></span>
-                </div>
+                {
+                    bioData.groups.map(group => (
+                        <div className='space-x-2 flex' key={group._id}>
+                        <li className='text-sm text-gray-900'>{group.name}</li>
+                        <span className='cursor-pointer hover:text-red-500'><MdDelete /></span>
+                        </div>  
+                    ))
+                }
             </div>
 
             {/* if the profile is not equal to user id, can't add friend
