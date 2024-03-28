@@ -1,4 +1,3 @@
-const { useId } = require("react");
 const dbClient = require("../utils/db");
 const { ObjectId } = require("mongodb");
 
@@ -19,7 +18,7 @@ const SocketController = {
       const chat = await chats.insertOne(newChat);
       const createdChat = await chats.findOne({ _id: chat.insertedId });
 
-      return res.status(200).json({ createdChat: createdChat });
+      return res.status(200).json(createdChat);
     } catch (error) {
       return res.status(500).send({ Error: "Failed to create a chat!" });
     }
@@ -36,7 +35,7 @@ const SocketController = {
         .find({ users: { $elemMatch: { $eq: userId } } })
         .toArray();
 
-      return res.status(200).json({ userChats: userChats });
+      return res.status(200).json(userChats);
     } catch (err) {
       return res.status(500).json({ Error: "Failed to get user chats" });
     }
@@ -84,7 +83,7 @@ const SocketController = {
       // const { chatDocument } = req.body;
       const chats = await dbClient.getCollection("chatDB", "chats");
       const storedChat = await chats.insertOne(chatDocument);
-      return res.status(200).json({storedChat: storedChat});
+      return res.status(200).json(storedChat);
     } catch (err) {
       return res.status(500).json({ Error: "Error storing the chat" });
     }
@@ -174,7 +173,7 @@ const SocketController = {
       });
       if (existingChat) {
         console.log("User is already a friend!", existingChat.users);
-        return res.status(200).json({ existingChat: existingChat });
+        return res.status(200).json(existingChat);
       }
       // gets the friend username
       const usersCollection = await dbClient.getCollection("chatDB", "users");
@@ -195,7 +194,7 @@ const SocketController = {
       // creates the chat for them
       const newChat = await chats.insertOne(chat);
       const createdChat = await chats.findOne({ _id: newChat.insertedId });
-      return res.status(201).json({ createdChat: createdChat });
+      return res.status(201).json(createdChat);
     } catch (err) {
       return res.status(400).json({ Error: "Cannot add user" });
     }
@@ -274,7 +273,7 @@ const SocketController = {
                 groups: userChatGroups,
                 isFriend: isFriend // if it is true, the button should disappear in frontend
             }
-            return res.status(200).json({ bio: bio });
+            return res.status(200).json(bio);
         } catch(err) {
             // console.log(err);
             return res.status(404).json({Error: "User bio not found!"});
@@ -322,7 +321,7 @@ const SocketController = {
 	
 			const results = [...chatNames, ...userNames];
 	
-			return res.status(200).json({ result: results });
+			return res.status(200).json(results);
 		} catch (err) {
 			console.error("Error searching:", err);
 			return res.status(500).json({ Error: "Internal server error" });
