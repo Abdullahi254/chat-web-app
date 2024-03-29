@@ -416,9 +416,9 @@ const SocketController = {
       const actualMsgId = ObjectId.createFromHexString(msgId);
       const messages = await dbClient.getCollection("chatDB", "messages");
       await messages.deleteOne({_id: actualMsgId});
-      return res.status(200).json({result: "You deleted this message"});
+      return res.status(200).json({message: "You deleted this message"});
     } catch(err) {
-      return res.status(200).json();
+      return res.status(200).json({Error: "Failed to delete this message"});
     }
   }
 };

@@ -136,7 +136,7 @@ const ChangeUserName = async (req, res) => {
     const { userId, newName } = req.body;
     
     if (!newName) {
-      return res.status(200).json({});
+      return res.status(200).json({Error: "Missing new username"});
     }
     
     const actualUserId = ObjectId.createFromHexString(userId);
@@ -151,7 +151,7 @@ const ChangeUserName = async (req, res) => {
     return res.status(200).json(updatedUser);
   } catch(err) {
     console.log(err);
-    return res.status(500).json({});
+    return res.status(500).json({Error: "Failed to update username"});
   }
 }
 
