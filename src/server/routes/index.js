@@ -37,5 +37,6 @@ router.get("/add_friend/:userId/:friendId", SocketController.addFriend);
 router.get("/search/:name/:userId", SocketController.searchChat);
 router.post("/edit_username", ChangeUserName);
 router.post("/delete_message", SocketController.deleteMessage);
+router.post("/delete_user_from_group", SocketController.deleteUserFromGroup);
 
 module.exports = router;
