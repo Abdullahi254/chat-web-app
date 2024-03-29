@@ -17,6 +17,7 @@ type Props = {
 }
 
 export type BioData = {
+    _id: string
     name: string
     users: { id: string, username: string }[]
 }
