@@ -126,18 +126,54 @@ export const handleAddMember = async (
   }
 };
 
-export const updateAbout = async (chatId:string, formData:FormData)=>{
+export const updateAbout = async (chatId: string, formData: FormData) => {
   console.log(formData.get("about"))
-  return{
+  return {
 
   }
 }
 
-export const updateName = async(  _currentState: unknown,
-  formData: FormData,)=>{
-  console.log("ID:", formData.get("userId") )
+export const updateName = async (_currentState: unknown,
+  formData: FormData,) => {
+  console.log("ID:", formData.get("userId"))
   console.log("NAME:", formData.get("name"))
-  return {
-
+  const userId = formData.get("userId")
+  const newName = formData.get("name")
+  try {
+    const res = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + "/edit_username",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          newName,
+        }),
+      },
+    );
+    const resul = await res.json()
+    if (res.ok) {
+      if (resul.Error) {
+        return {
+          isError: true,
+          message: resul.Error,
+        };
+      } else {
+        return {
+          isError: false,
+          message: "Successfully Changed Name!",
+          newName: resul.newName
+        }
+      }
+    } else {
+      throw Error('')
+    }
+  } catch (error) {
+    return {
+      isError: true,
+      message: "Error Changing Name!"
+    }
   }
 }
