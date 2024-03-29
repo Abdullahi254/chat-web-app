@@ -3,7 +3,7 @@ const {
   registerUser,
   loginUser,
   tokenChecker,
-  getUserBio,
+  ChangeUserName
 } = require("../controllers/UserController");
 const { uploadFile, uploads } = require("../controllers/uploadsController");
 const { Translate } = require("../controllers/transilator");
@@ -35,5 +35,7 @@ router.get("/add_friend/:userId/:friendId", SocketController.addFriend);
 //NOTE: Commented out since it will be used with sockets directly
 //router.post("/store_chat_history", SocketController.storeMessage);
 router.get("/search/:name/:userId", SocketController.searchChat);
+router.post("/edit_username", ChangeUserName);
+router.post("/delete_message", SocketController.deleteMessage);
 
 module.exports = router;

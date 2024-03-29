@@ -1,8 +1,9 @@
-import React from 'react'
-import dp from "../../../../public/dp.jpg"
+import React from "react";
+import dp from "../../../../public/dp.jpg";
 import { CiCamera } from "react-icons/ci";
 import { CiEdit } from "react-icons/ci";
 import { IoReturnDownBack } from "react-icons/io5";
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { getUserId } from "@/app/page"
@@ -21,6 +22,7 @@ export type BioData = {
     name: string
     users: { id: string, username: string }[]
 }
+
 
 // You can fetch the user data using profileId
 
@@ -77,4 +79,5 @@ const page = async ({ params }: Props) => {
     )
 }
 
-export default page
+
+export default page;
