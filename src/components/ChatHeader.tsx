@@ -6,16 +6,20 @@ import Link from 'next/link';
 type Props = {
     userId: string
     chatId: string
-    room: any
+    room: any,
+    className?: string;
 }
 
 const ChatHeader = ({
     userId,
     chatId,
-    room
+    room,
+    className
 }: Props) => {
+    const defaultClassName = 'w-full space-x-2 p-4 flex justify-between';
+    const combinedClassName = className ? `${defaultClassName} ${className}` : defaultClassName;
     return (
-        <div className='w-full space-x-2 p-4 flex justify-between'>
+        <div className={combinedClassName}>
             <nav className='flex-1 flex items-center justify-between px-6 bg-gray-200 rounded-l-lg rounded-r-sm'>
                 <h1 className='font-semibold'>{room.isRoomChat ? room.name :
                     room.info[0].id === userId ? room.info[1].name : room.info[0].name}</h1>

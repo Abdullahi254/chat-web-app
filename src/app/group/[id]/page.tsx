@@ -66,7 +66,7 @@ const page = async ({params}: Props) => {
             <div className='space-x-4 flex flex-col py-2 space-y-2 w-full justify-center'>
                 <h1 className='font-bold ml-2'>Members:</h1>
                 {
-                    groubBio.users.map(user => (
+                    groubBio.users.slice(0,5).map(user => (
                         <div className='space-x-2 flex' key={user.id}>
                             <li className='text-sm text-gray-900'>{user.username} </li>
                             <span className='cursor-pointer hover:text-red-500'><MdDelete /></span>
