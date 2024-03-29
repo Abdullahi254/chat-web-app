@@ -45,12 +45,12 @@ const SocketController = {
   async getChat(req, res) {
     try {
       const { chatId } = req.params;
-      console.log("ChatId is: ", chatId);
+      // console.log("ChatId is: ", chatId);
       const chats = await dbClient.getCollection("chatDB", "chats");
       const chat = await chats.findOne({
         _id: ObjectId.createFromHexString(chatId),
       });
-      res.send(chat);
+      // res.send(chat);
       const usersCollection = await dbClient.getCollection("chatDB", "users");
 
       if (!chat) {
@@ -59,7 +59,7 @@ const SocketController = {
 
       const users = [];
       for (let userId of chat.users) {
-        console.log("User id is: ", userId);
+        // console.log("User id is: ", userId);
         const user = await usersCollection.findOne({
           _id: ObjectId.createFromHexString(userId),
         });
