@@ -102,11 +102,26 @@ export const handleAddMember = async (
         }),
       },
     );
-    if (!res.ok) {
-      return res;
+    const resul = await res.json()
+    if (res.ok) {
+      if (resul.Error) {
+        return {
+          isError: true,
+          message: resul.Error,
+        };
+      } else {
+        return {
+          isError: false,
+          message: "Successfully Added Member!"
+        }
+      }
+    } else {
+      throw Error('')
     }
   } catch (error) {
-    throw error;
+    return {
+      isError: true,
+      message: "Error Adding Member! Member might already Exist!"
+    }
   }
-  redirect(`/chat/${chatId}`);
 };
