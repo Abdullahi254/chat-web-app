@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from 'react'
 import { IoMdSend } from "react-icons/io";
 import MessageBubble from './MessageBubble';
-import { io } from 'socket.io-client';
+import { chat_socket } from '@/app/conn'
+//import { io } from 'socket.io-client';
 
 import { Props as MessageInfo } from "./MessageBubble"
 import ProfileLink from './ProfileLink';
@@ -13,7 +14,7 @@ type Props = {
     chatId: string,
     userId: string,
     msgHistory?: MessageInfo[],
-    room:any
+    room: any
 }
 type SentMessage = {
     chatId: string
@@ -22,12 +23,12 @@ type SentMessage = {
 
 const ChatScreen = ({ userId, chatId, msgHistory, room }: Props) => {
     //TODO: Make base url consistent
-    const chat_socket = io(process.env.NEXT_PUBLIC_BASE_URL + '')
+    //const chat_socket = io(process.env.NEXT_PUBLIC_BASE_URL + '')
     const [messageList, setMessageList] = useState<MessageInfo[]>()
     console.log('-------->', messageList)
-    useEffect(()=>{
+    useEffect(() => {
         setMessageList(msgHistory)
-    },[msgHistory])
+    }, [msgHistory])
 
     //NOTE: Might change this to target the other user instead
     //const [onlineStatus, setOnlineStatus] = useState(chat_socket.connected)
@@ -42,6 +43,7 @@ const ChatScreen = ({ userId, chatId, msgHistory, room }: Props) => {
                     setOnlineStatus(false)
                 })
                 */
+        chat_socket.on('connect', () => console.log(`${chatId} connected`))
         chat_socket.on(`${chatId}:message:sent`, (msg) => {
             console.log(msg)
             setMessageList((prevMsg) => [...prevMsg as MessageInfo[], msg])
@@ -73,7 +75,7 @@ const ChatScreen = ({ userId, chatId, msgHistory, room }: Props) => {
 
     return (
         <div className='col-span-2 px-6 relative max-h-screen overflow-y-auto overflow-x-hidden scrollbar-thumb-gray-400 scrollbar-track-white scrollbar-thin flex flex-col'>
-            <ChatHeader userId={userId} chatId={chatId} room={room}/>
+            <ChatHeader userId={userId} chatId={chatId} room={room} />
             {/* list of messages being received */}
             <div className='space-y-3 mb-4 flex-grow'>
                 {messageList?.map((data, index) => <MessageBubble
