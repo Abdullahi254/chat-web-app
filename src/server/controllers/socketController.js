@@ -44,11 +44,12 @@ const SocketController = {
   async getChat(req, res) {
     try {
       const { chatId } = req.params;
+      console.log("ChatId is: ", chatId);
       const chats = await dbClient.getCollection("chatDB", "chats");
       const chat = await chats.findOne({
         _id: ObjectId.createFromHexString(chatId),
       });
-
+      res.send(chat);
       const usersCollection = await dbClient.getCollection("chatDB", "users");
 
       if (!chat) {
@@ -57,6 +58,7 @@ const SocketController = {
 
       const users = [];
       for (let userId of chat.users) {
+        console.log("User id is: ", userId);
         const user = await usersCollection.findOne({
           _id: ObjectId.createFromHexString(userId),
         });
@@ -405,6 +407,20 @@ const SocketController = {
       console.log("Failed to send message");
     }
   },
+  async deleteMessage(req, res) {
+    try {
+      const { msgId } = req.body;
+      if (!msgId) {
+        return res.status(400).json({Error: "Bad request!"});
+      }
+      const actualMsgId = ObjectId.createFromHexString(msgId);
+      const messages = await dbClient.getCollection("chatDB", "messages");
+      await messages.deleteOne({_id: actualMsgId});
+      return res.status(200).json({result: "You deleted this message"});
+    } catch(err) {
+      return res.status(200).json();
+    }
+  }
 };
 
 module.exports = SocketController;

@@ -131,4 +131,28 @@ async function getUserfromToken(token) {
   return null;
 }
 
-module.exports = { registerUser, loginUser, tokenChecker };
+const ChangeUserName = async (req, res) => {
+  try {
+    const { userId, newName } = req.body;
+    
+    if (!newName) {
+      return res.status(200).json({});
+    }
+    
+    const actualUserId = ObjectId.createFromHexString(userId);
+    const users = await dbClient.getCollection("chatDB", "users");
+    
+    const updatedUser = await users.findOneAndUpdate(
+      { _id: actualUserId },
+      { $set: { "username": newName } },
+      { upsert: true, returnDocument: 'after' }
+    );
+    
+    return res.status(200).json(updatedUser);
+  } catch(err) {
+    console.log(err);
+    return res.status(500).json({});
+  }
+}
+
+module.exports = { registerUser, loginUser, tokenChecker, ChangeUserName };
