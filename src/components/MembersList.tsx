@@ -1,15 +1,16 @@
 "use client"
 import { BioData } from '@/app/group/[id]/page';
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import { MdDelete } from "react-icons/md";
 type Props = {
     groupBio?: BioData
+    userId?: string
 }
 
-const MembersList = ({ groupBio }: Props) => {
-    const [more, setMore] = useState<number|undefined>(5)
-    const handleMore = ()=>{
-        if (more && more > 5){
+const MembersList = ({ groupBio, userId }: Props) => {
+    const [more, setMore] = useState<number | undefined>(5)
+    const handleMore = () => {
+        if (more && more > 5) {
             setMore(5)
         }
         else setMore(groupBio?.users.length)
@@ -22,18 +23,22 @@ const MembersList = ({ groupBio }: Props) => {
 
                     groupBio?.users.slice(0, more).map(user => (
                         <ul className='flex items-center flex-auto min-w-0 max-w-full ' key={user.id}>
-                            <li className='text-sm text-gray-900 none'>{user.username} </li>
-                            <span className='cursor-pointer hover:text-red-500'><MdDelete /></span>
+                            <li className='text-sm text-gray-900 font-semibold'>{user.username} </li>
+                            {
+                                groupBio.createdBy === userId &&
+                                <span className='cursor-pointer hover:text-red-500'><MdDelete /></span>
+                            }
+
                         </ul>
                     ))
                 }
                 {
-                    groupBio?.users &&  groupBio?.users.length > 5 && 
+                    groupBio?.users && groupBio?.users.length > 5 &&
                     <span className='text-blue-500 underline text-xs cursor-pointer' onClick={handleMore}>{
                         more && more > 5 ? "Less" : "More"
                     }</span>
                 }
-                
+
             </div>
 
 

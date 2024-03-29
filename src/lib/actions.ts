@@ -125,3 +125,19 @@ export const handleAddMember = async (
     }
   }
 };
+
+export const updateAbout = async (chatId:string, formData:FormData)=>{
+  console.log(formData.get("about"))
+  return{
+
+  }
+}
+
+export const updateName = async(  _currentState: unknown,
+  formData: FormData,)=>{
+  console.log("ID:", formData.get("userId") )
+  console.log("NAME:", formData.get("name"))
+  return {
+
+  }
+}
