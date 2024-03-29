@@ -427,16 +427,13 @@ const SocketController = {
     try {
         const { userId, AdminId, chatId } = req.body;
 
-        console.log("userID:", userId),
-        console.log("Admin:", AdminId);
-
         // Parameter validation
-        if (!userId || !AdminId || !chatId || !ObjectId.isValid(userId) || !ObjectId.isValid(AdminId) || !ObjectId.isValid(chatId)) {
+        if (!userId || !AdminId || !chatId || !ObjectId.isValid(chatId)) {
             return res.status(400).json({ Error: "Invalid or missing parameter(s)" });
         }
 
         const actualChatId = ObjectId.createFromHexString(chatId);
-        const actualAdminId = ObjectId.createFromHexString(AdminId);
+        // const actualAdminId = ObjectId.createFromHexString(AdminId);
 
         const chatsCollection = await dbClient.getCollection("chatDB", "chats");
 
@@ -444,8 +441,9 @@ const SocketController = {
         if (!chat) {
             return res.status(404).json({ Error: "Group not found!" });
         }
-
-        if (chat.createdBy !== actualAdminId) {
+        console.log("createdBY:", chat.createdBy.toString()),
+        console.log("Admin:", AdminId);
+        if (chat.createdBy.toString() !== AdminId) {
             return res.status(403).json({ Error: "Only Admin allowed to remove user" });
         }
 
@@ -463,7 +461,7 @@ const SocketController = {
         return res.status(200).json(updatedGroup);
     } catch (err) {
         console.log("Error removing user from group: ", err);
-        return res.status(500).send({ Error: "Failed to remove user from group" });
+        return res.status(500).json({ Error: "Failed to remove user from group" });
     }
 }
 
