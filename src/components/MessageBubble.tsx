@@ -52,16 +52,13 @@ const MessageBubble = ({
         showMenu ?
           <div className="z-10 absolute right-0 top-[75px] bg-white divide-y divide-gray-100 rounded-lg shadow w-40" ref={ref}>
             <ul className="py-2 text-sm text-gray-700" >
-              <li className="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-xs">
-                Reply
-              </li>
-              <li className="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-xs">
-                Foward
-              </li>
-              <li className="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-xs">
+            <li className="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-xs">
                 Copy
               </li>
               <li className="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-xs">
+                Translate
+              </li>
+              <li className="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-xs text-red-500">
                 Delete
               </li>
             </ul>
