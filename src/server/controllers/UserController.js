@@ -148,7 +148,10 @@ const ChangeUserName = async (req, res) => {
       { upsert: true, returnDocument: 'after' }
     );
     
-    return res.status(200).json(updatedUser);
+    return res.status(200).json({
+      message: "user name changed successfully",
+      newName: newName
+    });
   } catch(err) {
     console.log(err);
     return res.status(500).json({Error: "Failed to update username"});

@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { getUserId } from "@/app/page"
 import AddMember from '@/components/AddMember';
 import MembersList from '@/components/MembersList';
+import Status from '@/components/Status';
 
 
 type Props = {
@@ -21,6 +22,7 @@ export type BioData = {
     _id: string
     name: string
     users: { id: string, username: string }[]
+    createdBy: string
 }
 
 
@@ -36,7 +38,7 @@ const fetchGroupBio = async (chatId: string) => {
 }
 
 const page = async ({ params }: Props) => {
-    const userId = await getUserId();
+    const userId: string | undefined = await getUserId();
     const groubBio: BioData | undefined = await fetchGroupBio(params.id);
 
     return (
@@ -57,16 +59,10 @@ const page = async ({ params }: Props) => {
 
                 <div className='space-x-2 flex items-center w-full px-2 justify-center'>
                     <h1 className='tracking-widest text-sm font-semibold'>{groubBio?.name}</h1>
-                    <span className='cursor-pointer'><CiEdit /></span>
                 </div>
 
-                <div className='space-x-2 flex items-center w-full px-2'>
-                    <h1 className='font-bold'>About:</h1>
-                    <p className='text-sm text-gray-900'>Group chat for a group project.</p>
-                    <span className='cursor-pointer'><CiEdit /></span>
-                </div>
-
-                <MembersList groupBio={groubBio}/>
+                <Status groupBio={groubBio} chatId={params.id} />
+                <MembersList groupBio={groubBio} userId={userId} />
 
                 <div className='space-x-4 flex flex-col py-2 space-y-2 w-full justify-center'>
                     <h1 className='font-bold ml-2'>Add Member:</h1>
