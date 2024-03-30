@@ -13,7 +13,7 @@ type Props = {
     chatId: string,
     userId: string,
     msgHistory?: MessageInfo[],
-    room:any
+    room: any
 }
 type SentMessage = {
     chatId: string
@@ -25,9 +25,9 @@ const ChatScreen = ({ userId, chatId, msgHistory, room }: Props) => {
     const chat_socket = io(process.env.NEXT_PUBLIC_BASE_URL + '')
     const [messageList, setMessageList] = useState<MessageInfo[]>()
     console.log('-------->', messageList)
-    useEffect(()=>{
+    useEffect(() => {
         setMessageList(msgHistory)
-    },[msgHistory])
+    }, [msgHistory])
 
     //NOTE: Might change this to target the other user instead
     //const [onlineStatus, setOnlineStatus] = useState(chat_socket.connected)
@@ -73,7 +73,7 @@ const ChatScreen = ({ userId, chatId, msgHistory, room }: Props) => {
 
     return (
         <div className='col-span-2 px-6 relative max-h-screen overflow-y-auto overflow-x-hidden scrollbar-thumb-gray-400 scrollbar-track-white scrollbar-thin flex flex-col'>
-            <ChatHeader userId={userId} chatId={chatId} room={room}/>
+            <ChatHeader userId={userId} chatId={chatId} room={room} />
             {/* list of messages being received */}
             <div className='space-y-3 mb-4 flex-grow'>
                 {messageList?.map((data, index) => <MessageBubble
@@ -81,6 +81,7 @@ const ChatScreen = ({ userId, chatId, msgHistory, room }: Props) => {
                     timeStamp={data.timeStamp}
                     key={index}
                     userName={data.userName}
+                    msgId={data.msgId}
                     userId={userId}
                 />)}
             </div>
