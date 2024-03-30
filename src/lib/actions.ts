@@ -126,7 +126,7 @@ export const handleAddMember = async (
   }
 };
 
-export const handleRemoveMember = async (groupBio: any[], targetId: string) => {
+export const handleRemoveMember = async (groupBio: any, targetId: string) => {
   const userId = targetId;
 
   //@ts-ignore
