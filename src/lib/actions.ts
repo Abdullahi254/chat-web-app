@@ -2,6 +2,7 @@
 
 import { redirect, RedirectType } from "next/navigation";
 import { cookies } from "next/headers";
+import { revalidateTag } from 'next/cache'
 
 export const handleLogin = async (
   _currentState: unknown,
@@ -126,7 +127,7 @@ export const handleAddMember = async (
   }
 };
 
-export const handleRemoveMember = async (groupBio: any[], targetId: string) => {
+export const handleRemoveMember = async (groupBio: any, targetId: string) => {
   const userId = targetId;
 
   //@ts-ignore
@@ -228,6 +229,7 @@ export const updateName = async (
 
 export const deleteMessage = async (msgId: string) => {
   try {
+    console.log("Deleting............", msgId)
     const res = await fetch(
       process.env.NEXT_PUBLIC_BASE_URL + "/delete_message",
       {
@@ -241,6 +243,8 @@ export const deleteMessage = async (msgId: string) => {
       },
     );
     const resul = await res.json();
+    revalidateTag('collection')
+    console.log("Deleted Message Result", resul)
     if (res.ok) {
       if (resul.Error) {
         return {
