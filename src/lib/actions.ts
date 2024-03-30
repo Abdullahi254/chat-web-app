@@ -102,7 +102,7 @@ export const handleAddMember = async (
         }),
       },
     );
-    const resul = await res.json()
+    const resul = await res.json();
     if (res.ok) {
       if (resul.Error) {
         return {
@@ -112,17 +112,65 @@ export const handleAddMember = async (
       } else {
         return {
           isError: false,
-          message: "Successfully Added Member!"
-        }
+          message: "Successfully Added Member!",
+        };
       }
     } else {
-      throw Error('')
+      throw Error("");
     }
   } catch (error) {
     return {
       isError: true,
-      message: "Error Adding Member! Member might already Exist!"
+      message: "Error Adding Member! Member might already Exist!",
+    };
+  }
+};
+
+export const handleRemoveMember = async (groupBio: any[], targetId: string) => {
+  const userId = targetId;
+
+  //@ts-ignore
+  const chatId = groupBio._id;
+  //@ts-ignore
+  const AdminId = groupBio.createdBy;
+
+  try {
+    const res = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + "/delete_user_from_group",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          chatId,
+          AdminId,
+        }),
+      },
+    );
+    const resul = await res.json();
+    if (res.ok) {
+      if (resul.Error) {
+        return {
+          isError: true,
+          message: resul.Error,
+        };
+      } else {
+        return {
+          isError: false,
+          message: "Successfully Removed Member!",
+        };
+      }
+    } else {
+      throw Error("");
     }
+  } catch (error) {
+    console.log(error);
+    return {
+      isError: true,
+      message: "Error Removing Member! Internal server error",
+    };
   }
 };
 
