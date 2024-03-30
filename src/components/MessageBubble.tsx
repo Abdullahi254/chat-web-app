@@ -12,13 +12,17 @@ export type Props = {
   message: string
   timeStamp: number
   userId: string
+  messageId: string
+  senderId: string
 }
 
 const MessageBubble = ({
   userName,
   message,
   timeStamp,
-  userId
+  userId,
+  messageId,
+  senderId
 }: Props) => {
 
   const [showMenu, setShowMenu] = useState<boolean>(false)
@@ -43,7 +47,7 @@ const MessageBubble = ({
       <Image width={40} className="h-[32px] w-[32px] rounded-full" src={dp} alt="Dp" />
       <div className={userName ? `flex flex-col w-full leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl` : `flex flex-col w-full leading-1.5 p-4 border-gray-200 bg-blue-200 rounded-e-xl rounded-es-xl`}>
         <div className="flex items-center space-x-2 rtl:space-x-reverse">
-          <span className="text-sm font-semibold text-gray-900">{userName? userName : 'You'}</span>
+          <span className="text-sm font-semibold text-gray-900">{userName ? userName : 'You'}</span>
           <span className="text-sm font-normal text-gray-500">{new Date(timeStamp).toLocaleTimeString()}</span>
         </div>
         <p className="text-sm font-normal py-2.5 text-gray-900">{message}</p>
@@ -56,15 +60,18 @@ const MessageBubble = ({
         showMenu ?
           <div className="z-10 absolute right-0 top-[75px] bg-white divide-y divide-gray-100 rounded-lg shadow w-40" ref={ref}>
             <ul className="py-2 text-sm text-gray-700" >
-            <li className="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-xs">
+              <li className="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-xs">
                 Copy
               </li>
               <li className="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-xs">
                 Translate
               </li>
-              <li className="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-xs text-red-500" onClick={async () => deleteMessage(msgId)}>
-                Delete
-              </li>
+              {
+                senderId === userId && <li className="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-xs text-red-500" onClick={() => deleteMessage(messageId)}>
+                  Delete
+                </li>
+              }
+
             </ul>
           </div> : null
       }
