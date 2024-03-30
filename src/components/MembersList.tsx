@@ -1,6 +1,7 @@
 "use client"
 import { BioData } from '@/app/group/[id]/page';
-import React, { useState } from 'react'
+import { handleRemoveMember } from '@/lib/actions';
+import React, {useState} from 'react'
 import { MdDelete } from "react-icons/md";
 type Props = {
     groupBio?: BioData
@@ -26,19 +27,19 @@ const MembersList = ({ groupBio, userId }: Props) => {
                             <li className='text-sm text-gray-900 font-semibold'>{user.username} </li>
                             {
                                 groupBio.createdBy === userId &&
-                                <span className='cursor-pointer hover:text-red-500'><MdDelete /></span>
+                                <span className='cursor-pointer hover:text-red-500' onClick={async () => handleRemoveMember(groupBio, user.id)}><MdDelete /></span>
                             }
 
                         </ul>
                     ))
                 }
                 {
-                    groupBio?.users && groupBio?.users.length > 5 &&
+                    groupBio?.users &&  groupBio?.users.length > 5 && 
                     <span className='text-blue-500 underline text-xs cursor-pointer' onClick={handleMore}>{
                         more && more > 5 ? "Less" : "More"
                     }</span>
                 }
-
+                
             </div>
 
 
