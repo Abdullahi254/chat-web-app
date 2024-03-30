@@ -25,8 +25,9 @@ const MessageBubble = ({
   senderId
 }: Props) => {
 
-  const [showMenu, setShowMenu] = useState<boolean>(false)
-  const ref = useRef<HTMLDivElement>(null)
+    const [showMenu, setShowMenu] = useState<boolean>(false)
+    const ref = useRef<HTMLDivElement>(null)
+
 
   const triggerMenu = useCallback(() => {
     setShowMenu(!showMenu)
@@ -76,9 +77,9 @@ const MessageBubble = ({
           </div> : null
       }
 
-    </div>
+        </div>
 
-  )
+    )
 }
 
 export default MessageBubble
