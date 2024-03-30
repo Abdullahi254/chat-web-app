@@ -17,14 +17,13 @@ type Props = {
 }
 type SentMessage = {
     chatId: string
-    userId: string
 } & MessageInfo
 
 const ChatScreen = ({ userId, chatId, msgHistory, room }: Props) => {
     //TODO: Make base url consistent
     const chat_socket = io(process.env.NEXT_PUBLIC_BASE_URL + '')
     const [messageList, setMessageList] = useState<MessageInfo[]>()
-    console.log('-------->', messageList)
+
     useEffect(()=>{
         setMessageList(msgHistory)
     },[msgHistory])
@@ -81,6 +80,7 @@ const ChatScreen = ({ userId, chatId, msgHistory, room }: Props) => {
                     timeStamp={data.timeStamp}
                     key={index}
                     userName={data.userName}
+                    userId={userId}
                 />)}
             </div>
 
