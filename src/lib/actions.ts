@@ -102,7 +102,7 @@ export const handleAddMember = async (
         }),
       },
     );
-    const resul = await res.json()
+    const resul = await res.json();
     if (res.ok) {
       if (resul.Error) {
         return {
@@ -112,33 +112,33 @@ export const handleAddMember = async (
       } else {
         return {
           isError: false,
-          message: "Successfully Added Member!"
-        }
+          message: "Successfully Added Member!",
+        };
       }
     } else {
-      throw Error('')
+      throw Error("");
     }
   } catch (error) {
     return {
       isError: true,
-      message: "Error Adding Member! Member might already Exist!"
-    }
+      message: "Error Adding Member! Member might already Exist!",
+    };
   }
 };
 
 export const updateAbout = async (chatId: string, formData: FormData) => {
-  console.log(formData.get("about"))
-  return {
+  console.log(formData.get("about"));
+  return {};
+};
 
-  }
-}
-
-export const updateName = async (_currentState: unknown,
-  formData: FormData,) => {
-  console.log("ID:", formData.get("userId"))
-  console.log("NAME:", formData.get("name"))
-  const userId = formData.get("userId")
-  const newName = formData.get("name")
+export const updateName = async (
+  _currentState: unknown,
+  formData: FormData,
+) => {
+  console.log("ID:", formData.get("userId"));
+  console.log("NAME:", formData.get("name"));
+  const userId = formData.get("userId");
+  const newName = formData.get("name");
   try {
     const res = await fetch(
       process.env.NEXT_PUBLIC_BASE_URL + "/edit_username",
@@ -153,7 +153,7 @@ export const updateName = async (_currentState: unknown,
         }),
       },
     );
-    const resul = await res.json()
+    const resul = await res.json();
     if (res.ok) {
       if (resul.Error) {
         return {
@@ -164,16 +164,54 @@ export const updateName = async (_currentState: unknown,
         return {
           isError: false,
           message: "Successfully Changed Name!",
-          newName: resul.newName
-        }
+          newName: resul.newName,
+        };
       }
     } else {
-      throw Error('')
+      throw Error("");
     }
   } catch (error) {
     return {
       isError: true,
-      message: "Error Changing Name!"
-    }
+      message: "Error Changing Name!",
+    };
   }
-}
+};
+
+export const deleteMessage = async (msgId: string) => {
+  try {
+    const res = await fetch(
+      process.env.NEXT_PUBLIC_BASE_URL + "/delete_message",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          msgId,
+        }),
+      },
+    );
+    const resul = await res.json();
+    if (res.ok) {
+      if (resul.Error) {
+        return {
+          isError: true,
+          message: resul.Error,
+        };
+      } else {
+        return {
+          isError: false,
+          message: "Successfully deleted message!",
+        };
+      }
+    } else {
+      throw Error("");
+    }
+  } catch (error) {
+    return {
+      isError: true,
+      message: "Error deleting message!",
+    };
+  }
+};
