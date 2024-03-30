@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import dp from "../../public/dp.jpg"
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { deleteMessage } from '@/lib/actions';
 import Link from 'next/link';
 
 export type Props = {
@@ -19,6 +20,7 @@ const MessageBubble = ({
   timeStamp,
   userId
 }: Props) => {
+
   const [showMenu, setShowMenu] = useState<boolean>(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -41,9 +43,7 @@ const MessageBubble = ({
       <Image width={40} className="h-[32px] w-[32px] rounded-full" src={dp} alt="Dp" />
       <div className={userName ? `flex flex-col w-full leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl` : `flex flex-col w-full leading-1.5 p-4 border-gray-200 bg-blue-200 rounded-e-xl rounded-es-xl`}>
         <div className="flex items-center space-x-2 rtl:space-x-reverse">
-          <Link href={`/profile/${userId}`} className='cursor-pointer hover:underline'>
-            <span className="text-sm font-semibold text-gray-900">{userName? userName : 'You'}</span>
-          </Link>
+          <span className="text-sm font-semibold text-gray-900">{userName? userName : 'You'}</span>
           <span className="text-sm font-normal text-gray-500">{new Date(timeStamp).toLocaleTimeString()}</span>
         </div>
         <p className="text-sm font-normal py-2.5 text-gray-900">{message}</p>
@@ -62,7 +62,7 @@ const MessageBubble = ({
               <li className="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-xs">
                 Translate
               </li>
-              <li className="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-xs text-red-500">
+              <li className="block px-4 py-2 hover:bg-gray-100 cursor-pointer text-xs text-red-500" onClick={async () => deleteMessage(msgId)}>
                 Delete
               </li>
             </ul>
