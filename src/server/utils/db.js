@@ -1,9 +1,10 @@
 // entry point to the db
 const { MongoClient } = require("mongodb");
+const uri = "mongodb+srv://admin:xTErsJzESty9jud5@chatappcluster.bble1lm.mongodb.net/?retryWrites=true&w=majority&appName=chatAppCluster";
 
 class DBClient {
   constructor() {
-    const connectionString = process.env.REACT_APP_MONGO_URL;
+    const connectionString = process.env.REACT_APP_MONGO_URL || uri;
     if (!connectionString) {
       throw new Error(
         "REACT_APP_MONGO_URL environment variable is not defined.",

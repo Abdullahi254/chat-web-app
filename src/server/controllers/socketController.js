@@ -121,6 +121,9 @@ const SocketController = {
   async getChatMessages(req, res) {
     try {
       const { chatId } = req.params;
+      if (!chatId) {
+        return res.status(400).json({ Error: 'chatId required' });
+      }
       const messages = await dbClient.getCollection("chatDB", "messages");
       // const actualChatId = ObjectId.createFromHexString(chatId);
       // gets the sorted messages based createdAt attribute
@@ -128,7 +131,7 @@ const SocketController = {
         .find({ chatId: chatId })
         .sort({ createdAt: 1 })
         .toArray();
-
+      
       const usersCollection = await dbClient.getCollection("chatDB", "users");
       const chatsMessages = chats.map(async (msg) => {
         const user = await usersCollection.findOne({
@@ -136,9 +139,10 @@ const SocketController = {
         });
         return { ...msg, username: user.username };
       });
-	  const results = await Promise.all(chatsMessages)
+      
+      const results = await Promise.all(chatsMessages)
 
-      return res.status(200).send(results);
+      return res.status(200).json(results);
     } catch (err) {
       return res
         .status(500)
@@ -171,8 +175,9 @@ const SocketController = {
   async addFriend(req, res) {
     try {
       const { userId, friendId } = req.params;
-      console.log("userId", userId)
-      console.log("friendId", friendId)
+      if (!userId || !friendId) {
+        return res.status(400).json({Error: "Missing either user Id or friend ID"});
+      }
       const chats = await dbClient.getCollection("chatDB", "chats");
       // check first if both users might have a chatRoom and return it
       const actualFriendId = ObjectId.createFromHexString(friendId);
@@ -182,7 +187,7 @@ const SocketController = {
         isRoomChat: false,
       });
       if (existingChat) {
-        console.log("User is already a friend!", existingChat.users);
+        // console.log("User is already a friend!", existingChat.users);
         return res.status(401).json({Error: "User Already Exists!"});
       }
       // gets the friend username
@@ -213,10 +218,13 @@ const SocketController = {
       };
       // creates the chat for them
       const newChat = await chats.insertOne(chat);
-      const createdChat = await chats.findOne({ _id: newChat.insertedId });
+      if (!newChat.insertedId) {
+        return res.status(400).json({ Error: "Cannot add user" });
+      }
+      // const createdChat = await chats.findOne({ _id: newChat.insertedId });
       return res.status(201).json({message:"User Added as Friend!"});
     } catch (err) {
-      console.log(err)
+      // console.log(err)
       return res.status(400).json({ Error: "Cannot add user" });
     }
   },
