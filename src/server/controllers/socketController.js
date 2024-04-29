@@ -1,4 +1,3 @@
-const { GiCardJackClubs } = require("react-icons/gi");
 const dbClient = require("../utils/db");
 const { ObjectId } = require("mongodb");
 
