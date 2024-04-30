@@ -121,7 +121,7 @@ const SocketController = {
     try {
       const { chatId } = req.params;
       if (!chatId) {
-        return res.status(400).json({ Error: 'chatId required' });
+        return res.status(400).json({ Error: "chatId required" });
       }
       const messages = await dbClient.getCollection("chatDB", "messages");
       // const actualChatId = ObjectId.createFromHexString(chatId);
@@ -130,7 +130,7 @@ const SocketController = {
         .find({ chatId: chatId })
         .sort({ createdAt: 1 })
         .toArray();
-      
+
       const usersCollection = await dbClient.getCollection("chatDB", "users");
       const chatsMessages = chats.map(async (msg) => {
         const user = await usersCollection.findOne({
@@ -138,8 +138,8 @@ const SocketController = {
         });
         return { ...msg, username: user.username };
       });
-      
-      const results = await Promise.all(chatsMessages)
+
+      const results = await Promise.all(chatsMessages);
 
       return res.status(200).json(results);
     } catch (err) {
@@ -175,7 +175,9 @@ const SocketController = {
     try {
       const { userId, friendId } = req.params;
       if (!userId || !friendId) {
-        return res.status(400).json({Error: "Missing either user Id or friend ID"});
+        return res
+          .status(400)
+          .json({ Error: "Missing either user Id or friend ID" });
       }
       const chats = await dbClient.getCollection("chatDB", "chats");
       // check first if both users might have a chatRoom and return it
@@ -187,29 +189,29 @@ const SocketController = {
       });
       if (existingChat) {
         // console.log("User is already a friend!", existingChat.users);
-        return res.status(401).json({Error: "User Already Exists!"});
+        return res.status(401).json({ Error: "User Already Exists!" });
       }
       // gets the friend username
       const usersCollection = await dbClient.getCollection("chatDB", "users");
       const friend = await usersCollection.findOne({ _id: actualFriendId });
-      const user = await usersCollection.findOne({_id: actualUserId})
+      const user = await usersCollection.findOne({ _id: actualUserId });
 
       if (!friend) {
         return res.status(403).json({ Error: "This user doesn't exist yet!" });
       }
 
-      const chat = { 
+      const chat = {
         isRoomChat: false,
         users: [userId, friendId],
         info: [
           {
             id: user._id.toString(),
-            name: user.username
+            name: user.username,
           },
           {
             id: friend._id.toString(),
-            name: friend.username
-          }
+            name: friend.username,
+          },
         ],
         createdBy: userId,
         createdAt: new Date(),
@@ -221,7 +223,7 @@ const SocketController = {
         return res.status(400).json({ Error: "Cannot add user" });
       }
       // const createdChat = await chats.findOne({ _id: newChat.insertedId });
-      return res.status(201).json({message:"User Added as Friend!"});
+      return res.status(201).json({ message: "User Added as Friend!" });
     } catch (err) {
       // console.log(err)
       return res.status(400).json({ Error: "Cannot add user" });
@@ -419,59 +421,66 @@ const SocketController = {
     try {
       const { msgId } = req.body;
       if (!msgId) {
-        return res.status(400).json({Error: "Bad request!"});
+        return res.status(400).json({ Error: "Bad request!" });
       }
       const actualMsgId = ObjectId.createFromHexString(msgId);
       const messages = await dbClient.getCollection("chatDB", "messages");
-      await messages.deleteOne({_id: actualMsgId});
-      return res.status(200).json({message: "You deleted this message"});
-    } catch(err) {
-      return res.status(200).json({Error: "Failed to delete this message"});
+      await messages.deleteOne({ _id: actualMsgId });
+      return res.status(200).json({ message: "You deleted this message" });
+    } catch (err) {
+      return res.status(200).json({ Error: "Failed to delete this message" });
     }
   },
 
   async deleteUserFromGroup(req, res) {
     try {
-        const { userId, AdminId, chatId } = req.body;
+      const { userId, AdminId, chatId } = req.body;
 
-        // Parameter validation
-        if (!userId || !AdminId || !chatId || !ObjectId.isValid(chatId)) {
-            return res.status(400).json({ Error: "Invalid or missing parameter(s)" });
-        }
+      // Parameter validation
+      if (!userId || !AdminId || !chatId || !ObjectId.isValid(chatId)) {
+        return res
+          .status(400)
+          .json({ Error: "Invalid or missing parameter(s)" });
+      }
 
-        const actualChatId = ObjectId.createFromHexString(chatId);
-        // const actualAdminId = ObjectId.createFromHexString(AdminId);
+      const actualChatId = ObjectId.createFromHexString(chatId);
+      // const actualAdminId = ObjectId.createFromHexString(AdminId);
 
-        const chatsCollection = await dbClient.getCollection("chatDB", "chats");
+      const chatsCollection = await dbClient.getCollection("chatDB", "chats");
 
-        const chat = await chatsCollection.findOne({ _id: actualChatId });
-        if (!chat) {
-            return res.status(404).json({ Error: "Group not found!" });
-        }
-        console.log("createdBY:", chat.createdBy.toString()),
+      const chat = await chatsCollection.findOne({ _id: actualChatId });
+      if (!chat) {
+        return res.status(404).json({ Error: "Group not found!" });
+      }
+      console.log("createdBY:", chat.createdBy.toString()),
         console.log("Admin:", AdminId);
-        if (chat.createdBy.toString() !== AdminId) {
-            return res.status(403).json({ Error: "Only Admin allowed to remove user" });
-        }
+      if (chat.createdBy.toString() !== AdminId) {
+        return res
+          .status(403)
+          .json({ Error: "Only Admin allowed to remove user" });
+      }
 
-        const updatedGroup = await chatsCollection.findOneAndUpdate(
-            { _id: actualChatId },
-            { $pull: { users: userId } },
-            { upsert: true, returnDocument: 'after' }
-        );
+      const updatedGroup = await chatsCollection.findOneAndUpdate(
+        { _id: actualChatId },
+        { $pull: { users: userId } },
+        { upsert: true, returnDocument: "after" },
+      );
 
-        // Check if the update was successful
-        if (!updatedGroup) {
-            return res.status(500).json({ Error: "Failed to remove user from group" });
-        }
+      // Check if the update was successful
+      if (!updatedGroup) {
+        return res
+          .status(500)
+          .json({ Error: "Failed to remove user from group" });
+      }
 
-        return res.status(200).json(updatedGroup);
+      return res.status(200).json(updatedGroup);
     } catch (err) {
-        console.log("Error removing user from group: ", err);
-        return res.status(500).json({ Error: "Failed to remove user from group" });
+      console.log("Error removing user from group: ", err);
+      return res
+        .status(500)
+        .json({ Error: "Failed to remove user from group" });
     }
-}
-
+  },
 };
 
 module.exports = SocketController;

@@ -4,7 +4,7 @@ const dbClient = require("../utils/db");
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 const { assert, expect, should } = require("chai");
-const server = require("../routes/index");
+const server = require("../index");
 
 chai.use(chaiHttp);
 // SocketIO docs for testing https://socket.io/docs/v4/testing/
@@ -18,7 +18,7 @@ describe("deleteMessage", () => {
 
   require("dotenv").config();
   let msgId;
-  it("should send message after click", async () => {
+  it("Insert message into database", async () => {
     //NOTE: The userId & chatId are from a local instance of mongodb.
     // Do change them when testing on your own instance.
     //NOTE: Might be better to use an in-memory db for testing.
@@ -39,13 +39,12 @@ describe("deleteMessage", () => {
     chai
       .request(server)
       .post("/delete_message")
-      .send(msgId)
+      .send({ msgId: msgId })
       .end((err, res) => {
-        res.should.have.status(200);
-        res.body.should.be.a("object");
+        expect(res).status(200);
+        expect(res.body).to.include({ message: "You deleted this message" });
+        done();
       });
-
-    done();
   });
 
   it("post wrong msg id to api", (done) => {
@@ -54,10 +53,9 @@ describe("deleteMessage", () => {
       .post("/delete_message")
       .send("")
       .end((err, res) => {
-        err.should.have.status(400);
-        err.body.should.have.property("Error");
+        expect(res).status(400);
+        expect(res.body).to.include({ Error: "Bad request!" });
+        done();
       });
-
-    done();
   });
 });
