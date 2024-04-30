@@ -8,9 +8,9 @@ const server = require("../index");
 
 chai.use(chaiHttp);
 // SocketIO docs for testing https://socket.io/docs/v4/testing/
-describe("Verify Login token", () => {
+describe("Change username", () => {
   require("dotenv").config();
-  let token;
+  let userId;
 
   let dummyUser = {
     email: "random420@gmail.com",
@@ -39,23 +39,32 @@ describe("Verify Login token", () => {
       });
   });
 
-  it("login with correct credentials", (done) => {
-    chai
-      .request(server)
-      .post("/login")
-      .set("Content-Type", "application/json")
-      .send({ email: dummyUser.email, password: dummyUser.password })
-      .end((err, res) => {
-        token = res.body.token;
-        expect(res).status(200);
-        done();
-      });
+  it("fetch id of existing user", (done) => {
+    let users = dbClient.getCollection("chatDB", "users");
+    let r;
+
+    let username = dummyUser.email.split("@")[0];
+    console.log(username);
+    r = users.then((a) =>
+      a.findOne({
+        email: dummyUser.email,
+        username: username,
+      }),
+    );
+
+    r.then((x) => {
+      userId = x._id.toHexString();
+
+      done();
+    });
   });
 
-  it("send correct login token", (done) => {
+  it("provide userId and new username", (done) => {
     chai
       .request(server)
-      .get(`/verify_token?token=${token}`)
+      .post("/edit_username")
+      .set("Content-Type", "application/json")
+      .send({ userId: userId, newName: "Big_Boss!" })
       .end((err, res) => {
         expect(res).status(200);
         expect(res.body).to.be.a("object");
@@ -63,12 +72,28 @@ describe("Verify Login token", () => {
       });
   });
 
-  it("send wrong login token", (done) => {
+  it("provide no userId and new username", (done) => {
     chai
       .request(server)
-      .get(`/verify_token?token=${token + "random string"}`)
+      .post("/edit_username")
+      .set("Content-Type", "application/json")
+      .send({ newName: "Big_Boss!" })
       .end((err, res) => {
-        expect(res).status(403);
+        console.log(res.body);
+        expect(res).status(500);
+        expect(res.body).to.be.a("object");
+        done();
+      });
+  });
+
+  it("provide userId and no username", (done) => {
+    chai
+      .request(server)
+      .post("/edit_username")
+      .set("Content-Type", "application/json")
+      .send({ userId: userId })
+      .end((err, res) => {
+        expect(res).status(400);
         expect(res.body).to.be.a("object");
         done();
       });

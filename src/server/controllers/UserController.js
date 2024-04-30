@@ -135,8 +135,9 @@ const ChangeUserName = async (req, res) => {
   try {
     const { userId, newName } = req.body;
 
+    //TODO: Include reject message if id is not valid
     if (!newName) {
-      return res.status(200).json({ Error: "Missing new username" });
+      return res.status(400).json({ Error: "Missing new username" });
     }
 
     const actualUserId = ObjectId.createFromHexString(userId);
