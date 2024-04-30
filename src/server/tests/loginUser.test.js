@@ -8,7 +8,7 @@ const server = require("../index");
 
 chai.use(chaiHttp);
 // SocketIO docs for testing https://socket.io/docs/v4/testing/
-describe("registerUser", () => {
+describe("loginUser", () => {
   require("dotenv").config();
 
   let dummyUser = {
@@ -26,7 +26,7 @@ describe("registerUser", () => {
   });
   //BUG: Does not work
   //function says can not destructure
-  it("sign up api call", (done) => {
+  it("create new user", (done) => {
     chai
       .request(server)
       .post("/register")
@@ -38,26 +38,38 @@ describe("registerUser", () => {
       });
   });
 
-  it("send wrong credentials to api", (done) => {
+  it("login with correct credentials", (done) => {
     chai
       .request(server)
-      .post("/register")
-      .send("")
+      .post("/login")
+      .set("Content-Type", "application/json")
+      .send({ email: dummyUser.email, password: dummyUser.password })
       .end((err, res) => {
-        expect(res).status(400);
-        expect(res.body).to.include("All fields are required!");
+        expect(res).status(200);
         done();
       });
   });
 
-  it("try sign up with existing credentials", (done) => {
+  it("login with wrong details", (done) => {
     chai
       .request(server)
-      .post("/register")
-      .send({ email: dummyUser.email, password: dummyUser.password })
+      .post("/login")
+      .send({ email: dummyUser.email, password: "Only God knows" })
       .end((err, res) => {
         expect(res).status(400);
-        expect(res.body).to.include("User already exists!");
+        expect(res.body).to.include("Invalid email or password");
+        done();
+      });
+  });
+
+  it("login using non-existing user", (done) => {
+    chai
+      .request(server)
+      .post("/login")
+      .send({ email: "applebanana@gmail.com", password: "I like fruits!" })
+      .end((err, res) => {
+        expect(res).status(401);
+        expect(res.body).to.include("user not found");
         done();
       });
   });
