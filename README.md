@@ -52,6 +52,15 @@ This repository houses our project, which integrates MongoDB and follows a speci
      - Run `npm run xp` in another terminal, this will start the backend.
    - Then head to `http://localhost:3000/register`, register then login & start chatting. 
 
+---
+
+### Runnning Tests
+
+When running tests you need to have your environment variables setup like in the above setup.
+Then when running them: `mocha src/server/tests/**/**.js -r dotenv/config`.
+This way when calling the test that requires a environment variable it will run without any issues.
+
+
 ### Next.js Route Handlers
 
 For information on Next.js route handlers, please refer to the [Next.js documentation](https://nextjs.org/docs/app/building-your-application/routing/route-handlers).
