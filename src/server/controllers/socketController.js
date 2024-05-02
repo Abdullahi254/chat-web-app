@@ -6,6 +6,10 @@ const SocketController = {
     try {
       const { userId, name, isRoomChat } = req.body;
 
+      if (!userId || !name || !isRoomChat) {
+        return res.status(400).json({Error: "Missing some parameters!"});
+      }
+
       const createdAt = new Date();
       const newChat = {
         name,
@@ -20,7 +24,7 @@ const SocketController = {
 
       return res.status(200).json(createdChat);
     } catch (error) {
-      return res.status(500).send({ Error: "Failed to create a chat!" });
+      return res.status(500).json({ Error: "Failed to create a chat!" });
     }
   },
 
@@ -45,6 +49,9 @@ const SocketController = {
     try {
       const { chatId } = req.params;
       // console.log("ChatId is: ", chatId);
+      if (!chatId) {
+        return res.status(400).json({Error: "Missing parameter!"});
+      }
       const chats = await dbClient.getCollection("chatDB", "chats");
       const chat = await chats.findOne({
         _id: ObjectId.createFromHexString(chatId),
@@ -77,8 +84,8 @@ const SocketController = {
         users,
       });
     } catch (err) {
-      console.log(err);
-      return res.status(500).json({ error: "an error occured!" });
+      // console.log(err);
+      return res.status(500).json({ Error: "Failed to retrieve the chat!" });
     }
   },
 
@@ -101,6 +108,9 @@ const SocketController = {
    */
   async storeMessage(senderId, content, chatId, timeStamp) {
     try {
+      if (!senderId || !content || !chatId || !timeStamp) {
+        return false;
+      }
       const messages = await dbClient.getCollection("chatDB", "messages");
       const document = {
         senderId,
@@ -152,6 +162,9 @@ const SocketController = {
   async deleteGroup(req, res) {
     try {
       const { chatId, userId } = req.body;
+      if (!chatId || !userId) {
+        return res.status(400).json({Error: "Missing parameter!"});
+      }
       const chats = await dbClient.getCollection("chatDB", "chats");
       // find the particular chatgroup in database
       const actualChatId = ObjectId.createFromHexString(chatId);
@@ -162,7 +175,7 @@ const SocketController = {
       }
       // check if the user is the owner of or one created the group
       if (!chat.createdBy === userId) {
-        return res.status(401).json({ Error: "unauthorized" });
+        return res.status(401).json({ Error: "Unauthorized" });
       }
       await chats.deleteOne({ _id: actualChatId, createdBy: userId });
       res.status(200).json({});
@@ -231,6 +244,9 @@ const SocketController = {
   async addUserToRoom(req, res) {
     try {
       const { userId, chatId } = req.body;
+      if (!userId || !chatId) {
+        return res.status(400).json({Error: "Missing either user ID or chat ID!"});
+      }
       const chats = await dbClient.getCollection("chatDB", "chats");
       // check first if the user is already a member of group
       const actualChatId = ObjectId.createFromHexString(chatId);
@@ -282,6 +298,9 @@ const SocketController = {
   async getUserBio(req, res) {
     try {
       const { userId, friendId } = req.params;
+      if (!userId || !friendId) {
+        return res.status(400).json({Error: "Missing either user ID or friend ID!"});
+      }
       const usersCollection = await dbClient.getCollection("chatDB", "users");
       const user = await usersCollection.findOne({
         _id: ObjectId.createFromHexString(friendId),
@@ -306,7 +325,7 @@ const SocketController = {
       };
       return res.status(200).json(bio);
     } catch (err) {
-      // console.log(err);
+      console.log(err);
       return res.status(404).json({ Error: "User bio not found!" });
     }
   },
@@ -362,20 +381,23 @@ const SocketController = {
       const results = [...chatNames, ...userNames];
       return res.status(200).json(results);
     } catch (err) {
-      console.error("Error searching:", err);
+      // console.error("Error searching:", err);
       return res.status(500).json({ Error: "Internal server error" });
     }
   },
 
   async fetchUserName(userId) {
     try {
+      if (!userId) {
+        return null;
+      }
       const usersCollection = await dbClient.getCollection("chatDB", "users");
       const user = await usersCollection.findOne({
         _id: ObjectId.createFromHexString(userId),
       });
       return user.username;
     } catch (e) {
-      console.log("no user found");
+      // console.log(e);
       return null;
     }
   },
