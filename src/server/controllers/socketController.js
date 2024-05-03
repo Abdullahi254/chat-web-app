@@ -325,7 +325,7 @@ const SocketController = {
       };
       return res.status(200).json(bio);
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       return res.status(404).json({ Error: "User bio not found!" });
     }
   },
@@ -470,8 +470,8 @@ const SocketController = {
         if (!chat) {
             return res.status(404).json({ Error: "Group not found!" });
         }
-        console.log("createdBY:", chat.createdBy.toString()),
-        console.log("Admin:", AdminId);
+        // console.log("createdBY:", chat.createdBy.toString()),
+        // console.log("Admin:", AdminId);
         if (chat.createdBy.toString() !== AdminId) {
             return res.status(403).json({ Error: "Only Admin allowed to remove user" });
         }
@@ -489,7 +489,7 @@ const SocketController = {
 
         return res.status(200).json(updatedGroup);
     } catch (err) {
-        console.log("Error removing user from group: ", err);
+        // console.log("Error removing user from group: ", err);
         return res.status(500).json({ Error: "Failed to remove user from group" });
     }
 }
