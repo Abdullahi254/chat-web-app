@@ -1,9 +1,11 @@
+require("dotenv").config();
 const sinon = require('sinon');
 const { fetchUserName } = require('../controllers/socketController');
 const dbClient = require('../utils/db');
 const { expect } = require('chai');
 
 describe("fetchUserName", () => {
+ 
     afterEach(() => {
         sinon.restore();
     });

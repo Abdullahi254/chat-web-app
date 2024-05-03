@@ -1,9 +1,11 @@
+require("dotenv").config();
 const sinon = require('sinon');
 const { deleteGroup } = require('../controllers/socketController');
 const dbClient = require('../utils/db');
 const { ObjectId } = require("mongodb");
 
 describe("deleteGroup", () => {
+    
     afterEach(() => {
         sinon.restore();
     });

@@ -1,3 +1,4 @@
+require("dotenv").config();
 const sinon = require('sinon');
 const { getUserBio } = require('../controllers/socketController');
 const dbClient = require('../utils/db');

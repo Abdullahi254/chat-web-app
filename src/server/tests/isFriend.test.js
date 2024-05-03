@@ -1,9 +1,11 @@
+require("dotenv").config();
 const { expect } = require('chai');
 const sinon = require('sinon');
 const { isFriend } = require('../controllers/socketController');
 const dbClient = require('../utils/db');
 
 describe('isFriend function', () => {
+ 
   it('should return true if userId is equal to friendId', async () => {
     const result = await isFriend("user123", "user123");
     expect(result).to.be.true;
