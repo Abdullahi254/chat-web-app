@@ -1,9 +1,11 @@
+require("dotenv").config();
 const sinon = require('sinon');
 const { getChatMessages } = require('../controllers/socketController');
 const dbClient = require('../utils/db');
 const { ObjectId } = require("mongodb");
 
 describe('getChatMessages', () => {
+  
   afterEach(() => {
     sinon.restore(); // Restore any mocked functions after each test
   });

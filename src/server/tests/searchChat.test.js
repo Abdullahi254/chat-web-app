@@ -1,3 +1,4 @@
+require("dotenv").config();
 const sinon = require('sinon');
 const { searchChat } = require('../controllers/socketController');
 const dbClient = require('../utils/db');

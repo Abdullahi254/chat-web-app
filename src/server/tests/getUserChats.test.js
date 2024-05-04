@@ -1,8 +1,10 @@
+require("dotenv").config();
 const sinon = require('sinon');
 const { getUserChats } = require('../controllers/socketController');
 const dbClient = require('../utils/db');
 
 describe('getUserChats', () => {
+   
     afterEach(() => {
       sinon.restore(); // Reset Sinon's state after each test
     });
