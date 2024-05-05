@@ -134,28 +134,29 @@ async function getUserfromToken(token) {
 const ChangeUserName = async (req, res) => {
   try {
     const { userId, newName } = req.body;
-    
+
+    //TODO: Include reject message if id is not valid
     if (!newName) {
-      return res.status(200).json({Error: "Missing new username"});
+      return res.status(400).json({ Error: "Missing new username" });
     }
-    
+
     const actualUserId = ObjectId.createFromHexString(userId);
     const users = await dbClient.getCollection("chatDB", "users");
-    
+
     const updatedUser = await users.findOneAndUpdate(
       { _id: actualUserId },
-      { $set: { "username": newName } },
-      { upsert: true, returnDocument: 'after' }
+      { $set: { username: newName } },
+      { upsert: true, returnDocument: "after" },
     );
-    
+
     return res.status(200).json({
       message: "user name changed successfully",
-      newName: newName
+      newName: newName,
     });
-  } catch(err) {
+  } catch (err) {
     console.log(err);
-    return res.status(500).json({Error: "Failed to update username"});
+    return res.status(500).json({ Error: "Failed to update username" });
   }
-}
+};
 
 module.exports = { registerUser, loginUser, tokenChecker, ChangeUserName };

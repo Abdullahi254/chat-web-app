@@ -34,3 +34,5 @@ io.on("connection", (soc) => {
   });
 });
 httpServer.listen(PORT, () => console.log("Sever running on port " + PORT));
+
+module.exports = httpServer;
