@@ -41,7 +41,6 @@ const registerUser = async (req, res) => {
 
     res.status(201).json({ username, email });
   } catch (error) {
-    console.log(error);
     res.status(500).json(error);
   }
 };
@@ -72,7 +71,6 @@ const loginUser = async (req, res) => {
 
     res.status(200).json({ username: user.username, email, token });
   } catch (error) {
-    console.log(error);
     res.status(500).json(error);
   }
 };
@@ -94,7 +92,6 @@ const tokenChecker = async function (req, res, next) {
 const verifyToken = async (req, res, next) => {
   try {
     const authHeader = req.headers["authorization"];
-    console.log(authHeader);
     if (!authHeader) {
       return res.status(401).send("Token is missing");
     }
@@ -126,7 +123,7 @@ async function getUserfromToken(token) {
       return user;
     });
   } catch (error) {
-    console.log(error);
+    return res.status(500).json({ Error: error });
   }
   return null;
 }
@@ -154,7 +151,6 @@ const ChangeUserName = async (req, res) => {
       newName: newName,
     });
   } catch (err) {
-    console.log(err);
     return res.status(500).json({ Error: "Failed to update username" });
   }
 };

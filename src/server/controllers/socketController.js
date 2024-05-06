@@ -7,7 +7,7 @@ const SocketController = {
       const { userId, name, isRoomChat } = req.body;
 
       if (!userId || !name || !isRoomChat) {
-        return res.status(400).json({Error: "Missing some parameters!"});
+        return res.status(400).json({ Error: "Missing some parameters!" });
       }
 
       const createdAt = new Date();
@@ -50,7 +50,7 @@ const SocketController = {
       const { chatId } = req.params;
       // console.log("ChatId is: ", chatId);
       if (!chatId) {
-        return res.status(400).json({Error: "Missing parameter!"});
+        return res.status(400).json({ Error: "Missing parameter!" });
       }
       const chats = await dbClient.getCollection("chatDB", "chats");
       const chat = await chats.findOne({
@@ -163,7 +163,7 @@ const SocketController = {
     try {
       const { chatId, userId } = req.body;
       if (!chatId || !userId) {
-        return res.status(400).json({Error: "Missing parameter!"});
+        return res.status(400).json({ Error: "Missing parameter!" });
       }
       const chats = await dbClient.getCollection("chatDB", "chats");
       // find the particular chatgroup in database
@@ -247,7 +247,9 @@ const SocketController = {
     try {
       const { userId, chatId } = req.body;
       if (!userId || !chatId) {
-        return res.status(400).json({Error: "Missing either user ID or chat ID!"});
+        return res
+          .status(400)
+          .json({ Error: "Missing either user ID or chat ID!" });
       }
       const chats = await dbClient.getCollection("chatDB", "chats");
       // check first if the user is already a member of group
@@ -301,7 +303,9 @@ const SocketController = {
     try {
       const { userId, friendId } = req.params;
       if (!userId || !friendId) {
-        return res.status(400).json({Error: "Missing either user ID or friend ID!"});
+        return res
+          .status(400)
+          .json({ Error: "Missing either user ID or friend ID!" });
       }
       const usersCollection = await dbClient.getCollection("chatDB", "users");
       const user = await usersCollection.findOne({
@@ -474,14 +478,11 @@ const SocketController = {
       if (!chat) {
         return res.status(404).json({ Error: "Group not found!" });
       }
-      console.log("createdBY:", chat.createdBy.toString()),
-        console.log("Admin:", AdminId);
       if (chat.createdBy.toString() !== AdminId) {
         return res
           .status(403)
           .json({ Error: "Only Admin allowed to remove user" });
       }
-
 
       const updatedGroup = await chatsCollection.findOneAndUpdate(
         { _id: actualChatId },
@@ -498,7 +499,9 @@ const SocketController = {
 
       return res.status(200).json(updatedGroup);
     } catch (err) {
-        return res.status(500).json({ Error: "Failed to remove user from group" });
+      return res
+        .status(500)
+        .json({ Error: "Failed to remove user from group" });
     }
   },
 };

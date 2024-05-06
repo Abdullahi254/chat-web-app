@@ -79,7 +79,6 @@ describe("Change username", () => {
       .set("Content-Type", "application/json")
       .send({ newName: "Big_Boss!" })
       .end((err, res) => {
-        console.log(res.body);
         expect(res).status(500);
         expect(res.body).to.be.a("object");
         done();
