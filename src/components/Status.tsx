@@ -18,7 +18,7 @@ const Status = ({ groupBio, chatId }: Props) => {
     const { pending } = useFormStatus()
     return (
         <div className='space-x-2 flex items-center w-full px-2'>
-            <h1 className='font-bold'>About:</h1>
+            <h1 className='font-semibold text-xs'>About:</h1>
             {
                 showInput ?
                     <div className='flex items-center space-x-2'>

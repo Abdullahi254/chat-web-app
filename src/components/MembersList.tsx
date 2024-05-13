@@ -18,16 +18,16 @@ const MembersList = ({ groupBio, userId }: Props) => {
     }
     return (
         <div className='space-x-4 flex flex-col py-2 space-y-2 w-full justify-center flex-wrap overflow-auto scrollbar-thumb-gray-400 scrollbar-track-white scrollbar-thin'>
-            <h1 className='font-bold ml-2'>Members:</h1>
+            <h1 className='font-semibold text-xs ml-2'>Members:</h1>
             <div className='flex items-center space-x-4'>
                 {
 
                     groupBio?.users.slice(0, more).map(user => (
                         <ul className='flex items-center flex-auto min-w-0 max-w-full ' key={user.id}>
-                            <li className='text-sm text-gray-900 font-semibold'>{user.username} </li>
+                            <li className='text-xs text-gray-900 font-semibold'>{user.username} </li>
                             {
                                 groupBio.createdBy === userId &&
-                                <span className='cursor-pointer hover:text-red-500' onClick={async () => handleRemoveMember(groupBio, user.id)}><MdDelete /></span>
+                                <span className='cursor-pointer hover:text-red-500 text-xs' onClick={async () => handleRemoveMember(groupBio, user.id)}><MdDelete /></span>
                             }
 
                         </ul>

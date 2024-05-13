@@ -23,8 +23,8 @@ const SearchLink = ({ _id, name, isFriend, isRoomChat }: Props) => {
     <>
       <li className='flex border-gray-300 border-b-2 space-x-8 items-center py-4 hover:bg-gray-200 px-2'
       >
-        <Image src={dp} alt='dp' width={60} height={60} className='rounded-full h-[42px] w-[42px] cursor-pointer' onClick={handleProfileView} />
-        <p className='text-sm'>{name}</p>
+        <Image src={dp} alt='dp' width={60} height={60} className='rounded-full h-[22px] w-[22px] cursor-pointer' onClick={handleProfileView} />
+        <p className='text-xs'>{name}</p>
       </li>
     </>
 

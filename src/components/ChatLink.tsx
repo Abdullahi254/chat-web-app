@@ -24,16 +24,16 @@ const ChatLink = ({ room, userId }: Props) => {
         {
           room.isRoomChat ?
             <Link href={`/group/${room._id}`}>
-              <Image src={dp} alt='dp' width={60} height={60} className='rounded-full h-[42px] w-[42px]' />
+              <Image src={dp} alt='dp' width={60} height={60} className='rounded-full h-[22px] w-[22px]' />
             </Link> :
             <Link href={room.users[0] === userId ? `/profile/${room.users[1]}` : `/profile/${room.users[0]}`}>
-              <Image src={dp} alt='dp' width={60} height={60} className='rounded-full h-[42px] w-[42px]' />
+              <Image src={dp} alt='dp' width={60} height={60} className='rounded-full h-[22px] w-[22px]' />
             </Link>
         }
 
 
         <Link href={`/chat/${room._id}`} className='cursor-pointer'>
-          <p className='text-sm'>{
+          <p className='text-xs'>{
             room.isRoomChat ? room.name :
               room.info[0].id === userId ? room.info[1].name : room.info[0].name
           }</p>

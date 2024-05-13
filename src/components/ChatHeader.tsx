@@ -21,7 +21,7 @@ const ChatHeader = ({
     return (
         <div className={combinedClassName}>
             <nav className='flex-1 flex items-center justify-between px-6 bg-gray-200 rounded-l-lg rounded-r-sm'>
-                <h1 className='font-semibold'>{room.isRoomChat ? room.name :
+                <h1 className='font-semibold text-xs'>{room.isRoomChat ? room.name :
                     room.info[0].id === userId ? room.info[1].name : room.info[0].name}</h1>
                 {/* we can do a checker here to check If chatId is for group or private chat */}
                 {

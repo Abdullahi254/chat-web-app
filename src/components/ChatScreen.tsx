@@ -95,7 +95,7 @@ const ChatScreen = ({ userId, chatId, msgHistory, room }: Props) => {
             <form className='w-full' onSubmit={handleMessageSent} >
                 <label htmlFor="chat" className="sr-only">Your message</label>
                 <div className="flex items-center px-3 py-2 rounded-lg bg-gray-50">
-                    <textarea id="chat" name='chat' rows={2} className="block mx-4 p-2.5 w-[80%] text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-gray-500 focus:border-gray-500" placeholder="Your message..."></textarea>
+                    <textarea id="chat" name='chat' rows={2} className="text-xs block mx-4 p-2.5 w-[80%] text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-gray-500 focus:border-gray-500" placeholder="Your message..."></textarea>
                     <button type="submit" className="inline-flex justify-center p-2 text-gray-900 rounded-full cursor-pointer hover:bg-gray-100">
                         <IoMdSend className='text-xl' />
                     </button>

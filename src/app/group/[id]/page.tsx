@@ -58,14 +58,14 @@ const page = async ({ params }: Props) => {
                 </div>
 
                 <div className='space-x-2 flex items-center w-full px-2 justify-center'>
-                    <h1 className='tracking-widest text-sm font-semibold'>{groubBio?.name}</h1>
+                    <h1 className='tracking-widest text-xs font-semibold'>{groubBio?.name}</h1>
                 </div>
 
                 <Status groupBio={groubBio} chatId={params.id} />
                 <MembersList groupBio={groubBio} userId={userId} />
 
                 <div className='space-x-4 flex flex-col py-2 space-y-2 w-full justify-center'>
-                    <h1 className='font-bold ml-2'>Add Member:</h1>
+                    <h1 className='font-semibold text-xs ml-2'>Add Member:</h1>
                     <AddMember userId={userId} chatId={params.id as string} />
                 </div>
 
