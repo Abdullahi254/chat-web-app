@@ -3,7 +3,6 @@ import Image from 'next/image'
 import dp from "../../public/dp.jpg"
 import { CiCamera } from "react-icons/ci";
 import { CiEdit } from "react-icons/ci";
-import { MdDelete } from "react-icons/md";
 import AddChat from './AddChat';
 import { IoReturnDownBack } from "react-icons/io5";
 import Link from 'next/link';
@@ -12,6 +11,8 @@ import AddFriend from './AddFriend';
 import { getUserId } from '@/app/page';
 import { redirect } from 'next/navigation';
 import Name from './Name';
+import { deleteGroup } from '@/lib/actions';
+import DeleteIcon from './DeleteIcon';
 
 type Props = {
     profileId: string,
@@ -27,7 +28,7 @@ export type BioData = {
 
 async function getUserBio(userId: string, friendId: string): Promise<BioData> {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/get_user_bio/${userId}/${friendId}`, {next: {tags:['bio']}});
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/get_user_bio/${userId}/${friendId}`, { next: { tags: ['bio'] } });
         if (!response.ok) {
             // redirect(`/group/${friendId}`)
         }
@@ -74,7 +75,8 @@ const ProfileCard = async ({ profileId }: Props) => {
                             <li className='text-sm text-gray-900'>{group.name}</li>
                             {
                                 group?.createdBy === userId &&
-                                <span className='cursor-pointer hover:text-red-500'><MdDelete /></span>
+                                <DeleteIcon groupId={group._id as string} userId={userId} />
+
                             }
 
                         </div>
