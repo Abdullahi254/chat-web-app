@@ -12,7 +12,7 @@ async function page({ params}: Props) {
     const userId = await getUserId();
     return (
         <main className="h-screen py-10 px-6 pattern w-full">
-            <ProfileCard profileId={params.id} userId={userId}/>
+            <ProfileCard profileId={params.id}/>
         </main>
     )
 }

@@ -267,3 +267,22 @@ export const deleteMessage = async (msgId: string) => {
     };
   }
 };
+
+export const createGroup = async (userId:string, formData:FormData) => {
+  // setSearch(false)
+  const groupName = formData.get('create');
+  if (groupName) {
+     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/create_chat`, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+              isRoomChat: true,
+              name: groupName,
+              userId
+          })
+      })
+      revalidateTag("bio")
+  }
+}

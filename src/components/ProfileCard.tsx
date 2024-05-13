@@ -27,7 +27,7 @@ export type BioData = {
 
 async function getUserBio(userId: string, friendId: string): Promise<BioData> {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/get_user_bio/${userId}/${friendId}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/get_user_bio/${userId}/${friendId}`, {next: {tags:['bio']}});
         if (!response.ok) {
             // redirect(`/group/${friendId}`)
         }
