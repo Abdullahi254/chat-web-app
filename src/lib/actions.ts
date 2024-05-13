@@ -268,21 +268,44 @@ export const deleteMessage = async (msgId: string) => {
   }
 };
 
-export const createGroup = async (userId:string, formData:FormData) => {
-  // setSearch(false)
-  const groupName = formData.get('create');
-  if (groupName) {
-     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/create_chat`, {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-              isRoomChat: true,
-              name: groupName,
-              userId
-          })
+export const createGroup = async (userId: string, formData: FormData) => {
+  try {
+    const groupName = formData.get('create');
+    if (groupName) {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/create_chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          isRoomChat: true,
+          name: groupName,
+          userId
+        })
       })
       revalidateTag("bio")
+    }
+  } catch (er) {
+    throw new Error('Failed to Create Group!')
   }
+
+}
+
+export const deleteGroup = async (chatId: string, userId: string) => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/delete_group`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        chatId,
+        userId
+      })
+    })
+    revalidateTag("bio")
+  } catch (er) {
+    throw new Error('Failed to Delete Group!')
+  }
+
 }
