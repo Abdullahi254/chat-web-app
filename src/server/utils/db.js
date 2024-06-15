@@ -1,9 +1,9 @@
 // entry point to the db
 const { MongoClient } = require("mongodb");
 
+
 class DBClient {
-  constructor() {
-    const connectionString = process.env.REACT_APP_MONGO_URL;
+  constructor(connectionString) {
     if (!connectionString) {
       throw new Error(
         "REACT_APP_MONGO_URL environment variable is not defined.",
@@ -23,7 +23,6 @@ class DBClient {
     }
   }
 }
-
-const dbClient = new DBClient();
+const dbClient = new DBClient(process.env.REACT_APP_MONGO_URL);
 
 module.exports = dbClient;
